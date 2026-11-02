@@ -195,3 +195,35 @@ $css = file_get_contents( '/p/assets/rede-marketplace.css' );
 contem( '--e-global-typography-primary-font-family', $css, 'CSS usa a fonte do kit' );
 contem( '#f08a12', $css, 'CSS: laranja de reserva' );
 nao_contem( 'Bricolage', $css, 'CSS sem fontes da prévia' );
+
+// O kit do Elementor estiliza `.elementor-kit-N a:hover` (0,2,1) e `.elementor-kit-N h1` (0,1,1):
+// toda regra de link, botão, título ou parágrafo do plugin precisa ter especificidade >= 0,2,1.
+contem( '.rtm-acoes a.rtm-btn', $css, 'CSS: botão do topo com escopo' );
+contem( '.rtm-lateral a.rtm-btn:hover', $css, 'CSS: hover do botão lateral com escopo' );
+contem( '.rtm-barra a.rtm-btn:visited', $css, 'CSS: visited do botão da barra com escopo' );
+contem( '.rtm-dados h1.rtm-nome', $css, 'CSS: nome do topo com escopo' );
+contem( '.rtm-corpo h3.rtm-card-nome', $css, 'CSS: nome do card com escopo' );
+contem( '.rtm-rodape a.rtm-perfil:hover', $css, 'CSS: Ver perfil com escopo' );
+nao_contem( '!important', $css, 'CSS: sem !important' );
+function rtm_t_especificidade( $sel ) {
+	$sel = preg_replace( '/::[a-z-]+/', '', $sel );
+	$cls = preg_match_all( '/\.[a-z0-9_-]+|:[a-z-]+|\[[^\]]+\]/i', $sel );
+	$ids = preg_match_all( '/#[a-z0-9_-]+/i', $sel );
+	$tip = preg_match_all( '/(?:^|[\s>+~])([a-z][a-z0-9]*)/i', $sel );
+	return $ids * 10000 + $cls * 100 + $tip;
+}
+igual( 201, rtm_t_especificidade( '.elementor-kit-5 a:hover' ), 'calculadora de especificidade: kit a:hover = 0,2,1' );
+igual( 102, rtm_t_especificidade( 'section.rtm-bloco > h2' ), 'calculadora de especificidade: 0,1,2' );
+$sem_coment = preg_replace( '#/\*.*?\*/#s', '', $css );
+preg_match_all( '/([^{}]+)\{[^{}]*\}/', $sem_coment, $regras );
+$fracos = array();
+foreach ( $regras[1] as $grupo ) {
+	foreach ( explode( ',', $grupo ) as $sel ) {
+		$sel = trim( $sel );
+		if ( '' === $sel || ':root' === $sel || 0 === strpos( $sel, '@' ) ) { continue; }
+		$alvo = preg_match( '/(^|[\s>])(a|h1|h2|h3|p)([.:\[]|$)/', $sel ) || preg_match( '/rtm-(btn|perfil|nome|card-nome|cargo|bio)\b/', $sel );
+		if ( $alvo && rtm_t_especificidade( $sel ) < 201 ) { $fracos[] = $sel; }
+	}
+}
+ok( count( $regras[1] ) > 30, 'CSS: regras lidas' );
+igual( array(), $fracos, 'CSS: links, botões, títulos e parágrafos com especificidade >= 0,2,1' );
