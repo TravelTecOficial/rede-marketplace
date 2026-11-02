@@ -132,7 +132,12 @@ function rtm_salvar( $post_id ) {
 		return;
 	}
 	$entrada = ( isset( $_POST['rtm'] ) && is_array( $_POST['rtm'] ) ) ? wp_unslash( $_POST['rtm'] ) : array();
-	foreach ( rtm_limpar_campos( $entrada ) as $chave => $valor ) {
+	$campos  = rtm_limpar_campos( $entrada );
+	// Sem destinos publicados a caixa não mostra os selects (nem o marcador): não apaga o que já estava gravado.
+	if ( empty( $entrada['destinos_no_form'] ) ) {
+		unset( $campos['destinos'], $campos['destino_principal'] );
+	}
+	foreach ( $campos as $chave => $valor ) {
 		update_post_meta( $post_id, 'rtm_' . $chave, $valor );
 	}
 }
@@ -215,19 +220,25 @@ function rtm_caixa( $post ) {
 
 	// Destinos e especialidades
 	echo '<h3>Destinos e especialidades</h3>';
-	$selecionados = array();
+	// Marcado pelo id ou pelo slug: o Cliente Ideal pode recriar o destino (id novo, mesmo slug).
+	$sel_ids   = array();
+	$sel_slugs = array();
 	foreach ( is_array( $v['destinos'] ) ? $v['destinos'] : array() as $d ) {
 		if ( is_array( $d ) && isset( $d['id'] ) ) {
-			$selecionados[] = (int) $d['id'];
+			$sel_ids[] = (int) $d['id'];
+		}
+		if ( is_array( $d ) && ! empty( $d['slug'] ) ) {
+			$sel_slugs[] = (string) $d['slug'];
 		}
 	}
 	$destinos = rtm_destinos_publicados();
 	if ( ! $destinos ) {
 		echo '<p class="description">Nenhum destino publicado no site (tipo de conteúdo "destinos").</p>';
 	} else {
-		$h = '<select multiple size="8" id="rtm_destinos" name="rtm[destinos][]" style="min-width:280px">';
+		$h = '<input type="hidden" name="rtm[destinos_no_form]" value="1"><select multiple size="8" id="rtm_destinos" name="rtm[destinos][]" style="min-width:280px">';
 		foreach ( $destinos as $d ) {
-			$h .= '<option value="' . (int) $d['id'] . '"' . selected( in_array( $d['id'], $selecionados, true ), true, false ) . '>' . esc_html( $d['nome'] ) . '</option>';
+			$marcado = in_array( $d['id'], $sel_ids, true ) || in_array( $d['slug'], $sel_slugs, true );
+			$h      .= '<option value="' . (int) $d['id'] . '"' . selected( $marcado, true, false ) . '>' . esc_html( $d['nome'] ) . '</option>';
 		}
 		$h .= '</select>';
 		rtm_linha( $campos['destinos']['rotulo'], 'rtm_destinos', $h, 'Segure Ctrl (ou Cmd) para marcar vários.' );

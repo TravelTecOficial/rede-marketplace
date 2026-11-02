@@ -199,3 +199,11 @@ test('WhatsApp e e-mail inválidos são recusados', () => {
   $(w, 'rtm-email').value = 'a@b.co';
   assert.deepEqual(P(w.RTMCotacao.validar()), []);
 });
+
+test('faixa de acentos combinantes escrita com escapes (sem caracteres invisíveis no arquivo)', () => {
+  const B = String.fromCharCode(92); // barra invertida
+  const escrito = '[' + B + 'u0300-' + B + 'u036f]';
+  assert.ok(JS.includes(escrito), 'usa ' + escrito);
+  const literal = Array.from(JS).some((c) => c.charCodeAt(0) >= 0x300 && c.charCodeAt(0) <= 0x36f);
+  assert.ok(!literal, 'nenhum caractere combinante literal no arquivo');
+});

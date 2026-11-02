@@ -121,6 +121,20 @@ rtm_apagar_agentes_teste();
 rtm_t_post( 10, 'destinos', 'gramado', 'publish', 'Gramado' );
 igual( false, rtm_teste_sem_destino(), 'com gramado publicado não avisa' );
 
+// Criar e apagar agentes de teste limpam o cache (apagar com force não passa por save_post)
+rtm_t_post( 40, 'page', 'cotacao-especialistas', 'publish', 'Cotação' );
+$GLOBALS['rt_posts'][ count( $GLOBALS['rt_posts'] ) - 1 ]->post_content = '[rt_cotacao]';
+delete_transient( 'rtm_pagina_cotacao' );
+$purgas = array();
+add_action( 'litespeed_purge_post', function ( $id ) use ( &$purgas ) { $purgas[] = array( 'post', $id ); } );
+add_action( 'litespeed_purge_url', function ( $url ) use ( &$purgas ) { $purgas[] = array( 'url', $url ); } );
+$ids4 = rtm_criar_agentes_teste();
+ok( in_array( array( 'post', 40 ), $purgas, true ) && in_array( array( 'url', 'https://exemplo.test/cotacao-especialistas/' ), $purgas, true ), 'criar agentes de teste: purga a página de cotação' );
+ok( in_array( array( 'url', get_permalink( $ids4[0] ) ), $purgas, true ), 'criar agentes de teste: purga a página do agente' );
+$purgas = array();
+rtm_apagar_agentes_teste();
+ok( in_array( array( 'post', 40 ), $purgas, true ) && in_array( array( 'url', 'https://exemplo.test/cotacao-especialistas/' ), $purgas, true ), 'apagar agentes de teste: purga a página de cotação' );
+
 // Botões e ações (admin-post)
 ok( isset( $GLOBALS['rt_ganchos']['admin_post_rtm_criar_teste'] ) && isset( $GLOBALS['rt_ganchos']['admin_post_rtm_apagar_teste'] ), 'ações admin-post registradas' );
 ok( isset( $GLOBALS['rt_ganchos']['rtm_configuracoes_extra'] ), 'botões ligados em rtm_configuracoes_extra' );

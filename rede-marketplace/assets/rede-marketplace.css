@@ -38,6 +38,10 @@
 img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 
 /* Topo */
+/* Trilha: Rede Turística › Especialistas › nome */
+.rtm-trilha{box-sizing:border-box;max-width:1040px;margin:0 auto 14px;font-family:var(--rtm-font-body);font-size:13px;line-height:1.4;color:var(--rtm-muted)}
+.rtm-trilha a.rtm-trilha-link,.rtm-trilha a.rtm-trilha-link:visited{color:inherit;text-decoration:none}
+.rtm-trilha a.rtm-trilha-link:hover,.rtm-trilha a.rtm-trilha-link:focus{color:var(--rtm-ink);text-decoration:underline}
 .rtm-topo{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);max-width:1040px;margin:0 auto;background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:22px;overflow:hidden}
 .rtm-foto{position:relative;min-height:380px}
 .rtm-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}

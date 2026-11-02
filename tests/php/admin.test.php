@@ -68,7 +68,7 @@ igual( array_keys( rtm_campos() ), array_keys( rtm_limpar_campos( array() ) ), '
 $_POST = array( 'rtm_agente' => 'errado', 'rtm' => array( 'cargo' => 'X' ) );
 rtm_salvar( 50 );
 igual( array(), get_post_meta( 50 ), 'sem nonce válido não grava' );
-$_POST = array( 'rtm_agente' => 'ok_rtm_agente', 'rtm' => array( 'cargo' => 'Diretora', 'whatsapp' => '(11) 99999-0000', 'ativo' => '1', 'destinos' => array( '10' ) ) );
+$_POST = array( 'rtm_agente' => 'ok_rtm_agente', 'rtm' => array( 'cargo' => 'Diretora', 'whatsapp' => '(11) 99999-0000', 'ativo' => '1', 'destinos' => array( '10' ), 'destinos_no_form' => '1' ) );
 $GLOBALS['rt_pode'] = false;
 rtm_salvar( 50 );
 igual( array(), get_post_meta( 50 ), 'sem permissão não grava' );
@@ -85,6 +85,36 @@ igual( '1', get_post_meta( 50, 'rtm_ativo', true ), 'grava ativo' );
 igual( array( array( 'id' => 10, 'slug' => 'gramado' ) ), get_post_meta( 50, 'rtm_destinos', true ), 'grava destinos {id,slug}' );
 igual( 'gramado', get_post_meta( 50, 'rtm_destino_principal', true ), 'grava destino principal' );
 igual( 'publish', get_post( 10 )->post_status, 'destinos não é alterado' );
+
+// Sem destinos publicados o formulário não tem os selects (nem o marcador): salvar não apaga os destinos gravados
+$_POST = array( 'rtm_agente' => 'ok_rtm_agente', 'rtm' => array( 'cargo' => 'Diretora 2', 'ativo' => '1' ) );
+rtm_salvar( 50 );
+igual( 'Diretora 2', get_post_meta( 50, 'rtm_cargo', true ), 'sem marcador: os outros campos gravam' );
+igual( array( array( 'id' => 10, 'slug' => 'gramado' ) ), get_post_meta( 50, 'rtm_destinos', true ), 'sem marcador: destinos mantidos' );
+igual( 'gramado', get_post_meta( 50, 'rtm_destino_principal', true ), 'sem marcador: destino principal mantido' );
+$_POST = array( 'rtm_agente' => 'ok_rtm_agente', 'rtm' => array( 'ativo' => '1', 'destinos_no_form' => '1' ) );
+rtm_salvar( 50 );
+igual( array(), get_post_meta( 50, 'rtm_destinos', true ), 'com marcador e nada marcado: destinos limpos' );
+ok( ! array_key_exists( 'rtm_destinos_no_form', $GLOBALS['rt_meta'][50] ), 'marcador não vira meta' );
+
+// Caixa do agente: destino recriado no Cliente Ideal (id novo, mesmo slug) continua marcado
+function add_meta_box() {}
+function esc_textarea( $s ) { return esc_html( $s ); }
+function rtm_t_caixa( $id ) { ob_start(); rtm_caixa( get_post( $id ) ); return ob_get_clean(); }
+$GLOBALS['rt_meta'][51] = array( 'rtm_destinos' => array( array( 'id' => 99, 'slug' => 'canela' ), array( 'id' => 10, 'slug' => 'gramado' ) ), 'rtm_destino_principal' => 'canela' );
+$GLOBALS['rt_posts'][] = (object) array( 'ID' => 51, 'post_type' => 'rt_agente', 'post_status' => 'publish', 'post_title' => 'Bia', 'post_name' => 'bia' );
+$cx = rtm_t_caixa( 51 );
+contem( '<option value="11" selected="selected">Canela</option>', $cx, 'caixa: destino com id antigo marcado pelo slug' );
+contem( '<option value="10" selected="selected">Gramado</option>', $cx, 'caixa: destino pelo id marcado' );
+contem( 'name="rtm[destinos_no_form]" value="1"', $cx, 'caixa: marcador junto do select de destinos' );
+$_POST = array( 'rtm_agente' => 'ok_rtm_agente', 'rtm' => array( 'ativo' => '1', 'destinos' => array( '11', '10' ), 'destino_principal' => 'canela', 'destinos_no_form' => '1' ) );
+rtm_salvar( 51 );
+igual( array( array( 'id' => 11, 'slug' => 'canela' ), array( 'id' => 10, 'slug' => 'gramado' ) ), get_post_meta( 51, 'rtm_destinos', true ), 'salvar: grava o id atual do destino' );
+$tmp = $GLOBALS['rt_posts'];
+$GLOBALS['rt_posts'] = array_values( array_filter( $GLOBALS['rt_posts'], function ( $p ) { return 'destinos' !== $p->post_type; } ) );
+$cx = rtm_t_caixa( 51 );
+nao_contem( 'destinos_no_form', $cx, 'sem destinos publicados: sem select nem marcador' );
+$GLOBALS['rt_posts'] = $tmp;
 
 // Imagem destacada/logo não são tocadas e pós-autosave nada grava
 $GLOBALS['rt_meta'][50] = array();

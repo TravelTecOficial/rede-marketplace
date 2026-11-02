@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function rtm_secoes() {
-	return array( 'topo', 'sobre', 'especialidades', 'onde', 'cotacao', 'barra' );
+	return array( 'trilha', 'topo', 'sobre', 'especialidades', 'onde', 'cotacao', 'barra' );
 }
 
 /** [rt_agente secao="topo"]: seção do agente do post atual; fora de rt_agente (ou agente inativo) → ''. */

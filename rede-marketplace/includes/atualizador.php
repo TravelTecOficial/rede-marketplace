@@ -117,6 +117,39 @@ add_filter( 'http_request_args', function ( $args, $url ) {
 	return $args;
 }, 10, 2 );
 
+/**
+ * Cabeçalhos para seguir um redirecionamento. A API (api.github.com) responde ao download do anexo com
+ * um redirect para uma URL assinada em *.githubusercontent.com, que recusa o cabeçalho Authorization:
+ * o nosso token só segue se o destino ainda for api.github.com. Authorization de outra requisição não é mexido.
+ */
+function rtm_cabecalhos_redirecionamento( array $cabecalhos, $destino ) {
+	$token = rtm_token();
+	if ( '' === $token ) {
+		return $cabecalhos;
+	}
+	$host = strtolower( (string) wp_parse_url( (string) $destino, PHP_URL_HOST ) );
+	if ( 'api.github.com' === $host ) {
+		return $cabecalhos;
+	}
+	foreach ( $cabecalhos as $nome => $valor ) {
+		if ( 'authorization' === strtolower( (string) $nome ) && 'Bearer ' . $token === (string) $valor ) {
+			unset( $cabecalhos[ $nome ] );
+		}
+	}
+	return $cabecalhos;
+}
+
+/**
+ * Gancho do Requests antes de seguir um redirect. O WP_HTTP_Requests_Hooks (WP 4.7+) repassa cada gancho
+ * do Requests como a ação requests-<gancho>, com os parâmetros por referência ($location, $headers, ...).
+ */
+function rtm_antes_do_redirecionamento( $destino, &$cabecalhos ) {
+	if ( is_array( $cabecalhos ) ) {
+		$cabecalhos = rtm_cabecalhos_redirecionamento( $cabecalhos, $destino );
+	}
+}
+add_action( 'requests-requests.before_redirect', 'rtm_antes_do_redirecionamento', 10, 2 );
+
 /** Ficha do plugin, com as notas da release. */
 function rtm_ficha( $release ) {
 	return (object) array(

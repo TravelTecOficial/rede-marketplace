@@ -77,6 +77,26 @@ contem( 'rtm-barra', $barra, 'barra fixa do celular' );
 contem( 'Pedir cotação com Mariana', $barra, 'barra: botão' );
 igual( '', rtm_secao( 'inexistente', $a ), 'seção desconhecida → vazio' );
 
+// Trilha: Rede Turística › Especialistas › nome
+$tr = rtm_secao( 'trilha', $a );
+contem( '<nav class="rtm-trilha" aria-label="Trilha de navegação">', $tr, 'trilha: nav com rótulo' );
+contem( '<a class="rtm-trilha-link" href="https://exemplo.test/">Rede Turística</a>', $tr, 'trilha: Rede Turística leva à página inicial' );
+contem( '<span>Especialistas</span>', $tr, 'trilha: Especialistas sem link (não há página de arquivo)' );
+contem( '<span aria-current="page">Mariana Kloss</span>', $tr, 'trilha: nome do agente por último' );
+ok( strpos( $tr, 'Rede Turística' ) < strpos( $tr, 'Especialistas' ) && strpos( $tr, 'Especialistas' ) < strpos( $tr, 'Mariana Kloss' ), 'trilha: ordem' );
+igual( 'trilha', rtm_secoes()[0], 'trilha é a primeira seção' );
+
+// Destino recriado no Cliente Ideal (id novo, mesmo slug): o nome vem pelo slug
+rtm_t_post( 12, 'Nova Petrópolis', array(), 'publish', 'destinos' );
+rtm_t_post( 13, 'Bento', array(), 'trash', 'destinos' );
+rtm_t_post( 60, 'Luiza Prado', array( 'ativo' => '1', 'destinos' => array(
+	array( 'id' => 444, 'slug' => 'nova-petropolis' ), array( 'id' => 13, 'slug' => 'bento' ), array( 'id' => 445, 'slug' => 'sumiu' ),
+) ) );
+$el = rtm_secao( 'especialidades', rtm_agente( 60 ) );
+contem( '>Nova Petrópolis<', $el, 'destino com id antigo: nome achado pelo slug' );
+nao_contem( 'Bento', $el, 'destino na lixeira não aparece' );
+nao_contem( 'sumiu', $el, 'destino que não existe mais não aparece' );
+
 // Cadastur verificado
 update_post_meta( 5, 'rtm_cadastur_conferido_em', '2026-11-02' );
 $a2 = rtm_agente( 5 );
@@ -146,6 +166,7 @@ $sc = $GLOBALS['rt_shortcodes']['rt_agente'];
 $GLOBALS['rt_atual'] = 5;
 contem( 'Mariana Kloss', call_user_func( $sc, array( 'secao' => 'topo' ) ), 'shortcode no agente: topo' );
 igual( '', call_user_func( $sc, array( 'secao' => 'xyz' ) ), 'shortcode com seção inválida: vazio' );
+contem( 'rtm-trilha', call_user_func( $sc, array( 'secao' => 'trilha' ) ), 'shortcode no agente: trilha' );
 $GLOBALS['rt_atual'] = 10;
 igual( '', call_user_func( $sc, array( 'secao' => 'topo' ) ), 'shortcode fora de rt_agente: vazio' );
 
@@ -173,6 +194,8 @@ $GLOBALS['rt_atual'] = 5;
 $r = rtm_template_reserva( '/tema/single.php' );
 igual( '/p/templates/agente.php', $r, 'rt_agente sem modelo do Elementor: modelo reserva' );
 ok( file_exists( $r ), 'modelo reserva existe' );
+$reserva = file_get_contents( $r );
+ok( false !== strpos( $reserva, "rtm_secao( 'trilha'" ) && strpos( $reserva, "rtm_secao( 'trilha'" ) < strpos( $reserva, "rtm_secao( 'topo'" ), 'modelo reserva: trilha antes do topo' );
 
 // CSS só em rt_agente e na página com [rt_cotacao
 ok( in_array( 'rtm_estilos', $GLOBALS['rt_ganchos']['wp_enqueue_scripts'], true ), 'wp_enqueue_scripts -> rtm_estilos' );
@@ -210,6 +233,8 @@ contem( '.rtm-rodape a.rtm-perfil:hover', $css, 'CSS: Ver perfil com escopo' );
 nao_contem( '!important', $css, 'CSS: sem !important' );
 contem( '.rtm-lista-esp .rtm-esp b.rtm-esp-titulo', $css, 'CSS: título da especialidade com escopo' );
 contem( '.rtm-lista-esp .rtm-esp span.rtm-esp-desc', $css, 'CSS: descrição da especialidade com escopo' );
+contem( '.rtm-trilha a.rtm-trilha-link', $css, 'CSS: link da trilha com escopo' );
+contem( '.rtm-trilha a.rtm-trilha-link:hover', $css, 'CSS: hover do link da trilha com escopo' );
 igual( true, rtm_t_especificidade_ok( '.rtm-lista-esp .rtm-esp b.rtm-esp-titulo' ) && rtm_t_especificidade_ok( '.rtm-lista-esp .rtm-esp span.rtm-esp-desc' ), 'CSS: especialidade >= 0,2,1' );
 function rtm_t_especificidade_ok( $sel ) { return rtm_t_especificidade( $sel ) >= 201; }
 function rtm_t_especificidade( $sel ) {
@@ -228,7 +253,7 @@ foreach ( $regras[1] as $grupo ) {
 	foreach ( explode( ',', $grupo ) as $sel ) {
 		$sel = trim( $sel );
 		if ( '' === $sel || ':root' === $sel || 0 === strpos( $sel, '@' ) ) { continue; }
-		$alvo = preg_match( '/(^|[\s>])(a|h1|h2|h3|p|label|button|input|select|textarea)([.:\[]|$)/', $sel ) || preg_match( '/rtm-(esp-titulo|esp-desc|btn|perfil|nome|card-nome|cargo|bio|pilula|enviar|rot|rede|lgpd|titulo|lead|etapa-h|etapa-dica|vazio)\b/', $sel );
+		$alvo = preg_match( '/(^|[\s>])(a|h1|h2|h3|p|label|button|input|select|textarea|nav)([.:\[]|$)/', $sel ) || preg_match( '/rtm-(esp-titulo|esp-desc|btn|perfil|nome|card-nome|cargo|bio|pilula|enviar|rot|rede|lgpd|titulo|lead|etapa-h|etapa-dica|vazio|trilha-link)\b/', $sel );
 		if ( $alvo && rtm_t_especificidade( $sel ) < 201 ) { $fracos[] = $sel; }
 	}
 }

@@ -72,6 +72,30 @@ function rtm_html_chips( array $itens ) {
 	return $h;
 }
 
+/**
+ * Nome de um destino guardado como {id, slug}. O Cliente Ideal pode recriar o destino (id novo, mesmo slug):
+ * vale o id se ainda for um destino publicado; senão, procura pelo slug. '' se não existir mais.
+ */
+function rtm_titulo_destino( $d ) {
+	if ( ! is_array( $d ) ) {
+		return '';
+	}
+	$p = ! empty( $d['id'] ) ? get_post( (int) $d['id'] ) : null;
+	if ( ! $p || 'destinos' !== $p->post_type || 'publish' !== $p->post_status ) {
+		$p       = null;
+		$achados = ! empty( $d['slug'] ) ? get_posts( array(
+			'post_type'      => 'destinos',
+			'post_status'    => 'publish',
+			'name'           => (string) $d['slug'],
+			'posts_per_page' => 1,
+		) ) : array();
+		if ( $achados ) {
+			$p = $achados[0];
+		}
+	}
+	return $p ? (string) $p->post_title : '';
+}
+
 /** HTML de uma seção da página do agente; '' quando não há dado para mostrar. */
 function rtm_secao( $secao, array $agente ) {
 	$nome  = rtm_primeiro_nome( $agente );
@@ -79,6 +103,14 @@ function rtm_secao( $secao, array $agente ) {
 	$botao = '<a class="rtm-btn" href="' . $url . '">' . esc_html( 'Pedir cotação com ' . $nome ) . '</a>';
 
 	switch ( $secao ) {
+		case 'trilha':
+			// Não existe página de arquivo dos especialistas: "Especialistas" fica sem link.
+			return '<nav class="rtm-trilha" aria-label="Trilha de navegação">'
+				. '<a class="rtm-trilha-link" href="' . esc_url( home_url( '/' ) ) . '">Rede Turística</a>'
+				. ' <span class="rtm-trilha-sep" aria-hidden="true">›</span> <span>Especialistas</span>'
+				. ' <span class="rtm-trilha-sep" aria-hidden="true">›</span> <span aria-current="page">' . esc_html( $agente['nome'] ) . '</span>'
+				. '</nav>';
+
 		case 'topo':
 			$h  = '<section class="rtm-topo">' . rtm_html_foto( $agente, 'rtm-foto' ) . '<div class="rtm-dados">';
 			$h .= rtm_html_cadastur( $agente, true );
@@ -125,8 +157,8 @@ function rtm_secao( $secao, array $agente ) {
 			}
 			$nomes = array();
 			foreach ( $agente['destinos'] as $d ) {
-				$titulo = is_array( $d ) && ! empty( $d['id'] ) ? get_the_title( (int) $d['id'] ) : '';
-				if ( '' !== (string) $titulo ) {
+				$titulo = rtm_titulo_destino( $d );
+				if ( '' !== $titulo ) {
 					$nomes[] = $titulo;
 				}
 			}
@@ -195,25 +227,17 @@ function rtm_card( array $agente ) {
 
 /** A página atual tem o shortcode [rt_cotacao (no conteúdo ou nos dados do Elementor)? */
 function rtm_pagina_tem_cotacao() {
-	if ( ! is_singular() ) {
-		return false;
-	}
-	$id = get_queried_object_id();
-	$p  = get_post( $id );
-	if ( ! $p ) {
-		return false;
-	}
-	if ( isset( $p->post_content ) && false !== strpos( (string) $p->post_content, '[rt_cotacao' ) ) {
-		return true;
-	}
-	$dados = get_post_meta( $id, '_elementor_data', true );
-	return is_string( $dados ) && false !== strpos( $dados, '[rt_cotacao' );
+	return is_singular() && rtm_post_tem_cotacao( get_queried_object_id() );
+}
+
+function rtm_enfileirar_estilo() {
+	wp_enqueue_style( 'rede-marketplace', RTM_URL . 'assets/rede-marketplace.css', array(), RTM_VERSION );
 }
 
 /** CSS só nas páginas do agente e na página da cotação. */
 function rtm_estilos() {
 	if ( is_singular( 'rt_agente' ) || rtm_pagina_tem_cotacao() ) {
-		wp_enqueue_style( 'rede-marketplace', RTM_URL . 'assets/rede-marketplace.css', array(), RTM_VERSION );
+		rtm_enfileirar_estilo();
 	}
 }
 add_action( 'wp_enqueue_scripts', 'rtm_estilos' );

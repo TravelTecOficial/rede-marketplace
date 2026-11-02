@@ -173,6 +173,10 @@ function rtm_criar_agentes_teste() {
 		wp_set_object_terms( $id, $a['tipos'], 'rt_tipo_viagem' );
 		$ids[] = (int) $id;
 	}
+	// wp_insert_post purgou antes dos metas: limpa de novo com o agente completo (página dele e cotação).
+	foreach ( $ids as $id ) {
+		rtm_purgar_cache( $id );
+	}
 	return $ids;
 }
 
@@ -187,6 +191,7 @@ function rtm_apagar_agentes_teste() {
 			$n++;
 		}
 	}
+	rtm_purgar_cotacao(); // apagar de vez não passa por save_post_rt_agente
 	return $n;
 }
 

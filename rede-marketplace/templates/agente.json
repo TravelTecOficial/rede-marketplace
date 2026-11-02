@@ -8,6 +8,40 @@
  "page_settings": {},
  "content": [
   {
+   "id": "rtm000d",
+   "elType": "container",
+   "settings": {
+    "content_width": "boxed",
+    "boxed_width": {
+     "unit": "px",
+     "size": 1072,
+     "sizes": []
+    },
+    "flex_direction": "column",
+    "padding": {
+     "unit": "px",
+     "top": "18",
+     "right": "16",
+     "bottom": "0",
+     "left": "16",
+     "isLinked": false
+    },
+    "css_classes": "rtm-c-trilha"
+   },
+   "elements": [
+    {
+     "id": "rtm000c",
+     "elType": "widget",
+     "widgetType": "shortcode",
+     "settings": {
+      "shortcode": "[rt_agente secao=\"trilha\"]"
+     },
+     "elements": []
+    }
+   ],
+   "isInner": false
+  },
+  {
    "id": "rtm0002",
    "elType": "container",
    "settings": {
@@ -15,7 +49,7 @@
     "flex_direction": "column",
     "padding": {
      "unit": "px",
-     "top": "20",
+     "top": "0",
      "right": "16",
      "bottom": "0",
      "left": "16",

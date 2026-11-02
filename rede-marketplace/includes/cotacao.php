@@ -65,6 +65,8 @@ function rtm_cot_etapa_titulo( $n, $titulo, $dica ) {
 
 /** Shortcode [rt_cotacao]: HTML completo da página de cotação. Nada é enviado pela rede a partir daqui. */
 function rtm_cotacao_html() {
+	// Também aqui (e não só em rtm_estilos): o shortcode pode estar num modelo do Elementor, fora do conteúdo da página.
+	rtm_enfileirar_estilo();
 	wp_enqueue_script( 'rtm-cotacao', RTM_URL . 'assets/cotacao.js', array(), RTM_VERSION, true );
 
 	$agentes  = rtm_agentes_ativos();

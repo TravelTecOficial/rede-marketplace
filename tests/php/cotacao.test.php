@@ -18,7 +18,10 @@ rtm_t_post( 7, 'Inativa', array( 'ativo' => '0', 'destinos' => array( array( 'id
 rtm_t_post( 8, 'Agente de Canela', array( 'ativo' => '1', 'destinos' => array( array( 'id' => 13, 'slug' => 'canela' ) ) ) );
 
 ok( isset( $GLOBALS['rt_shortcodes']['rt_cotacao'] ), 'shortcode rt_cotacao registrado' );
+$GLOBALS['rt_estilos'] = array();
 $html = call_user_func( $GLOBALS['rt_shortcodes']['rt_cotacao'] );
+ok( isset( $GLOBALS['rt_estilos']['rede-marketplace'] ), 'shortcode enfileira o CSS (shortcode num modelo, fora do conteúdo da página)' );
+ok( isset( $GLOBALS['rt_scripts']['rtm-cotacao'] ), 'shortcode enfileira o JS' );
 igual( $html, rtm_cotacao_html(), 'shortcode devolve rtm_cotacao_html()' );
 
 // Estrutura e IDs (contrato com cotacao.js)

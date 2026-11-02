@@ -287,3 +287,18 @@ function get_terms( $args = array() ) {
 	}
 	return $res;
 }
+
+// Correções finais: painel e consultas (pre_get_posts).
+$GLOBALS['rt_admin'] = false;  // is_admin
+function is_admin() { return (bool) $GLOBALS['rt_admin']; }
+class RT_Consulta {
+	public $vars; public $principal; public $singular; public $is_home; public $is_search = false;
+	public function __construct( $vars = array(), $principal = true, $singular = false, $home = true ) {
+		$this->vars = $vars; $this->principal = $principal; $this->singular = $singular; $this->is_home = $home && ! $singular;
+	}
+	public function get( $k, $padrao = null ) { return array_key_exists( $k, $this->vars ) ? $this->vars[ $k ] : $padrao; }
+	public function set( $k, $v ) { $this->vars[ $k ] = $v; }
+	public function is_main_query() { return $this->principal; }
+	public function is_singular( $t = '' ) { return $this->singular; }
+}
+function wp_parse_url( $url, $parte = -1 ) { return parse_url( $url, $parte ); }

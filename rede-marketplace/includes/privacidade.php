@@ -14,11 +14,6 @@ function rtm_pagina_marketplace() {
 	return is_singular( 'rt_agente' ) || rtm_pagina_tem_cotacao();
 }
 
-/** ID da página de cotação (pela URL das opções), 0 se não achar. */
-function rtm_id_pagina_cotacao() {
-	return (int) url_to_postid( (string) rtm_opcoes()['url_cotacao'] );
-}
-
 function rtm_robots( $robots ) {
 	if ( rtm_ensaio() && rtm_pagina_marketplace() ) {
 		$robots['noindex']  = true;

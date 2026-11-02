@@ -22,7 +22,7 @@
 
   function slugar(s) {
     var t = String(s || '').toLowerCase();
-    if (t.normalize) { t = t.normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+    if (t.normalize) { t = t.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
     return t.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   }
 

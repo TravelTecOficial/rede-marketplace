@@ -6,13 +6,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /** Registra o tipo de post do agente e a taxonomia de tipos de viagem. */
 function rtm_registrar() {
 	register_post_type( 'rt_agente', array(
-		'labels'       => array( 'name' => 'Agentes', 'singular_name' => 'Agente' ),
-		'public'       => true,
-		'has_archive'  => false,
-		'rewrite'      => array( 'slug' => 'especialistas', 'with_front' => false ),
-		'show_in_rest' => false,
-		'menu_icon'    => 'dashicons-groups',
-		'supports'     => array( 'title', 'thumbnail' ),
+		'labels'              => array( 'name' => 'Agentes', 'singular_name' => 'Agente' ),
+		'public'              => true,
+		'exclude_from_search' => true,
+		'has_archive'         => false,
+		'rewrite'             => array( 'slug' => 'especialistas', 'with_front' => false ),
+		'show_in_rest'        => false,
+		'menu_icon'           => 'dashicons-groups',
+		'supports'            => array( 'title', 'thumbnail' ),
 	) );
 	register_taxonomy( 'rt_tipo_viagem', array( 'rt_agente' ), array(
 		'labels'       => array( 'name' => 'Tipos de viagem', 'singular_name' => 'Tipo de viagem' ),
@@ -183,15 +184,120 @@ function rtm_agentes_ativos() {
 	return $res;
 }
 
-/** Ao salvar um agente, limpa o cache do post e da página de cotação (LiteSpeed). */
-function rtm_purgar_cache( $post_id ) {
-	do_action( 'litespeed_purge_post', (int) $post_id );
+/** O post (objeto ou id) tem o shortcode [rt_cotacao no conteúdo ou nos dados do Elementor? */
+function rtm_post_tem_cotacao( $post ) {
+	$p = is_object( $post ) ? $post : get_post( (int) $post );
+	if ( ! $p ) {
+		return false;
+	}
+	if ( isset( $p->post_content ) && false !== strpos( (string) $p->post_content, '[rt_cotacao' ) ) {
+		return true;
+	}
+	$dados = get_post_meta( (int) $p->ID, '_elementor_data', true );
+	return is_string( $dados ) && false !== strpos( $dados, '[rt_cotacao' );
+}
+
+/**
+ * Id da página publicada que tem [rt_cotacao (0 se nenhuma). Primeiro tenta a URL das configurações,
+ * depois procura nas páginas. Fica em transient; salvar qualquer página ou as opções renova.
+ */
+function rtm_id_pagina_cotacao() {
+	$salvo = get_transient( 'rtm_pagina_cotacao' );
+	if ( false !== $salvo ) {
+		return (int) $salvo;
+	}
+	$id = (int) url_to_postid( (string) rtm_opcoes()['url_cotacao'] );
+	if ( ! $id || 'publish' !== get_post_status( $id ) || ! rtm_post_tem_cotacao( $id ) ) {
+		$id = 0;
+		$paginas = get_posts( array(
+			'post_type'      => 'page',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+		) );
+		foreach ( $paginas as $p ) {
+			if ( rtm_post_tem_cotacao( $p ) ) {
+				$id = (int) $p->ID;
+				break;
+			}
+		}
+	}
+	set_transient( 'rtm_pagina_cotacao', $id, DAY_IN_SECONDS );
+	return $id;
+}
+
+function rtm_esquecer_pagina_cotacao() {
+	delete_transient( 'rtm_pagina_cotacao' );
+}
+
+/**
+ * Limpa a página de cotação no LiteSpeed: a URL base e o post (a etiqueta do post cobre todas as
+ * variantes ?destino=&agente=, que o LiteSpeed guarda separadas).
+ */
+function rtm_purgar_cotacao() {
 	$o = rtm_opcoes();
 	do_action( 'litespeed_purge_url', $o['url_cotacao'] );
+	$id = rtm_id_pagina_cotacao();
+	if ( $id ) {
+		do_action( 'litespeed_purge_post', $id );
+	}
+}
+
+/** Ao salvar um agente: limpa o post, a URL dele (um 404 de quando estava inativo fica em cache) e a cotação. */
+function rtm_purgar_cache( $post_id ) {
+	$post_id = (int) $post_id;
+	do_action( 'litespeed_purge_post', $post_id );
+	$url = get_permalink( $post_id );
+	if ( $url ) {
+		do_action( 'litespeed_purge_url', $url );
+	}
+	rtm_purgar_cotacao();
+}
+
+/** Apagar de vez não passa por save_post: limpa antes (a URL ainda existe)... */
+function rtm_purgar_ao_apagar( $post_id ) {
+	$p = get_post( $post_id );
+	if ( $p && 'rt_agente' === $p->post_type ) {
+		rtm_purgar_cache( $post_id );
+	}
+}
+
+/** ...e a cotação de novo depois, caso alguém a tenha visitado no meio. */
+function rtm_purgar_depois_de_apagar( $post_id, $post = null ) {
+	if ( is_object( $post ) && isset( $post->post_type ) && 'rt_agente' === $post->post_type ) {
+		rtm_purgar_cotacao();
+	}
+}
+
+/**
+ * rt_agente não aparece em listagens do site (busca, feed, /?post_type=rt_agente): só a página de cada agente.
+ * Com post_type=rt_agente sozinho a consulta fica sem resultado e deixa de ser "página inicial", e o WP responde 404.
+ */
+function rtm_fora_das_listas( $q ) {
+	if ( is_admin() || ! $q->is_main_query() || $q->is_singular() ) {
+		return;
+	}
+	$tipo = $q->get( 'post_type' );
+	if ( is_array( $tipo ) && in_array( 'rt_agente', $tipo, true ) ) {
+		$resto = array_values( array_diff( $tipo, array( 'rt_agente' ) ) );
+		if ( $resto ) {
+			$q->set( 'post_type', $resto );
+			return;
+		}
+		$tipo = 'rt_agente';
+	}
+	if ( 'rt_agente' === $tipo ) {
+		$q->set( 'post__in', array( 0 ) );
+		$q->is_home = false;
+	}
 }
 
 add_action( 'init', 'rtm_registrar' );
 add_action( 'save_post_rt_agente', 'rtm_purgar_cache', 20 );
+add_action( 'before_delete_post', 'rtm_purgar_ao_apagar' );
+add_action( 'deleted_post', 'rtm_purgar_depois_de_apagar', 10, 2 );
+add_action( 'save_post_page', 'rtm_esquecer_pagina_cotacao' );
+add_action( 'update_option_rtm_opcoes', 'rtm_esquecer_pagina_cotacao' );
+add_action( 'pre_get_posts', 'rtm_fora_das_listas' );
 register_activation_hook( RTM_DIR . 'rede-marketplace.php', function () {
 	rtm_registrar();
 	rtm_instalar_tipos();
