@@ -89,12 +89,13 @@ function wp_remote_retrieve_body( $r ) { return is_array( $r ) ? $r['body'] : ''
 function wp_remote_retrieve_header( $r, $h ) { return is_array( $r ) && isset( $r['headers'][ $h ] ) ? $r['headers'][ $h ] : ''; }
 
 // Ganchos: add_* só registram; do_action chama os callbacks registrados.
-function add_action( $g, $cb, $p = 10, $n = 1 ) { $GLOBALS['rt_ganchos'][ $g ][] = $cb; }
-function add_filter( $g, $cb, $p = 10, $n = 1 ) { $GLOBALS['rt_ganchos'][ $g ][] = $cb; }
+function add_action( $g, $cb, $p = 10, $n = 1 ) { $GLOBALS['rt_ganchos'][ $g ][] = $cb; $GLOBALS['rt_prioridades'][ $g ][] = $p; }
+function add_filter( $g, $cb, $p = 10, $n = 1 ) { add_action( $g, $cb, $p, $n ); }
 function do_action( $g, ...$args ) {
 	foreach ( isset( $GLOBALS['rt_ganchos'][ $g ] ) ? $GLOBALS['rt_ganchos'][ $g ] : array() as $cb ) { call_user_func_array( $cb, $args ); }
 }
-function register_activation_hook( $f, $cb ) {}
+function register_activation_hook( $f, $cb ) { $GLOBALS['rt_ativacao'][] = $cb; }
+function flush_rewrite_rules( $duro = true ) { $GLOBALS['rt_flush'] = ( isset( $GLOBALS['rt_flush'] ) ? $GLOBALS['rt_flush'] : 0 ) + 1; }
 function plugin_dir_path( $f ) { return '/p/'; }
 function plugin_dir_url( $f ) { return 'https://exemplo.test/wp-content/plugins/rede-marketplace/'; }
 function plugin_basename( $f ) { return 'rede-marketplace/rede-marketplace.php'; }
@@ -141,5 +142,15 @@ function wp_insert_term( $termo, $tax, $args = array() ) {
 	return array( 'term_id' => $n );
 }
 
+// Posts falsos: $GLOBALS['rt_posts'] (ID, post_type, post_status, post_title, post_name).
+function get_post( $id = null ) {
+	foreach ( $GLOBALS['rt_posts'] as $p ) { if ( (int) $p->ID === (int) $id ) { return $p; } }
+	return null;
+}
+function get_post_status( $id = null ) { $p = get_post( $id ); return $p ? $p->post_status : false; }
+function get_the_post_thumbnail_url( $id = null, $tam = 'post-thumbnail' ) {
+	$m = isset( $GLOBALS['rt_meta'][ $id ]['_thumbnail_id'] ) ? $GLOBALS['rt_meta'][ $id ]['_thumbnail_id'] : 0;
+	return $m && isset( $GLOBALS['rt_anexos'][ $m ] ) ? $GLOBALS['rt_anexos'][ $m ] : false;
+}
 function get_permalink( $id ) { return 'https://exemplo.test/?p=' . (int) $id; }
 function wp_get_attachment_image_url( $id, $tam = 'thumbnail' ) { return isset( $GLOBALS['rt_anexos'][ $id ] ) ? $GLOBALS['rt_anexos'][ $id ] : false; }
