@@ -2,12 +2,13 @@
   "name": "rede-marketplace-testes",
   "private": true,
   "type": "module",
-  "description": "Testes do plugin Rede Marketplace (PHP 7.4 e 8.2 por php-wasm). Não vai no zip.",
+  "description": "Testes do plugin Rede Marketplace (PHP 7.4 e 8.2 por php-wasm e JS por jsdom). Não vai no zip.",
   "scripts": {
-    "test": "node run.mjs"
+    "test": "node run.mjs && node --test \"js/*.test.mjs\""
   },
   "devDependencies": {
     "@php-wasm/node": "*",
-    "@php-wasm/universal": "*"
+    "@php-wasm/universal": "*",
+    "jsdom": "^29.1.1"
   }
 }
