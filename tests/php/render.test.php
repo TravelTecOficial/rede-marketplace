@@ -221,7 +221,7 @@ foreach ( $regras[1] as $grupo ) {
 	foreach ( explode( ',', $grupo ) as $sel ) {
 		$sel = trim( $sel );
 		if ( '' === $sel || ':root' === $sel || 0 === strpos( $sel, '@' ) ) { continue; }
-		$alvo = preg_match( '/(^|[\s>])(a|h1|h2|h3|p)([.:\[]|$)/', $sel ) || preg_match( '/rtm-(btn|perfil|nome|card-nome|cargo|bio)\b/', $sel );
+		$alvo = preg_match( '/(^|[\s>])(a|h1|h2|h3|p|label|button|input|select|textarea)([.:\[]|$)/', $sel ) || preg_match( '/rtm-(btn|perfil|nome|card-nome|cargo|bio|pilula|enviar|rot|rede|lgpd|titulo|lead|etapa-h|etapa-dica|vazio)\b/', $sel );
 		if ( $alvo && rtm_t_especificidade( $sel ) < 201 ) { $fracos[] = $sel; }
 	}
 }

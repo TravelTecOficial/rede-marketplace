@@ -1,4 +1,144 @@
 <?php
+/** Página de cotação: formulário em 4 etapas (HTML do servidor). O comportamento fica em assets/cotacao.js. */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+/** Faixas de orçamento por pessoa (texto exato; vai como o rótulo e o valor). */
+function rtm_orcamentos() {
+	return array( 'Até R$ 2.000', 'R$ 2.000 a R$ 3.500', 'R$ 3.500 a R$ 5.000', 'R$ 5.000 a R$ 8.000', 'Acima de R$ 8.000', 'Ainda não defini' );
+}
+
+/** Tipos de viagem: termos de rt_tipo_viagem, ou a lista inicial se ainda não houver termos. */
+function rtm_tipos_cotacao() {
+	$nomes  = array();
+	$termos = get_terms( array( 'taxonomy' => 'rt_tipo_viagem', 'hide_empty' => false ) );
+	if ( is_array( $termos ) ) {
+		foreach ( $termos as $t ) {
+			if ( is_object( $t ) && '' !== trim( (string) $t->name ) ) {
+				$nomes[] = (string) $t->name;
+			}
+		}
+	}
+	return $nomes ? $nomes : rtm_tipos_iniciais();
+}
+
+/** Destinos publicados (post type `destinos`) com ao menos um agente ativo: slug => título. */
+function rtm_destinos_cotacao( array $agentes ) {
+	$com_agente = array();
+	foreach ( $agentes as $a ) {
+		foreach ( $a['destinos_slugs'] as $s ) {
+			$com_agente[ (string) $s ] = true;
+		}
+	}
+	$res   = array();
+	$posts = get_posts( array( 'post_type' => 'destinos', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC' ) );
+	foreach ( $posts as $p ) {
+		if ( isset( $com_agente[ $p->post_name ] ) ) {
+			$res[ $p->post_name ] = $p->post_title;
+		}
+	}
+	return $res;
+}
+
+/** Pílulas (botões alternáveis). $itens: valor => rótulo. */
+function rtm_cot_pilulas( array $itens, $atributo, array $marcados = array() ) {
+	$h = '';
+	foreach ( $itens as $valor => $rotulo ) {
+		$h .= '<button type="button" class="rtm-pilula" ' . $atributo . '="' . esc_attr( $valor ) . '" aria-pressed="' . ( in_array( (string) $valor, $marcados, true ) ? 'true' : 'false' ) . '">' . esc_html( $rotulo ) . '</button>';
+	}
+	return $h;
+}
+
+function rtm_cot_select( $id, array $opcoes, $padrao, $rotulo, $cheio = false ) {
+	$h = '<label class="rtm-rot' . ( $cheio ? ' rtm-cheio' : '' ) . '" for="' . esc_attr( $id ) . '">' . esc_html( $rotulo ) . '<select id="' . esc_attr( $id ) . '" name="' . esc_attr( substr( $id, 4 ) ) . '">';
+	foreach ( $opcoes as $o ) {
+		$h .= '<option value="' . esc_attr( $o ) . '"' . ( (string) $o === (string) $padrao ? ' selected' : '' ) . '>' . esc_html( $o ) . '</option>';
+	}
+	return $h . '</select></label>';
+}
+
+function rtm_cot_etapa_titulo( $n, $titulo, $dica ) {
+	return '<div class="rtm-etapa-tit"><span class="rtm-num" aria-hidden="true">' . (int) $n . '</span><div><h2 class="rtm-etapa-h">' . esc_html( $titulo ) . '</h2><p class="rtm-etapa-dica">' . esc_html( $dica ) . '</p></div></div>';
+}
+
+/** Shortcode [rt_cotacao]: HTML completo da página de cotação. Nada é enviado pela rede a partir daqui. */
+function rtm_cotacao_html() {
+	wp_enqueue_script( 'rtm-cotacao', RTM_URL . 'assets/cotacao.js', array(), RTM_VERSION, true );
+
+	$agentes  = rtm_agentes_ativos();
+	$destinos = rtm_destinos_cotacao( $agentes );
+	$tipos    = rtm_tipos_cotacao();
+	$politica = esc_url( (string) get_privacy_policy_url() );
+	$inclui   = array( 'Aéreo', 'Hospedagem', 'Passeios', 'Ingressos Natal Luz', 'Transfer', 'Carro' );
+
+	$h  = '<div class="rtm-cotacao">';
+	$h .= '<div class="rtm-intro"><small>Pedido de cotação</small>';
+	$h .= '<h1 class="rtm-titulo">Receba até 3 cotações de especialistas<span id="rtm-titulo-destino"></span></h1>';
+	$h .= '<p class="rtm-lead">Conte como é a sua viagem, escolha quem vai montá-la e receba as propostas no seu WhatsApp. Sem custo e sem compromisso.</p>';
+	$h .= '<div class="rtm-como"><span><b>1.</b> Conte sua viagem</span><span><b>2.</b> Escolha os especialistas</span><span><b>3.</b> Compare e decida</span></div></div>';
+
+	$h .= '<form id="rtm-cotacao" novalidate>';
+
+	// Etapa 1: a viagem.
+	$h .= '<section class="rtm-etapa" data-etapa="1">' . rtm_cot_etapa_titulo( 1, 'Sua viagem', 'O tipo de viagem mostra os especialistas certos para você.' );
+	$h .= '<div class="rtm-campos">';
+	$h .= '<label class="rtm-rot" for="rtm-destino">Destino<select id="rtm-destino" name="destino">';
+	foreach ( $destinos as $slug => $titulo ) {
+		$h .= '<option value="' . esc_attr( $slug ) . '">' . esc_html( $titulo ) . '</option>';
+	}
+	$h .= '</select></label>';
+	$h .= '<label class="rtm-rot" for="rtm-origem">Cidade de saída<input type="text" id="rtm-origem" name="origem" placeholder="Ex.: Campinas/SP" autocomplete="address-level2"></label>';
+	$h .= '<div class="rtm-grupo rtm-cheio" role="group" aria-labelledby="rtm-tipos-rot"><span id="rtm-tipos-rot">Tipo de viagem</span><div class="rtm-pilulas" id="rtm-tipos">'
+		. rtm_cot_pilulas( array_combine( $tipos, $tipos ), 'data-tipo' ) . '</div></div>';
+	$h .= '</div></section>';
+
+	// Etapa 2: especialistas.
+	$h .= '<section class="rtm-etapa" data-etapa="2">' . rtm_cot_etapa_titulo( 2, 'Escolha seus especialistas', 'Marque de 1 a 3. Cada um envia uma cotação.' );
+	$h .= '<div class="rtm-lista" id="rtm-lista">';
+	foreach ( $agentes as $a ) {
+		$h .= rtm_card( $a );
+	}
+	$h .= '</div>';
+	$h .= '<div class="rtm-vazio" id="rtm-vazio" hidden>Nenhum especialista com esse perfil ainda. Marque &quot;a Rede escolhe&quot; e indicamos o melhor para você.</div>';
+	$h .= '<label class="rtm-rede" for="rtm-rede"><input type="checkbox" id="rtm-rede" name="rede"><span>Prefiro que a <b>Rede Turística</b> escolha os especialistas para mim</span></label>';
+	$h .= '</section>';
+
+	// Etapa 3: detalhes.
+	$h .= '<section class="rtm-etapa" data-etapa="3">' . rtm_cot_etapa_titulo( 3, 'Detalhes da viagem', 'Quanto mais detalhes, mais certeira a cotação.' );
+	$h .= '<div class="rtm-campos">';
+	$h .= '<div class="rtm-grupo rtm-cheio" role="group" aria-labelledby="rtm-datas-rot"><span id="rtm-datas-rot">Datas</span><div class="rtm-pilulas" id="rtm-datas">'
+		. rtm_cot_pilulas( array( 'certas' => 'Já tenho as datas', 'mes' => 'Só sei o mês', 'aberto' => 'Ainda não sei' ), 'data-v', array( 'certas' ) ) . '</div></div>';
+	$h .= '<label class="rtm-rot" for="rtm-ida">Ida<input type="date" id="rtm-ida" name="ida"></label>';
+	$h .= '<label class="rtm-rot" for="rtm-volta">Volta<input type="date" id="rtm-volta" name="volta"></label>';
+	$h .= '<label class="rtm-rot rtm-cheio" for="rtm-mes" hidden>Mês da viagem<input type="month" id="rtm-mes" name="mes"></label>';
+	$h .= '<div class="rtm-grupo rtm-cheio" role="group" aria-labelledby="rtm-quem-rot"><span id="rtm-quem-rot">Quem vai</span><div class="rtm-cont">'
+		. rtm_cot_select( 'rtm-adultos', array( '1', '2', '3', '4', '5+' ), '2', 'Adultos' )
+		. rtm_cot_select( 'rtm-criancas', array( '0', '1', '2', '3+' ), '0', 'Crianças (2–12)' )
+		. rtm_cot_select( 'rtm-bebes', array( '0', '1', '2+' ), '0', 'Bebês (0–2)' ) . '</div></div>';
+	$h .= '<div class="rtm-grupo rtm-cheio" role="group" aria-labelledby="rtm-inclui-rot"><span id="rtm-inclui-rot">O que precisa na cotação</span><div class="rtm-pilulas" id="rtm-inclui">'
+		. rtm_cot_pilulas( array_combine( $inclui, $inclui ), 'data-item', array( 'Aéreo', 'Hospedagem' ) ) . '</div></div>';
+	$h .= rtm_cot_select( 'rtm-orcamento', rtm_orcamentos(), 'Ainda não defini', 'Orçamento por pessoa', true );
+	$h .= '<label class="rtm-rot rtm-cheio" for="rtm-obs">Algo mais que o especialista precisa saber? <span class="rtm-dica">Hotel desejado, aniversário, restrições, ritmo da viagem…</span><textarea id="rtm-obs" name="obs"></textarea></label>';
+	$h .= '</div></section>';
+
+	// Etapa 4: contato.
+	$h .= '<section class="rtm-etapa" data-etapa="4">' . rtm_cot_etapa_titulo( 4, 'Seu contato', 'As cotações chegam por aqui.' );
+	$h .= '<div class="rtm-campos">';
+	$h .= '<label class="rtm-rot rtm-cheio" for="rtm-nome">Nome completo<input type="text" id="rtm-nome" name="nome" autocomplete="name"></label>';
+	$h .= '<label class="rtm-rot" for="rtm-whats">WhatsApp<input type="tel" id="rtm-whats" name="whats" autocomplete="tel" placeholder="(11) 99999-9999"></label>';
+	$h .= '<label class="rtm-rot" for="rtm-email">E-mail<input type="email" id="rtm-email" name="email" autocomplete="email"></label>';
+	$h .= rtm_cot_select( 'rtm-horario', array( 'Qualquer horário', 'Manhã', 'Tarde', 'Noite' ), 'Qualquer horário', 'Melhor horário para contato', true );
+	$link = '' !== $politica ? '<a href="' . $politica . '" target="_blank" rel="noopener">Política de Privacidade</a>' : 'Política de Privacidade';
+	$h .= '<label class="rtm-lgpd rtm-cheio" for="rtm-lgpd"><input type="checkbox" id="rtm-lgpd" name="lgpd"><span>Autorizo a Rede Turística a enviar meus dados aos especialistas escolhidos para que preparem as cotações, conforme a ' . $link . '.</span></label>';
+	$h .= '</div>';
+	$h .= '<div class="rtm-aviso-ensaio" id="rtm-aviso-ensaio" role="status" hidden>Modo ensaio: seu pedido ainda não foi enviado a nenhum especialista.</div>';
+	$h .= '</section>';
+	$h .= '</form>';
+
+	$h .= '<div class="rtm-cbarra"><div class="rtm-cbarra-in"><div class="rtm-contagem" id="rtm-contagem" aria-live="polite">Nenhum especialista escolhido <em>· até 3</em></div>'
+		. '<button type="button" class="rtm-enviar" id="rtm-enviar" disabled>Pedir cotações</button></div></div>';
+	return $h . '</div>';
+}
+add_shortcode( 'rt_cotacao', 'rtm_cotacao_html' );

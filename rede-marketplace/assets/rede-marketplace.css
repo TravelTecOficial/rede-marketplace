@@ -116,3 +116,57 @@ img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 .rtm-rodape a.rtm-perfil,.rtm-rodape a.rtm-perfil:visited,.rtm-rodape a.rtm-perfil:hover,.rtm-rodape a.rtm-perfil:focus{font-size:13px;font-weight:700;color:var(--rtm-ink);text-decoration:underline;text-underline-offset:3px}
 @media (max-width:560px){.rtm-card{grid-template-columns:1fr}.rtm-card-foto{min-height:0;aspect-ratio:4/3}.rtm-corpo{padding:14px 16px 16px}}
 @media (prefers-reduced-motion:reduce){.rtm-card{transition:none}}
+
+/* Página de cotação (formulário em 4 etapas). Tudo com escopo .rtm-cotacao; links, botões, rótulos,
+   campos e títulos a partir de 0,2,1 para vencer o kit do Elementor. */
+.rtm-cotacao{box-sizing:border-box;max-width:780px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 130px;font-family:var(--rtm-font-body);font-size:15px;line-height:1.5;color:var(--rtm-ink)}
+.rtm-cotacao *{box-sizing:border-box}
+.rtm-cotacao .rtm-intro{display:flex;flex-direction:column;gap:8px;margin-block:12px 26px}
+.rtm-cotacao .rtm-intro small{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--rtm-muted);font-weight:700}
+.rtm-cotacao h1.rtm-titulo{font-family:var(--rtm-font-display);font-size:clamp(28px,4.4vw,38px);line-height:1.08;margin:0;color:var(--rtm-ink);text-wrap:balance}
+.rtm-cotacao p.rtm-lead{margin:0;color:var(--rtm-muted);max-width:62ch}
+.rtm-cotacao .rtm-como{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:6px;font-size:13px;color:var(--rtm-muted)}
+.rtm-cotacao .rtm-como b{color:var(--rtm-ink)}
+
+.rtm-cotacao .rtm-etapa{background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:18px;padding:22px clamp(16px,3vw,26px);margin-bottom:18px}
+.rtm-cotacao .rtm-etapa-tit{display:flex;align-items:baseline;gap:10px;margin-bottom:16px}
+.rtm-cotacao .rtm-num{width:28px;height:28px;border-radius:50%;background:var(--rtm-ink);color:var(--rtm-surface);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none;transform:translateY(4px)}
+.rtm-cotacao h2.rtm-etapa-h{font-family:var(--rtm-font-display);font-size:22px;margin:0;line-height:1.2;color:var(--rtm-ink)}
+.rtm-cotacao p.rtm-etapa-dica{margin:2px 0 0;color:var(--rtm-muted);font-size:13.5px}
+
+.rtm-cotacao .rtm-campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.rtm-cotacao .rtm-campos .rtm-cheio{grid-column:1/-1}
+@media (max-width:560px){.rtm-cotacao .rtm-campos{grid-template-columns:1fr}}
+.rtm-cotacao label.rtm-rot{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:var(--rtm-ink)}
+.rtm-cotacao label.rtm-rot span.rtm-dica{font-weight:500;color:var(--rtm-muted);font-size:12px}
+.rtm-cotacao input[type=text],.rtm-cotacao input[type=email],.rtm-cotacao input[type=tel],.rtm-cotacao input[type=month],.rtm-cotacao input[type=date],.rtm-cotacao label.rtm-rot select,.rtm-cotacao label.rtm-rot textarea{display:block;width:100%;margin:0;font:inherit;font-weight:400;color:var(--rtm-ink);background:var(--rtm-bg);border:1px solid var(--rtm-line);border-radius:10px;padding:11px 12px;box-shadow:none}
+.rtm-cotacao label.rtm-rot textarea{min-height:84px;resize:vertical}
+.rtm-cotacao input[type=text]:focus-visible,.rtm-cotacao input[type=email]:focus-visible,.rtm-cotacao input[type=tel]:focus-visible,.rtm-cotacao input[type=month]:focus-visible,.rtm-cotacao input[type=date]:focus-visible,.rtm-cotacao label.rtm-rot select:focus-visible,.rtm-cotacao label.rtm-rot textarea:focus-visible{outline:2px solid var(--rtm-brand);outline-offset:1px}
+.rtm-cotacao label.rtm-rot[hidden],.rtm-cotacao div.rtm-vazio[hidden],.rtm-cotacao div.rtm-aviso-ensaio[hidden]{display:none}
+
+.rtm-cotacao .rtm-pilulas{display:flex;flex-wrap:wrap;gap:8px}
+.rtm-cotacao .rtm-pilulas button.rtm-pilula{font:inherit;font-size:13.5px;font-weight:600;line-height:1.3;padding:8px 14px;border-radius:99px;border:1.5px solid var(--rtm-line);background:var(--rtm-surface);color:var(--rtm-ink);cursor:pointer;text-transform:none;letter-spacing:normal;box-shadow:none}
+.rtm-cotacao .rtm-pilulas button.rtm-pilula:hover,.rtm-cotacao .rtm-pilulas button.rtm-pilula:focus{border-color:var(--rtm-brand);background:var(--rtm-surface);color:var(--rtm-ink)}
+.rtm-cotacao .rtm-pilulas button.rtm-pilula[aria-pressed="true"],.rtm-cotacao .rtm-pilulas button.rtm-pilula[aria-pressed="true"]:hover{border-color:var(--rtm-brand);background:var(--rtm-brand-soft);color:var(--rtm-ink)}
+.rtm-cotacao .rtm-pilulas button.rtm-pilula:focus-visible{outline:2px solid var(--rtm-brand);outline-offset:2px}
+.rtm-cotacao .rtm-grupo{display:flex;flex-direction:column;gap:8px}
+.rtm-cotacao .rtm-grupo > span{font-size:13px;font-weight:700}
+.rtm-cotacao .rtm-cont{display:flex;gap:10px;flex-wrap:wrap}
+.rtm-cotacao .rtm-cont label.rtm-rot{flex:1;min-width:110px}
+
+.rtm-cotacao .rtm-lista{display:flex;flex-direction:column;gap:14px}
+.rtm-cotacao label.rtm-rede{display:flex;align-items:center;gap:10px;margin-top:14px;padding:13px 15px;border:1px dashed var(--rtm-line);border-radius:12px;cursor:pointer;font-size:14px;color:var(--rtm-ink)}
+.rtm-cotacao label.rtm-rede input[type=checkbox],.rtm-cotacao label.rtm-lgpd input[type=checkbox]{width:18px;height:18px;margin:0;accent-color:var(--rtm-brand);flex:none}
+.rtm-cotacao label.rtm-lgpd{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--rtm-muted);margin-top:4px}
+.rtm-cotacao label.rtm-lgpd a,.rtm-cotacao label.rtm-lgpd a:visited,.rtm-cotacao label.rtm-lgpd a:hover,.rtm-cotacao label.rtm-lgpd a:focus{color:var(--rtm-ink);text-decoration:underline;text-underline-offset:3px}
+.rtm-cotacao div.rtm-vazio{margin-top:14px;padding:16px;border-radius:12px;background:var(--rtm-bg);color:var(--rtm-muted);font-size:14px}
+.rtm-cotacao div.rtm-aviso-ensaio{margin-top:14px;padding:14px;border-radius:12px;background:var(--rtm-ok-soft);color:var(--rtm-ink);font-weight:600}
+
+.rtm-cotacao .rtm-cbarra{position:fixed;left:0;right:0;bottom:0;background:var(--rtm-surface);border-top:1px solid var(--rtm-line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:50}
+.rtm-cotacao .rtm-cbarra-in{max-width:780px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.rtm-cotacao .rtm-contagem{font-weight:700}
+.rtm-cotacao .rtm-contagem em{font-style:normal;color:var(--rtm-muted);font-weight:500}
+.rtm-cotacao .rtm-cbarra button.rtm-enviar{background:var(--rtm-brand);color:var(--rtm-brand-ink);border:0;border-radius:10px;padding:12px 20px;font:inherit;font-weight:800;cursor:pointer;text-transform:none;letter-spacing:normal;box-shadow:none}
+.rtm-cotacao .rtm-cbarra button.rtm-enviar:hover,.rtm-cotacao .rtm-cbarra button.rtm-enviar:focus{background:var(--rtm-brand);color:var(--rtm-brand-ink);filter:brightness(.95)}
+.rtm-cotacao .rtm-cbarra button.rtm-enviar:focus-visible{outline:3px solid var(--rtm-brand);outline-offset:3px}
+.rtm-cotacao .rtm-cbarra button.rtm-enviar[disabled],.rtm-cotacao .rtm-cbarra button.rtm-enviar[disabled]:hover{opacity:.45;cursor:not-allowed;filter:none}

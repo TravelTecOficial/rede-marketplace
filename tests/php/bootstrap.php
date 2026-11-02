@@ -223,3 +223,20 @@ function wp_insert_post( $dados, $erro = false ) {
 	);
 	return $n;
 }
+
+// Cotação (Task 5).
+$GLOBALS['rt_scripts']     = array();  // wp_enqueue_script: handle => [src, ver, rodape]
+$GLOBALS['rt_privacidade'] = '';       // get_privacy_policy_url
+function wp_enqueue_script( $h, $src = '', $deps = array(), $ver = false, $rodape = false ) {
+	$GLOBALS['rt_scripts'][ $h ] = array( 'src' => $src, 'ver' => $ver, 'rodape' => $rodape );
+}
+function get_privacy_policy_url() { return (string) $GLOBALS['rt_privacidade']; }
+// get_terms: usa os termos criados por wp_insert_term; sem nenhum, devolve array vazio (como o WP).
+function get_terms( $args = array() ) {
+	$tax = isset( $args['taxonomy'] ) ? $args['taxonomy'] : '';
+	$res = array();
+	if ( isset( $GLOBALS['rt_taxonomias'][ $tax ]['criados'] ) ) {
+		foreach ( $GLOBALS['rt_taxonomias'][ $tax ]['criados'] as $nome => $id ) { $res[] = (object) array( 'term_id' => $id, 'name' => $nome ); }
+	}
+	return $res;
+}
