@@ -316,8 +316,40 @@ function rtm_tela_configuracoes() {
 		. '</table>';
 	submit_button();
 	echo '</form>';
-	do_action( 'rtm_configuracoes_extra' ); // a Task 7 coloca aqui "Criar/Apagar agentes de teste"
+	do_action( 'rtm_configuracoes_extra' ); // botões dos agentes de teste (rtm_botoes_teste)
 	echo '</div>';
+}
+
+/** Aviso depois de criar/apagar os agentes de teste (vem na URL de volta; só valores conhecidos). */
+function rtm_aviso_teste() {
+	$q = isset( $_GET['rtm_teste'] ) ? (string) wp_unslash( $_GET['rtm_teste'] ) : '';
+	if ( 'criados' === $q ) {
+		$h = '<div class="notice notice-success"><p>3 agentes de teste criados.</p></div>';
+		if ( ! empty( $_GET['rtm_sem_destino'] ) ) {
+			$h .= '<div class="notice notice-warning"><p>O destino "gramado" não está publicado no site: os agentes de teste foram criados sem destinos.</p></div>';
+		}
+		echo $h; // HTML fixo, sem dados do usuário.
+	} elseif ( 'apagados' === $q ) {
+		$n = isset( $_GET['rtm_n'] ) ? absint( wp_unslash( $_GET['rtm_n'] ) ) : 0;
+		echo '<div class="notice notice-success"><p>' . (int) $n . ' agentes de teste apagados.</p></div>';
+	}
+}
+
+/** Botões "Criar/Apagar agentes de teste" (admin-post.php, nonce + manage_options na ação). */
+function rtm_botoes_teste() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	rtm_aviso_teste();
+	$acao = esc_url( admin_url( 'admin-post.php' ) );
+	echo '<hr><h2>Agentes de teste</h2><p>Três agentes fictícios (Mariana, Rafael e Camila) para o ensaio. Apagar remove só os agentes de teste.</p>';
+	foreach ( array( 'rtm_criar_teste' => 'Criar agentes de teste', 'rtm_apagar_teste' => 'Apagar agentes de teste' ) as $nome => $rotulo ) {
+		echo '<form method="post" action="' . $acao . '" style="display:inline-block;margin-right:8px">'
+			. '<input type="hidden" name="action" value="' . esc_attr( $nome ) . '">';
+		wp_nonce_field( $nome, '_wpnonce', false );
+		submit_button( $rotulo, 'rtm_apagar_teste' === $nome ? 'secondary' : 'primary', 'submit', false );
+		echo '</form>';
+	}
 }
 
 /* ---------------------------------------------------------------------------
@@ -335,6 +367,7 @@ function rtm_colunas( $colunas ) {
 	$novas['rtm_destinos'] = 'Destinos';
 	$novas['rtm_ativo']    = 'Ativo';
 	$novas['rtm_cadastur'] = 'Cadastur conferido';
+	$novas['rtm_teste']    = 'Teste';
 	return $novas;
 }
 
@@ -368,6 +401,9 @@ function rtm_coluna( $coluna, $post_id ) {
 			$d = (string) get_post_meta( $post_id, 'rtm_cadastur_conferido_em', true );
 			echo '' !== $d ? esc_html( $d ) : '—';
 			break;
+		case 'rtm_teste':
+			echo '1' === (string) get_post_meta( $post_id, 'rtm_teste', true ) ? '<span class="rtm-selo-teste">Teste</span>' : '';
+			break;
 	}
 }
 
@@ -378,3 +414,4 @@ add_action( 'admin_init', 'rtm_registrar_opcoes' );
 add_action( 'admin_menu', 'rtm_menu_configuracoes' );
 add_filter( 'manage_rt_agente_posts_columns', 'rtm_colunas' );
 add_action( 'manage_rt_agente_posts_custom_column', 'rtm_coluna', 10, 2 );
+add_action( 'rtm_configuracoes_extra', 'rtm_botoes_teste' );

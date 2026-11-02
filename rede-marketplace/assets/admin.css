@@ -6,3 +6,4 @@
 .rtm-privado { background: #fff8e5; border-left: 4px solid #dba617; padding: 4px 14px 8px; }
 .rtm-logo-previa img { display: block; margin: 6px 0; border: 1px solid #dcdcde; background: #fff; padding: 4px; }
 .column-rtm_foto { width: 56px; }
+.rtm-selo-teste { display: inline-block; padding: 2px 8px; border-radius: 99px; background: #fdecd6; color: #6b3d00; font-size: 12px; font-weight: 600; }

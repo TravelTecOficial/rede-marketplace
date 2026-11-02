@@ -4,6 +4,7 @@ define( 'ABSPATH', '/' );
 define( 'HOUR_IN_SECONDS', 3600 );
 define( 'DAY_IN_SECONDS', 86400 );
 define( 'RTM_TESTE', true );
+define( 'OBJECT', 'OBJECT' );
 
 $GLOBALS['rt_falhas']     = 0;
 $GLOBALS['rt_opcoes']     = array();
@@ -118,12 +119,19 @@ function get_post_meta( $id, $chave = '', $unico = false ) {
 }
 function update_post_meta( $id, $chave, $valor ) { $GLOBALS['rt_meta'][ $id ][ $chave ] = $valor; return true; }
 
-// get_posts: filtra $GLOBALS['rt_posts'] por post_type e post_status.
+// get_posts: filtra $GLOBALS['rt_posts'] por post_type, post_status ('any' = todos menos lixeira), name e meta_key/meta_value.
 function get_posts( $args = array() ) {
 	$res = array();
 	foreach ( $GLOBALS['rt_posts'] as $p ) {
 		if ( isset( $args['post_type'] ) && $p->post_type !== $args['post_type'] ) { continue; }
-		if ( isset( $args['post_status'] ) && $p->post_status !== $args['post_status'] ) { continue; }
+		if ( isset( $args['post_status'] ) ) {
+			if ( 'any' === $args['post_status'] ? 'trash' === $p->post_status : $p->post_status !== $args['post_status'] ) { continue; }
+		}
+		if ( isset( $args['name'] ) && $p->post_name !== $args['name'] ) { continue; }
+		if ( isset( $args['meta_key'] ) ) {
+			$m = isset( $GLOBALS['rt_meta'][ $p->ID ][ $args['meta_key'] ] ) ? $GLOBALS['rt_meta'][ $p->ID ][ $args['meta_key'] ] : null;
+			if ( null === $m || ( isset( $args['meta_value'] ) && (string) $m !== (string) $args['meta_value'] ) ) { continue; }
+		}
 		$res[] = $p;
 	}
 	return $res;
@@ -217,12 +225,51 @@ function wp_set_object_terms( $id, $termos, $tax ) { $GLOBALS['rt_obj_termos'][ 
 function wp_insert_post( $dados, $erro = false ) {
 	static $n = 1000;
 	$n++;
+	$titulo = isset( $dados['post_title'] ) ? $dados['post_title'] : '';
 	$GLOBALS['rt_posts'][] = (object) array(
 		'ID' => $n, 'post_type' => $dados['post_type'], 'post_status' => $dados['post_status'],
-		'post_title' => $dados['post_title'], 'post_name' => sanitize_title( $dados['post_title'] ), 'post_content' => '',
+		'post_title' => $titulo, 'post_name' => ! empty( $dados['post_name'] ) ? $dados['post_name'] : sanitize_title( $titulo ), 'post_content' => '',
 	);
+	foreach ( isset( $dados['meta_input'] ) ? $dados['meta_input'] : array() as $k => $v ) { $GLOBALS['rt_meta'][ $n ][ $k ] = $v; }
 	return $n;
 }
+// Apagar post: com $forcar remove de vez (e a meta); sem, só manda para a lixeira.
+function wp_delete_post( $id, $forcar = false ) {
+	$GLOBALS['rt_apagados'][] = array( (int) $id, (bool) $forcar );
+	foreach ( $GLOBALS['rt_posts'] as $i => $p ) {
+		if ( (int) $p->ID !== (int) $id ) { continue; }
+		if ( $forcar ) {
+			unset( $GLOBALS['rt_posts'][ $i ], $GLOBALS['rt_meta'][ $id ] );
+			$GLOBALS['rt_posts'] = array_values( $GLOBALS['rt_posts'] );
+		} else {
+			$p->post_status = 'trash';
+		}
+		return $p;
+	}
+	return false;
+}
+function get_page_by_path( $caminho, $saida = OBJECT, $tipo = 'page' ) {
+	foreach ( $GLOBALS['rt_posts'] as $p ) {
+		if ( $p->post_name === $caminho && in_array( $p->post_type, (array) $tipo, true ) && 'trash' !== $p->post_status ) { return $p; }
+	}
+	return null;
+}
+// Redirecionamento e formulários do admin (Task 7): o redirect só registra o destino.
+$GLOBALS['rt_redirect'] = '';
+class RT_Saida_Redirect extends Exception {}
+function wp_safe_redirect( $url, $status = 302 ) { $GLOBALS['rt_redirect'] = $url; throw new RT_Saida_Redirect( $url ); }
+function add_query_arg( $args, $url = '' ) { return $url . ( false === strpos( $url, '?' ) ? '?' : '&' ) . http_build_query( $args ); }
+function wp_nonce_field( $acao = -1, $nome = '_wpnonce', $ref = true, $eco = true ) { $h = '<input type="hidden" name="' . $nome . '" value="' . wp_create_nonce( $acao ) . '">'; if ( $eco ) { echo $h; } return $h; }
+function check_admin_referer( $acao = -1, $nome = '_wpnonce' ) {
+	$v = isset( $_REQUEST[ $nome ] ) ? $_REQUEST[ $nome ] : '';
+	if ( ! wp_verify_nonce( $v, $acao ) ) { throw new Exception( 'nonce inválido' ); }
+	return 1;
+}
+function wp_die( $msg = '' ) { throw new Exception( 'wp_die: ' . ( is_string( $msg ) ? $msg : '' ) ); }
+function submit_button( $texto = 'Salvar', $tipo = 'primary', $nome = 'submit', $envolver = true ) { echo '<input type="submit" name="' . $nome . '" class="button button-' . $tipo . '" value="' . esc_attr( $texto ) . '">'; }
+function settings_fields( $g ) {}
+function checked( $a, $b = true, $eco = true ) { $r = ( (string) $a === (string) $b ) ? ' checked="checked"' : ''; if ( $eco ) { echo $r; } return $r; }
+function selected( $a, $b = true, $eco = true ) { $r = ( (string) $a === (string) $b ) ? ' selected="selected"' : ''; if ( $eco ) { echo $r; } return $r; }
 
 // Cotação (Task 5).
 $GLOBALS['rt_scripts']     = array();  // wp_enqueue_script: handle => [src, ver, rodape]
