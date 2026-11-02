@@ -8,7 +8,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).parent
 PLUGIN = RAIZ / "rede-marketplace"
-INCLUIR = ["rede-marketplace.php", "readme.txt", "includes/*.php", "assets/*", "assets/teste/*", "templates/*.json"]
+INCLUIR = ["rede-marketplace.php", "readme.txt", "includes/*.php", "assets/*", "assets/teste/*", "templates/*.json", "templates/*.php"]
 
 
 def main():

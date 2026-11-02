@@ -1,0 +1,204 @@
+{
+ "chave": "agente",
+ "titulo": "Especialistas — página do agente",
+ "tipo": "single",
+ "condicoes": [
+  "include/singular/rt_agente"
+ ],
+ "page_settings": {},
+ "content": [
+  {
+   "id": "rtm0002",
+   "elType": "container",
+   "settings": {
+    "content_width": "full",
+    "flex_direction": "column",
+    "padding": {
+     "unit": "px",
+     "top": "20",
+     "right": "16",
+     "bottom": "0",
+     "left": "16",
+     "isLinked": false
+    },
+    "css_classes": "rtm-c-topo"
+   },
+   "elements": [
+    {
+     "id": "rtm0001",
+     "elType": "widget",
+     "widgetType": "shortcode",
+     "settings": {
+      "shortcode": "[rt_agente secao=\"topo\"]"
+     },
+     "elements": []
+    }
+   ],
+   "isInner": false
+  },
+  {
+   "id": "rtm0009",
+   "elType": "container",
+   "settings": {
+    "content_width": "boxed",
+    "boxed_width": {
+     "unit": "px",
+     "size": 1072,
+     "sizes": []
+    },
+    "flex_direction": "row",
+    "flex_direction_tablet": "column",
+    "flex_direction_mobile": "column",
+    "flex_wrap": "nowrap",
+    "flex_gap": {
+     "unit": "px",
+     "size": 22,
+     "column": "22",
+     "row": "22",
+     "isLinked": true
+    },
+    "padding": {
+     "unit": "px",
+     "top": "22",
+     "right": "16",
+     "bottom": "40",
+     "left": "16",
+     "isLinked": false
+    },
+    "css_classes": "rtm-c-grade"
+   },
+   "elements": [
+    {
+     "id": "rtm0006",
+     "elType": "container",
+     "settings": {
+      "content_width": "full",
+      "flex_direction": "column",
+      "width": {
+       "unit": "%",
+       "size": 68
+      },
+      "width_tablet": {
+       "unit": "%",
+       "size": 100
+      },
+      "width_mobile": {
+       "unit": "%",
+       "size": 100
+      },
+      "padding": {
+       "unit": "px",
+       "top": "0",
+       "right": "0",
+       "bottom": "0",
+       "left": "0",
+       "isLinked": false
+      },
+      "css_classes": "rtm-c-principal"
+     },
+     "elements": [
+      {
+       "id": "rtm0003",
+       "elType": "widget",
+       "widgetType": "shortcode",
+       "settings": {
+        "shortcode": "[rt_agente secao=\"sobre\"]"
+       },
+       "elements": []
+      },
+      {
+       "id": "rtm0004",
+       "elType": "widget",
+       "widgetType": "shortcode",
+       "settings": {
+        "shortcode": "[rt_agente secao=\"especialidades\"]"
+       },
+       "elements": []
+      },
+      {
+       "id": "rtm0005",
+       "elType": "widget",
+       "widgetType": "shortcode",
+       "settings": {
+        "shortcode": "[rt_agente secao=\"onde\"]"
+       },
+       "elements": []
+      }
+     ],
+     "isInner": true
+    },
+    {
+     "id": "rtm0008",
+     "elType": "container",
+     "settings": {
+      "content_width": "full",
+      "flex_direction": "column",
+      "width": {
+       "unit": "%",
+       "size": 32
+      },
+      "width_tablet": {
+       "unit": "%",
+       "size": 100
+      },
+      "width_mobile": {
+       "unit": "%",
+       "size": 100
+      },
+      "padding": {
+       "unit": "px",
+       "top": "0",
+       "right": "0",
+       "bottom": "0",
+       "left": "0",
+       "isLinked": false
+      },
+      "css_classes": "rtm-c-lateral"
+     },
+     "elements": [
+      {
+       "id": "rtm0007",
+       "elType": "widget",
+       "widgetType": "shortcode",
+       "settings": {
+        "shortcode": "[rt_agente secao=\"cotacao\"]"
+       },
+       "elements": []
+      }
+     ],
+     "isInner": true
+    }
+   ],
+   "isInner": false
+  },
+  {
+   "id": "rtm000b",
+   "elType": "container",
+   "settings": {
+    "content_width": "full",
+    "flex_direction": "column",
+    "padding": {
+     "unit": "px",
+     "top": "0",
+     "right": "0",
+     "bottom": "0",
+     "left": "0",
+     "isLinked": false
+    },
+    "css_classes": "rtm-c-barra"
+   },
+   "elements": [
+    {
+     "id": "rtm000a",
+     "elType": "widget",
+     "widgetType": "shortcode",
+     "settings": {
+      "shortcode": "[rt_agente secao=\"barra\"]"
+     },
+     "elements": []
+    }
+   ],
+   "isInner": false
+  }
+ ]
+}

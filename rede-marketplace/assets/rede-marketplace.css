@@ -1,0 +1,117 @@
+/* Rede Marketplace — página do agente e card da cotação (a partir das prévias aprovadas).
+   Fontes e cores vêm do kit do Elementor do site, com reserva. */
+:root{
+  --rtm-bg:#f4f1ec;
+  --rtm-surface:#ffffff;
+  --rtm-ink:var(--e-global-color-text, #1b1712);
+  --rtm-muted:#6c645a;
+  --rtm-line:#e6e0d8;
+  --rtm-chip:#f4f1ec;
+  --rtm-brand:var(--e-global-color-accent, #f08a12);
+  --rtm-brand-ink:#1b1712;
+  --rtm-brand-soft:#fdecd6;
+  --rtm-ok:#2e8b57;
+  --rtm-ok-soft:#e5f3ea;
+  --rtm-logo:#2f6b4f;
+  --rtm-font-display:var(--e-global-typography-primary-font-family, "Montserrat"), "Segoe UI", sans-serif;
+  --rtm-font-body:var(--e-global-typography-text-font-family, "Roboto"), "Segoe UI", Arial, sans-serif;
+}
+
+.rtm-topo,.rtm-bloco,.rtm-card,.rtm-barra{box-sizing:border-box;font-family:var(--rtm-font-body);font-size:15px;line-height:1.55;color:var(--rtm-ink)}
+.rtm-topo *,.rtm-bloco *,.rtm-card *,.rtm-barra *{box-sizing:border-box}
+
+/* Botões e peças comuns */
+.rtm-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--rtm-brand);color:var(--rtm-brand-ink);border:0;border-radius:11px;padding:13px 20px;font:inherit;font-weight:800;text-decoration:none;cursor:pointer;text-align:center}
+.rtm-btn:hover,.rtm-btn:focus{color:var(--rtm-brand-ink);filter:brightness(.95)}
+.rtm-btn:focus-visible{outline:3px solid var(--rtm-brand);outline-offset:3px}
+.rtm-cadastur{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;background:var(--rtm-ok-soft);color:var(--rtm-ink);font-size:12.5px;font-weight:700;padding:4px 11px 4px 6px;border-radius:99px}
+.rtm-cadastur i{width:17px;height:17px;border-radius:50%;background:var(--rtm-ok);color:#fff;display:grid;place-items:center;font-style:normal;font-size:10px}
+.rtm-chips,.rtm-destinos{display:flex;flex-wrap:wrap;gap:7px}
+.rtm-chip{font-size:12.5px;font-weight:600;padding:4px 12px;border-radius:99px;background:var(--rtm-chip);border:1px solid var(--rtm-line)}
+.rtm-iniciais{font-family:var(--rtm-font-display);font-weight:700;font-size:clamp(40px,8vw,72px);color:#fff;letter-spacing:.04em}
+.rtm-sem-foto{display:grid;place-items:center;background:linear-gradient(135deg,#f6c27a,#c96a1e)}
+.rtm-agencia{display:flex;align-items:center;gap:12px}
+.rtm-agencia span{font-size:13px;color:var(--rtm-muted);line-height:1.35}
+.rtm-agencia strong{display:block;color:var(--rtm-ink);font-size:15px}
+.rtm-logo{width:42px;height:42px;border-radius:9px;display:grid;place-items:center;font-size:13px;font-weight:800;color:#fff;background:var(--rtm-logo);flex:none;object-fit:contain}
+img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
+
+/* Topo */
+.rtm-topo{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);max-width:1040px;margin:0 auto;background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:22px;overflow:hidden}
+.rtm-foto{position:relative;min-height:380px}
+.rtm-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.rtm-dados{display:flex;flex-direction:column;gap:12px;padding:clamp(20px,3.4vw,36px);min-width:0}
+.rtm-nome{font-family:var(--rtm-font-display);font-size:clamp(32px,5vw,46px);line-height:1.02;margin:0;color:var(--rtm-ink);text-wrap:balance;overflow-wrap:anywhere}
+.rtm-cargo{margin:0;color:var(--rtm-muted);font-size:15px}
+.rtm-numeros{display:flex;flex-wrap:wrap;gap:10px 28px;padding-block:6px}
+.rtm-numeros div{display:flex;flex-direction:column}
+.rtm-numeros b{font-family:var(--rtm-font-display);font-size:24px;line-height:1.1}
+.rtm-numeros span{font-size:12.5px;color:var(--rtm-muted)}
+.rtm-acoes{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.rtm-dados .rtm-agencia{margin-top:auto;padding-top:14px;border-top:1px solid var(--rtm-line)}
+@media (max-width:760px){.rtm-topo{grid-template-columns:1fr}.rtm-foto{min-height:0;aspect-ratio:4/3.2}}
+
+/* Blocos de conteúdo */
+.rtm-bloco{background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:18px;padding:clamp(18px,3vw,28px);margin-bottom:18px}
+.rtm-bloco h2{font-family:var(--rtm-font-display);font-size:23px;margin:0 0 12px;line-height:1.2;color:var(--rtm-ink)}
+.rtm-bloco p{margin:0 0 10px;max-width:66ch}
+.rtm-lista-esp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.rtm-lista-esp{grid-template-columns:1fr}}
+.rtm-esp{padding:14px;border-radius:12px;background:var(--rtm-bg)}
+.rtm-esp b{display:block;font-size:14.5px}
+.rtm-lista-esp + .rtm-destinos{margin-top:14px}
+.rtm-endereco{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;font-size:14px}
+.rtm-endereco b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--rtm-muted)}
+@media (max-width:520px){.rtm-endereco{grid-template-columns:1fr}}
+
+/* Cartão lateral de cotação */
+.rtm-lateral{position:sticky;top:16px}
+.e-con.rtm-c-lateral > .elementor-widget-shortcode{position:sticky;top:16px}
+.rtm-lateral .rtm-bloco{display:flex;flex-direction:column;gap:12px}
+.rtm-lateral h3{font-family:var(--rtm-font-display);font-size:20px;margin:0;line-height:1.2;color:var(--rtm-ink)}
+.rtm-lateral p{margin:0;font-size:14px;color:var(--rtm-muted)}
+.rtm-lateral ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+
+/* Modelo reserva (sem Elementor) */
+.rtm-wrap{max-width:1072px;margin:0 auto;padding:20px 16px 40px}
+.rtm-grade{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;margin-top:22px}
+@media (max-width:900px){
+  .rtm-grade{grid-template-columns:1fr}
+  .rtm-lateral,.e-con.rtm-c-lateral{display:none!important}
+  .e-con.rtm-c-principal{--width:100%}
+}
+
+/* Barra fixa do celular */
+.rtm-barra,.rtm-barra-espaco{display:none}
+.rtm-barra{position:fixed;left:0;right:0;bottom:0;background:var(--rtm-surface);border-top:1px solid var(--rtm-line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:50}
+.rtm-barra-in{display:flex;gap:10px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.rtm-barra .rtm-btn{flex:1}
+@media (max-width:900px){.rtm-barra{display:block}.rtm-barra-espaco{display:block;height:72px}}
+
+/* Card da cotação */
+.rtm-card{position:relative;display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr);background:var(--rtm-surface);border:2px solid var(--rtm-line);border-radius:16px;overflow:hidden;cursor:pointer;text-align:left;transition:border-color .15s,opacity .15s}
+.rtm-card:hover{border-color:var(--rtm-brand)}
+.rtm-card:focus-visible{outline:3px solid var(--rtm-brand);outline-offset:3px}
+.rtm-card[aria-pressed="true"]{border-color:var(--rtm-brand);box-shadow:0 0 0 4px var(--rtm-brand-soft)}
+.rtm-card[hidden]{display:none}
+.rtm-card-foto{position:relative;overflow:hidden;min-height:100%}
+.rtm-card-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.rtm-card-foto .rtm-iniciais{font-size:44px}
+.rtm-selo{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background:var(--rtm-surface);border:2px solid var(--rtm-line);display:grid;place-items:center;font-weight:800;color:transparent;z-index:1}
+.rtm-card[aria-pressed="true"] .rtm-selo{background:var(--rtm-brand);border-color:var(--rtm-brand);color:var(--rtm-brand-ink)}
+.rtm-corpo{display:flex;flex-direction:column;gap:8px;padding:16px 50px 16px 20px;min-width:0}
+.rtm-corpo .rtm-cadastur{font-size:11.5px;padding:3px 9px 3px 5px}
+.rtm-corpo .rtm-cadastur i{width:15px;height:15px;font-size:9px}
+.rtm-card-nome{font-family:var(--rtm-font-display);font-size:24px;font-weight:700;line-height:1.1;margin:0;color:var(--rtm-ink);overflow-wrap:anywhere}
+.rtm-corpo .rtm-chips{gap:6px}
+.rtm-corpo .rtm-chip{font-size:12px;padding:3px 10px}
+.rtm-chip.rtm-match{background:var(--rtm-brand-soft);border-color:var(--rtm-brand)}
+.rtm-bio{margin:0;font-size:14px}
+.rtm-rodape{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:2px;padding-top:10px;border-top:1px solid var(--rtm-line)}
+.rtm-rodape .rtm-agencia{gap:10px}
+.rtm-rodape .rtm-logo{width:34px;height:34px;border-radius:8px;font-size:11px}
+.rtm-rodape .rtm-agencia span{font-size:12.5px;line-height:1.3}
+.rtm-rodape .rtm-agencia strong{font-size:14px}
+.rtm-perfil{font-size:13px;font-weight:700;color:var(--rtm-ink);text-decoration:underline;text-underline-offset:3px}
+@media (max-width:560px){.rtm-card{grid-template-columns:1fr}.rtm-card-foto{min-height:0;aspect-ratio:4/3}.rtm-corpo{padding:14px 16px 16px}}
+@media (prefers-reduced-motion:reduce){.rtm-card{transition:none}}
