@@ -51,7 +51,11 @@ foreach ( $ids as $id ) {
 	foreach ( $GLOBALS['rt_obj_termos'][ $id ]['rt_tipo_viagem'] as $t ) {
 		ok( in_array( $t, rtm_tipos_iniciais(), true ), "tipo '$t' existe entre os tipos do plugin" );
 	}
-	ok( count( get_post_meta( $id, 'rtm_especialidades', true ) ) <= 4, "post $id: até 4 especialidades" );
+	$esps = get_post_meta( $id, 'rtm_especialidades', true );
+	ok( count( $esps ) <= 4 && count( $esps ) > 0, "post $id: até 4 especialidades" );
+	foreach ( $esps as $esp ) {
+		ok( is_array( $esp ) && '' !== $esp['titulo'] && '' !== $esp['descricao'] && mb_strlen( $esp['descricao'] ) <= 120, "post $id: especialidade com título e descrição curta" );
+	}
 }
 $por_slug = array();
 foreach ( $ids as $id ) {

@@ -75,14 +75,7 @@ function rtm_limpar_campos( array $entrada ) {
 				break;
 
 			case 'especialidades':
-				$lista = array();
-				foreach ( is_array( $bruto ) ? $bruto : array() as $item ) {
-					$item = is_scalar( $item ) ? sanitize_text_field( (string) $item ) : '';
-					if ( '' !== $item ) {
-						$lista[] = $item;
-					}
-				}
-				$saida[ $chave ] = array_slice( $lista, 0, $def['max'] ? (int) $def['max'] : 4 );
+				$saida[ $chave ] = rtm_especialidades_normalizar( $bruto, $def['max'] ? (int) $def['max'] : 4 );
 				break;
 
 			case 'destinos':
@@ -246,13 +239,15 @@ function rtm_caixa( $post ) {
 		$h .= '</select>';
 		rtm_linha( $campos['destino_principal']['rotulo'], 'rtm_destino_principal', $h, 'Precisa estar entre os destinos marcados; senão vale o primeiro.' );
 	}
-	$esp = array_values( array_filter( is_array( $v['especialidades'] ) ? $v['especialidades'] : array(), 'strlen' ) );
+	$esp = rtm_especialidades_normalizar( $v['especialidades'] );
 	if ( ! $esp ) {
-		$esp = array( '' );
+		$esp = array( array( 'titulo' => '', 'descricao' => '' ) );
 	}
 	echo '<div class="rtm-linha rtm-especialidades" data-max="4"><strong>' . esc_html( $campos['especialidades']['rotulo'] ) . '</strong> <span class="description">(até 4)</span><div class="rtm-esp-lista">';
-	foreach ( $esp as $item ) {
-		echo '<p class="rtm-esp-item"><input type="text" class="regular-text" name="rtm[especialidades][]" value="' . esc_attr( (string) $item ) . '"> <button type="button" class="button-link rtm-esp-remover">Remover</button></p>';
+	foreach ( $esp as $i => $item ) {
+		echo '<p class="rtm-esp-item"><input type="text" class="regular-text" name="rtm[especialidades][' . (int) $i . '][titulo]" value="' . esc_attr( $item['titulo'] ) . '" placeholder="Título (ex.: Natal Luz)" aria-label="Título"> '
+			. '<input type="text" class="large-text rtm-esp-desc" maxlength="120" name="rtm[especialidades][' . (int) $i . '][descricao]" value="' . esc_attr( $item['descricao'] ) . '" placeholder="Descrição curta (até 120 caracteres)" aria-label="Descrição curta"> '
+			. '<button type="button" class="button-link rtm-esp-remover">Remover</button></p>';
 	}
 	echo '</div><button type="button" class="button rtm-esp-adicionar">Adicionar especialidade</button></div>';
 	echo '<p class="description">Os tipos de viagem ficam na caixa "Tipos de viagem", ao lado.</p>';

@@ -26,8 +26,17 @@ igual( '1133334444', rtm_limpar_campos( array( 'whatsapp' => '(11) 3333-4444' ) 
 igual( '', rtm_limpar_campos( array( 'email' => 'x@' ) )['email'], 'email inválido -> vazio' );
 igual( 'a@b.com', rtm_limpar_campos( array( 'email' => ' a@b.com ' ) )['email'], 'email válido' );
 igual( 180, mb_strlen( rtm_limpar_campos( array( 'texto_card' => str_repeat( 'é', 250 ) ) )['texto_card'] ), 'texto_card cortado em 180' );
-$e = rtm_limpar_campos( array( 'especialidades' => array( 'a', '', 'b', ' ', 'c', 'd', 'e', 'f' ) ) )['especialidades'];
-igual( array( 'a', 'b', 'c', 'd' ), $e, 'especialidades: 4 itens não vazios' );
+$e = rtm_limpar_campos( array( 'especialidades' => array(
+	array( 'titulo' => 'a', 'descricao' => 'da' ), array( 'titulo' => '', 'descricao' => 'sem título' ), array( 'titulo' => 'b' ), array( 'titulo' => ' ', 'descricao' => 'x' ),
+	array( 'titulo' => 'c', 'descricao' => ' <b>dc</b> ' ), array( 'titulo' => 'd', 'descricao' => '' ), array( 'titulo' => 'e', 'descricao' => 'de' ), array( 'titulo' => 'f', 'descricao' => 'df' ),
+) ) )['especialidades'];
+igual( array(
+	array( 'titulo' => 'a', 'descricao' => 'da' ), array( 'titulo' => 'b', 'descricao' => '' ),
+	array( 'titulo' => 'c', 'descricao' => 'dc' ), array( 'titulo' => 'd', 'descricao' => '' ),
+), $e, 'especialidades: {titulo,descricao}, sem título descartada, sanitizada, máx 4' );
+$e = rtm_limpar_campos( array( 'especialidades' => array( array( 'titulo' => 'Família', 'descricao' => str_repeat( 'é', 200 ) ) ) ) )['especialidades'];
+igual( 120, mb_strlen( $e[0]['descricao'] ), 'especialidades: descrição cortada em 120 (mb)' );
+igual( array( array( 'titulo' => 'Luxo', 'descricao' => '' ), array( 'titulo' => 'Grupos', 'descricao' => '' ) ), rtm_limpar_campos( array( 'especialidades' => array( 'Luxo', '', 'Grupos' ) ) )['especialidades'], 'especialidades: texto simples antigo vira {titulo, descricao vazia}' );
 igual( array(), rtm_limpar_campos( array() )['especialidades'], 'especialidades ausentes -> lista vazia' );
 $d = rtm_limpar_campos( array( 'destinos' => array( '10', '999', '12', '10', '11' ), 'destino_principal' => 'paris' ) );
 igual( array( array( 'id' => 10, 'slug' => 'gramado' ), array( 'id' => 11, 'slug' => 'canela' ) ), $d['destinos'], 'destinos: só publicados existentes, sem repetição, {id,slug}' );

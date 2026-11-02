@@ -30,6 +30,11 @@
 
 	// Especialidades: no máximo 4 linhas.
 	function atualizar( $bloco ) {
+		$bloco.find( '.rtm-esp-item' ).each( function ( i ) {
+			$( this ).find( 'input' ).each( function () {
+				this.name = this.name.replace( /\[especialidades\]\[\d+\]/, '[especialidades][' + i + ']' );
+			} );
+		} );
 		var max = parseInt( $bloco.data( 'max' ), 10 ) || 4;
 		var n   = $bloco.find( '.rtm-esp-item' ).length;
 		$bloco.find( '.rtm-esp-adicionar' ).prop( 'disabled', n >= max );

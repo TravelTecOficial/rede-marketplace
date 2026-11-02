@@ -79,6 +79,14 @@ igual( 'https://exemplo.test/teste.jpg', $b['foto'], 'foto_url_teste como fallba
 igual( '', $b['logo'], 'sem logo: vazio' );
 igual( array(), $b['destinos_slugs'], 'sem destinos: vazio' );
 
+// Especialidades: {titulo, descricao}; texto simples antigo é convertido na leitura
+rtm_t_post( 20, 'Leg', array( 'ativo' => '1', 'especialidades' => array( 'Luxo', array( 'titulo' => 'Família', 'descricao' => 'Parques' ), array( 'descricao' => 'sem título' ), '', 7, 'A', 'B', 'C' ) ) );
+igual( array(
+	array( 'titulo' => 'Luxo', 'descricao' => '' ), array( 'titulo' => 'Família', 'descricao' => 'Parques' ),
+	array( 'titulo' => 'A', 'descricao' => '' ), array( 'titulo' => 'B', 'descricao' => '' ),
+), rtm_agente( 20 )['especialidades'], 'rtm_agente: especialidades {titulo,descricao}, legado convertido, inválidas fora, máx 4' );
+igual( array(), rtm_agente( 6 )['especialidades'], 'rtm_agente: sem especialidades -> lista vazia' );
+
 // Inativo / não publicado / outro tipo / inexistente
 rtm_t_post( 7, 'Zé Inativo', array( 'ativo' => '0' ) );
 rtm_t_post( 8, 'Rascunho', array( 'ativo' => '1' ), 'draft' );
@@ -87,7 +95,7 @@ igual( null, rtm_agente( 7 ), 'ativo=0 -> null' );
 igual( null, rtm_agente( 8 ), 'rascunho -> null' );
 igual( null, rtm_agente( 9 ), 'outro post type -> null' );
 igual( null, rtm_agente( 999 ), 'inexistente -> null' );
-igual( array( 'Ana', 'Mariana Kloss' ), array_column( rtm_agentes_ativos(), 'nome' ), 'ativos: só publicados e ativos, por título' );
+igual( array( 'Ana', 'Leg', 'Mariana Kloss' ), array_column( rtm_agentes_ativos(), 'nome' ), 'ativos: só publicados e ativos, por título' );
 
 // Purga de cache
 $GLOBALS['rt_ganchos'] = array();

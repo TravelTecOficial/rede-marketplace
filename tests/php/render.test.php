@@ -23,7 +23,7 @@ rtm_t_post( 5, 'Mariana Kloss', array(
 	'cargo' => 'Especialista em Gramado e Serra Gaúcha', 'texto_card' => 'Há 12 anos levo famílias para a Serra Gaúcha.',
 	'apresentacao' => "Nasci em Nova Petrópolis.\n\nGosto de entender o ritmo de cada família.",
 	'cadastur' => '21.123.456/0001-00', 'anos_experiencia' => '12', 'viajantes_atendidos' => '1400',
-	'idiomas' => array( 'Português', 'Espanhol' ), 'especialidades' => array( 'Parques e Snowland', 'Ingressos do Natal Luz' ),
+	'idiomas' => array( 'Português', 'Espanhol' ), 'especialidades' => array( array( 'titulo' => 'Parques e Snowland', 'descricao' => 'Snowland, Mini Mundo & hotéis "com" recreação.' ), array( 'titulo' => 'Ingressos do Natal Luz', 'descricao' => '' ), 'Luxo' ),
 	'destinos' => array( array( 'id' => 10, 'slug' => 'gramado' ), array( 'id' => 11, 'slug' => 'canela' ) ),
 	'destino_principal' => 'gramado', 'agencia_nome' => 'Serra Viagens', 'agencia_cidade' => 'Gramado/RS', 'agencia_desde' => '2009',
 	'endereco' => 'Av. Borges de Medeiros, 1500', 'horario' => 'Seg a sex, 9h às 18h', 'google_perfil' => 'https://g.page/serra',
@@ -61,7 +61,10 @@ $sobre = rtm_secao( 'sobre', $a );
 contem( 'Sobre Mariana', $sobre, 'sobre: título' );
 contem( '<p>Nasci em Nova Petrópolis.</p>', $sobre, 'sobre: apresentação em parágrafos' );
 $esp = rtm_secao( 'especialidades', $a );
-contem( 'Ingressos do Natal Luz', $esp, 'especialidades: itens' );
+contem( '<b class="rtm-esp-titulo">Ingressos do Natal Luz</b>', $esp, 'especialidades: título em negrito' );
+contem( '<span class="rtm-esp-desc">Snowland, Mini Mundo &amp; hotéis &quot;com&quot; recreação.</span>', $esp, 'especialidades: descrição escapada' );
+igual( 1, substr_count( $esp, 'rtm-esp-desc"' ), 'especialidades: sem descrição não gera span (vazia e texto antigo)' );
+contem( '<b class="rtm-esp-titulo">Luxo</b>', $esp, 'especialidades: texto simples antigo ainda aparece' );
 contem( '>Canela<', $esp, 'especialidades: destinos pelo nome' );
 $onde = rtm_secao( 'onde', $a );
 contem( 'Av. Borges de Medeiros, 1500', $onde, 'onde: endereço' );
@@ -205,6 +208,10 @@ contem( '.rtm-dados h1.rtm-nome', $css, 'CSS: nome do topo com escopo' );
 contem( '.rtm-corpo h3.rtm-card-nome', $css, 'CSS: nome do card com escopo' );
 contem( '.rtm-rodape a.rtm-perfil:hover', $css, 'CSS: Ver perfil com escopo' );
 nao_contem( '!important', $css, 'CSS: sem !important' );
+contem( '.rtm-lista-esp .rtm-esp b.rtm-esp-titulo', $css, 'CSS: título da especialidade com escopo' );
+contem( '.rtm-lista-esp .rtm-esp span.rtm-esp-desc', $css, 'CSS: descrição da especialidade com escopo' );
+igual( true, rtm_t_especificidade_ok( '.rtm-lista-esp .rtm-esp b.rtm-esp-titulo' ) && rtm_t_especificidade_ok( '.rtm-lista-esp .rtm-esp span.rtm-esp-desc' ), 'CSS: especialidade >= 0,2,1' );
+function rtm_t_especificidade_ok( $sel ) { return rtm_t_especificidade( $sel ) >= 201; }
 function rtm_t_especificidade( $sel ) {
 	$sel = preg_replace( '/::[a-z-]+/', '', $sel );
 	$cls = preg_match_all( '/\.[a-z0-9_-]+|:[a-z-]+|\[[^\]]+\]/i', $sel );
@@ -221,7 +228,7 @@ foreach ( $regras[1] as $grupo ) {
 	foreach ( explode( ',', $grupo ) as $sel ) {
 		$sel = trim( $sel );
 		if ( '' === $sel || ':root' === $sel || 0 === strpos( $sel, '@' ) ) { continue; }
-		$alvo = preg_match( '/(^|[\s>])(a|h1|h2|h3|p|label|button|input|select|textarea)([.:\[]|$)/', $sel ) || preg_match( '/rtm-(btn|perfil|nome|card-nome|cargo|bio|pilula|enviar|rot|rede|lgpd|titulo|lead|etapa-h|etapa-dica|vazio)\b/', $sel );
+		$alvo = preg_match( '/(^|[\s>])(a|h1|h2|h3|p|label|button|input|select|textarea)([.:\[]|$)/', $sel ) || preg_match( '/rtm-(esp-titulo|esp-desc|btn|perfil|nome|card-nome|cargo|bio|pilula|enviar|rot|rede|lgpd|titulo|lead|etapa-h|etapa-dica|vazio)\b/', $sel );
 		if ( $alvo && rtm_t_especificidade( $sel ) < 201 ) { $fracos[] = $sel; }
 	}
 }

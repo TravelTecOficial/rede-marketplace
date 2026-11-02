@@ -119,10 +119,9 @@ function rtm_secao( $secao, array $agente ) {
 
 		case 'especialidades':
 			$esp = '';
-			foreach ( $agente['especialidades'] as $item ) {
-				if ( '' !== trim( (string) $item ) ) {
-					$esp .= '<div class="rtm-esp"><b>' . esc_html( $item ) . '</b></div>';
-				}
+			foreach ( rtm_especialidades_normalizar( $agente['especialidades'] ) as $item ) {
+				$esp .= '<div class="rtm-esp"><b class="rtm-esp-titulo">' . esc_html( $item['titulo'] ) . '</b>'
+					. ( '' !== $item['descricao'] ? '<span class="rtm-esp-desc">' . esc_html( $item['descricao'] ) . '</span>' : '' ) . '</div>';
 			}
 			$nomes = array();
 			foreach ( $agente['destinos'] as $d ) {

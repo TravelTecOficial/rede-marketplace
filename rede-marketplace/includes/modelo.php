@@ -83,6 +83,27 @@ function rtm_iniciais( $nome ) {
 	return mb_strtoupper( $i );
 }
 
+/** Normaliza especialidades para uma lista (máx. 4) de { titulo, descricao }; texto simples antigo vira título sem descrição. */
+function rtm_especialidades_normalizar( $bruto, $max = 4 ) {
+	$lista = array();
+	foreach ( is_array( $bruto ) ? $bruto : array() as $item ) {
+		if ( is_array( $item ) ) {
+			$titulo = isset( $item['titulo'] ) && is_scalar( $item['titulo'] ) ? sanitize_text_field( (string) $item['titulo'] ) : '';
+			$desc   = isset( $item['descricao'] ) && is_scalar( $item['descricao'] ) ? sanitize_text_field( (string) $item['descricao'] ) : '';
+		} elseif ( is_string( $item ) ) {
+			$titulo = sanitize_text_field( $item );
+			$desc   = '';
+		} else {
+			continue;
+		}
+		if ( '' === $titulo ) {
+			continue;
+		}
+		$lista[] = array( 'titulo' => $titulo, 'descricao' => mb_substr( $desc, 0, 120 ) );
+	}
+	return array_slice( $lista, 0, (int) $max );
+}
+
 /** Dados públicos do agente, ou null se não existir, não for rt_agente, não estiver publicado ou ativo. */
 function rtm_agente( $post_id ) {
 	$post_id = (int) $post_id;
@@ -101,6 +122,9 @@ function rtm_agente( $post_id ) {
 		$v = get_post_meta( $post_id, 'rtm_' . $chave, true );
 		if ( in_array( $def['tipo'], array( 'lista', 'destinos', 'especialidades' ), true ) ) {
 			$v = is_array( $v ) ? $v : array();
+		}
+		if ( 'especialidades' === $def['tipo'] ) {
+			$v = rtm_especialidades_normalizar( $v, $def['max'] ? $def['max'] : 4 );
 		}
 		$a[ $chave ] = $v;
 	}

@@ -59,7 +59,8 @@ img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 .rtm-lista-esp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 @media (max-width:520px){.rtm-lista-esp{grid-template-columns:1fr}}
 .rtm-esp{padding:14px;border-radius:12px;background:var(--rtm-bg)}
-.rtm-esp b{display:block;font-size:14.5px}
+.rtm-lista-esp .rtm-esp b.rtm-esp-titulo{display:block;font-size:14.5px}
+.rtm-lista-esp .rtm-esp span.rtm-esp-desc{display:block;font-size:13px;color:var(--rtm-muted)}
 .rtm-lista-esp + .rtm-destinos{margin-top:14px}
 .rtm-endereco{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;font-size:14px}
 .rtm-endereco b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--rtm-muted)}
