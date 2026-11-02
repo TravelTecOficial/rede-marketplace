@@ -17,8 +17,9 @@ igual( array( 'title', 'thumbnail' ), $t['supports'], 'rt_agente: supports title
 $x = $GLOBALS['rt_taxonomias']['rt_tipo_viagem'];
 ok( false === $x['args']['hierarchical'] && false === $x['args']['show_in_rest'] && false === $x['args']['public'], 'rt_tipo_viagem: plana, privada, sem REST' );
 ok( isset( $GLOBALS['rt_ganchos']['init'] ) && in_array( 'rtm_registrar', $GLOBALS['rt_ganchos']['init'], true ), 'init -> rtm_registrar' );
-igual( array( 'rtm_purgar_cache' ), $GLOBALS['rt_ganchos']['save_post_rt_agente'], 'save_post_rt_agente -> rtm_purgar_cache' );
-igual( array( 20 ), $GLOBALS['rt_prioridades']['save_post_rt_agente'], 'purga com prioridade 20' );
+$i = array_search( 'rtm_purgar_cache', $GLOBALS['rt_ganchos']['save_post_rt_agente'], true );
+ok( false !== $i, 'save_post_rt_agente -> rtm_purgar_cache' );
+igual( 20, $GLOBALS['rt_prioridades']['save_post_rt_agente'][ $i ], 'purga com prioridade 20' );
 ok( ! empty( $GLOBALS['rt_ativacao'] ), 'gancho de ativação registrado' );
 
 // Tipos iniciais

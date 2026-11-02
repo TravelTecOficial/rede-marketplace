@@ -154,3 +154,15 @@ function get_the_post_thumbnail_url( $id = null, $tam = 'post-thumbnail' ) {
 }
 function get_permalink( $id ) { return 'https://exemplo.test/?p=' . (int) $id; }
 function wp_get_attachment_image_url( $id, $tam = 'thumbnail' ) { return isset( $GLOBALS['rt_anexos'][ $id ] ) ? $GLOBALS['rt_anexos'][ $id ] : false; }
+
+// Admin / segurança / validação (Task 3).
+$GLOBALS['rt_pode'] = true;   // current_user_can
+function wp_unslash( $v ) { return is_array( $v ) ? array_map( 'wp_unslash', $v ) : stripslashes( (string) $v ); }
+function absint( $v ) { return abs( (int) $v ); }
+function is_email( $e ) { return preg_match( '/^[^@\s]+@[^@\s]+\.[^@\s]+$/', (string) $e ) ? $e : false; }
+function sanitize_email( $e ) { return preg_replace( '/[^a-zA-Z0-9@._+\-]/', '', (string) $e ); }
+function current_user_can( $cap, ...$args ) { return (bool) $GLOBALS['rt_pode']; }
+function wp_create_nonce( $acao ) { return 'ok_' . $acao; }
+function wp_verify_nonce( $nonce, $acao ) { return ( 'ok_' . $acao === $nonce ) ? 1 : false; }
+function wp_is_post_revision( $id ) { return ! empty( $GLOBALS['rt_revisoes'][ $id ] ) ? $id : false; }
+function delete_post_meta( $id, $chave ) { unset( $GLOBALS['rt_meta'][ $id ][ $chave ] ); return true; }

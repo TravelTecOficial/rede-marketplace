@@ -1,0 +1,8 @@
+.rtm-caixa h3 { margin: 22px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #dcdcde; }
+.rtm-caixa h3:first-child { margin-top: 0; }
+.rtm-linha { margin: 12px 0; }
+.rtm-caixa .large-text { max-width: 640px; }
+.rtm-esp-item { margin: 6px 0; }
+.rtm-privado { background: #fff8e5; border-left: 4px solid #dba617; padding: 4px 14px 8px; }
+.rtm-logo-previa img { display: block; margin: 6px 0; border: 1px solid #dcdcde; background: #fff; padding: 4px; }
+.column-rtm_foto { width: 56px; }
