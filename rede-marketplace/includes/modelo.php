@@ -61,6 +61,12 @@ function rtm_campos() {
 		'endereco'              => $c( 'Endereço', 'texto' ),
 		'horario'               => $c( 'Horário de atendimento', 'texto' ),
 		'google_perfil'         => $c( 'Perfil no Google (URL)', 'texto' ),
+		'instagram'             => $c( 'Instagram', 'rede' ),
+		'facebook'              => $c( 'Facebook', 'rede' ),
+		'tiktok'                => $c( 'TikTok', 'rede' ),
+		'youtube'               => $c( 'YouTube', 'rede' ),
+		'linkedin'              => $c( 'LinkedIn', 'rede' ),
+		'site'                  => $c( 'Site', 'rede' ),
 		'foto_url_teste'        => $c( 'URL da foto (só agentes de teste)', 'texto' ),
 		'whatsapp'              => $c( 'WhatsApp', 'telefone', false ),
 		'email'                 => $c( 'E-mail', 'email', false ),
@@ -82,6 +88,33 @@ function rtm_iniciais( $nome ) {
 		$i = mb_substr( $p[0], 0, 2 );
 	}
 	return mb_strtoupper( $i );
+}
+
+/**
+ * Link de rede social: aceita URL completa, endereço sem https:// ou @usuario (Instagram e TikTok).
+ * Só http(s); qualquer outra coisa vira ''.
+ */
+function rtm_rede_url( $rede, $valor ) {
+	$v = trim( (string) $valor );
+	if ( '' === $v ) {
+		return '';
+	}
+	if ( preg_match( '/^@([A-Za-z0-9._]{1,30})$/', $v, $m ) ) {
+		if ( 'instagram' === $rede ) {
+			return 'https://www.instagram.com/' . $m[1] . '/';
+		}
+		if ( 'tiktok' === $rede ) {
+			return 'https://www.tiktok.com/@' . $m[1];
+		}
+		return '';
+	}
+	if ( ! preg_match( '#^[a-z][a-z0-9+.\-]*://#i', $v ) ) {
+		$v = 'https://' . $v;
+	}
+	if ( ! preg_match( '#^https?://[^\s/?\#]+\.[^\s/?\#]+#i', $v ) ) {
+		return '';
+	}
+	return esc_url_raw( $v );
 }
 
 /** Normaliza especialidades para uma lista (máx. 4) de { titulo, descricao }; texto simples antigo vira título sem descrição. */

@@ -62,6 +62,38 @@ function rtm_html_cadastur( array $agente, $com_numero ) {
 	return '<span class="rtm-cadastur"><i aria-hidden="true">✓</i>' . esc_html( $txt ) . '</span>';
 }
 
+/** Redes sociais na ordem em que aparecem na página. */
+function rtm_redes() {
+	return array( 'instagram' => 'Instagram', 'facebook' => 'Facebook', 'tiktok' => 'TikTok', 'youtube' => 'YouTube', 'linkedin' => 'LinkedIn', 'site' => 'Site' );
+}
+
+/** Ícone (SVG simples, na cor do texto) de cada rede. */
+function rtm_icone_rede( $rede ) {
+	$p = array(
+		'instagram' => '<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3"/>',
+		'facebook'  => '<path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8v3h2.5V21z"/>',
+		'tiktok'    => '<path d="M16.6 3c.4 2.2 1.7 3.6 3.9 3.8v3a7 7 0 0 1-3.9-1.2v6.1a5.7 5.7 0 1 1-5.7-5.7l.9.1v3.1a2.7 2.7 0 1 0 1.8 2.5V3z"/>',
+		'youtube'   => '<rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3z" fill="#fff"/>',
+		'linkedin'  => '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 10h2.2v7H7zM8.1 6.6a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6zM10.7 10h2.1v1c.4-.7 1.3-1.2 2.4-1.2 2.2 0 2.6 1.4 2.6 3.3V17h-2.2v-3.4c0-.8 0-1.9-1.2-1.9s-1.4.9-1.4 1.8V17h-2.3z" fill="#fff"/>',
+		'site'      => '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c2.5 2.5 3.6 5.5 3.6 9s-1.1 6.5-3.6 9c-2.5-2.5-3.6-5.5-3.6-9S9.5 5.5 12 3z" fill="none" stroke="currentColor" stroke-width="1.6"/>',
+	);
+	return '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" focusable="false">' . $p[ $rede ] . '</svg>';
+}
+
+/** Links das redes preenchidas; '' quando nenhuma. */
+function rtm_html_redes( array $agente ) {
+	$h = '';
+	foreach ( rtm_redes() as $rede => $nome ) {
+		$url = isset( $agente[ $rede ] ) ? esc_url( (string) $agente[ $rede ] ) : '';
+		if ( '' === $url ) {
+			continue;
+		}
+		$rotulo = $nome . ' de ' . rtm_primeiro_nome( $agente ) . ' (abre em nova aba)';
+		$h     .= '<a class="rtm-rede rtm-rede-' . $rede . '" href="' . $url . '" target="_blank" rel="noopener nofollow" aria-label="' . esc_attr( $rotulo ) . '" title="' . esc_attr( $nome ) . '">' . rtm_icone_rede( $rede ) . '</a>';
+	}
+	return '' === $h ? '' : '<div class="rtm-redes">' . $h . '</div>';
+}
+
 function rtm_html_chips( array $itens ) {
 	$h = '';
 	foreach ( $itens as $t ) {
@@ -139,6 +171,7 @@ function rtm_secao( $secao, array $agente ) {
 				$h .= '<div class="rtm-numeros">' . $num . '</div>';
 			}
 			$h .= '<div class="rtm-acoes">' . $botao . '</div>';
+			$h .= rtm_html_redes( $agente );
 			$h .= rtm_html_agencia( $agente, true );
 			return $h . '</div></section>';
 

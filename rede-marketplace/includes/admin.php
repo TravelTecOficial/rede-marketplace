@@ -95,6 +95,10 @@ function rtm_limpar_campos( array $entrada ) {
 				$saida[ $chave ] = $lista;
 				break;
 
+			case 'rede':
+				$saida[ $chave ] = rtm_rede_url( $chave, $texto );
+				break;
+
 			default: // texto, textarea
 				if ( 'apresentacao' === $chave ) {
 					$saida[ $chave ] = wp_kses_post( $texto );
@@ -215,6 +219,12 @@ function rtm_caixa( $post ) {
 		. '<button type="button" class="button rtm-logo-escolher">Escolher logo</button> '
 		. '<button type="button" class="button-link rtm-logo-remover"' . ( $logo_id ? '' : ' hidden' ) . '>Remover</button></div>';
 	foreach ( array( 'agencia_cidade', 'agencia_desde', 'endereco', 'horario', 'google_perfil' ) as $c ) {
+		rtm_campo( $c, $v[ $c ] );
+	}
+
+	// Redes sociais
+	echo '<h3>Redes sociais</h3><p class="description">Cole o link do perfil (ou @usuario no Instagram e no TikTok). Em branco, o ícone não aparece.</p>';
+	foreach ( array_keys( rtm_redes() ) as $c ) {
 		rtm_campo( $c, $v[ $c ] );
 	}
 

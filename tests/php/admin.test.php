@@ -45,6 +45,14 @@ igual( 'canela', rtm_limpar_campos( array( 'destinos' => array( 10, 11 ), 'desti
 $d2 = rtm_limpar_campos( array( 'destinos' => array( 999 ), 'destino_principal' => 'x' ) );
 igual( array( array(), '' ), array( $d2['destinos'], $d2['destino_principal'] ), 'sem destinos válidos -> vazio' );
 igual( array(), rtm_limpar_campos( array() )['destinos'], 'destinos ausentes -> lista vazia' );
+$r = rtm_limpar_campos( array( 'instagram' => '@mariana.kloss', 'tiktok' => '@mk_viagens', 'facebook' => 'facebook.com/serra', 'youtube' => 'javascript:alert(1)', 'linkedin' => '@x', 'site' => 'nada' ) );
+igual( 'https://www.instagram.com/mariana.kloss/', $r['instagram'], 'rede: @usuario no Instagram vira URL' );
+igual( 'https://www.tiktok.com/@mk_viagens', $r['tiktok'], 'rede: @usuario no TikTok vira URL' );
+igual( 'https://facebook.com/serra', $r['facebook'], 'rede: sem https:// ganha https://' );
+igual( '', $r['youtube'], 'rede: javascript: recusado' );
+igual( '', $r['linkedin'], 'rede: @usuario só vale para Instagram e TikTok' );
+igual( '', $r['site'], 'rede: texto sem domínio recusado' );
+igual( 'http://serra.com.br/x', rtm_limpar_campos( array( 'site' => ' http://serra.com.br/x ' ) )['site'], 'rede: http mantido' );
 igual( '', rtm_limpar_campos( array( 'cadastur_conferido_em' => '31/02/2026' ) )['cadastur_conferido_em'], 'data inválida -> vazio' );
 igual( '', rtm_limpar_campos( array( 'cadastur_conferido_em' => '2026-02-31' ) )['cadastur_conferido_em'], 'data inexistente -> vazio' );
 igual( '2026-03-05', rtm_limpar_campos( array( 'cadastur_conferido_em' => '2026-03-05' ) )['cadastur_conferido_em'], 'data válida' );

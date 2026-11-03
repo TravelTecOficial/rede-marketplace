@@ -53,6 +53,11 @@ img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 .rtm-numeros b{font-family:var(--rtm-font-display);font-size:24px;line-height:1.1}
 .rtm-numeros span{font-size:12.5px;color:var(--rtm-muted)}
 .rtm-acoes{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.rtm-redes{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.rtm-redes a.rtm-rede{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:var(--rtm-chip);border:1px solid var(--rtm-line);color:var(--rtm-ink);text-decoration:none}
+.rtm-redes a.rtm-rede:hover,.rtm-redes a.rtm-rede:focus{background:var(--rtm-brand-soft);border-color:var(--rtm-brand);color:var(--rtm-ink)}
+.rtm-redes a.rtm-rede:focus-visible{outline:3px solid var(--rtm-brand);outline-offset:2px}
+.rtm-redes a.rtm-rede svg{display:block}
 .rtm-dados .rtm-agencia{margin-top:auto;padding-top:14px;border-top:1px solid var(--rtm-line)}
 @media (max-width:760px){.rtm-topo{grid-template-columns:1fr}.rtm-foto{min-height:0;aspect-ratio:4/3.2}}
 

@@ -27,6 +27,7 @@ rtm_t_post( 5, 'Mariana Kloss', array(
 	'destinos' => array( array( 'id' => 10, 'slug' => 'gramado' ), array( 'id' => 11, 'slug' => 'canela' ) ),
 	'destino_principal' => 'gramado', 'agencia_nome' => 'Serra Viagens', 'agencia_cidade' => 'Gramado/RS', 'agencia_desde' => '2009',
 	'endereco' => 'Av. Borges de Medeiros, 1500', 'horario' => 'Seg a sex, 9h às 18h', 'google_perfil' => 'https://g.page/serra',
+	'instagram' => 'https://www.instagram.com/mariana/', 'site' => 'https://serra.com.br/', 'facebook' => 'javascript:alert(1)',
 ) );
 $GLOBALS['rt_termos'][5]['rt_tipo_viagem'] = array( (object) array( 'name' => 'Família' ), (object) array( 'name' => 'Natal Luz' ) );
 $a    = rtm_agente( 5 );
@@ -42,6 +43,11 @@ contem( '12 anos', $topo, 'topo: anos de experiência' );
 contem( '+1.400', $topo, 'topo: viajantes atendidos' );
 contem( 'Português · Espanhol', $topo, 'topo: idiomas' );
 contem( 'Serra Viagens', $topo, 'topo: agência' );
+contem( 'href="https://www.instagram.com/mariana/" target="_blank" rel="noopener nofollow" aria-label="Instagram de Mariana (abre em nova aba)"', $topo, 'topo: Instagram com rótulo e nova aba' );
+contem( 'rtm-rede-site', $topo, 'topo: site' );
+nao_contem( 'rtm-rede-facebook', $topo, 'topo: link não http(s) não aparece' );
+nao_contem( 'rtm-rede-tiktok', $topo, 'topo: rede vazia não aparece' );
+ok( strpos( $topo, 'rtm-rede-instagram' ) < strpos( $topo, 'rtm-rede-site' ), 'topo: ordem das redes' );
 contem( 'desde 2009', $topo, 'topo: agência desde' );
 contem( '>SV<', $topo, 'topo: logo vazio vira iniciais da agência' );
 contem( '>MK<', $topo, 'topo: sem foto vira iniciais (Review Focus 3)' );
