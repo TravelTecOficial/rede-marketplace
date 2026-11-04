@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.7.0 (04/11/2026): topo do agente com foto menor e, abaixo dela, agência, redes e selo Cadastur.
 0.6.1 (04/11/2026): selo "Cadastur verificado" clicável volta ao visual verde (o tema pintava o botão de rosa).
 0.6.0 (04/11/2026): selo oficial "Somos certificados Cadastur" no topo do agente, clicável (abre o certificado).
 0.5.0 (04/11/2026): selo "Cadastur verificado" abre janela com o certificado, número, validade e link para o site oficial.
