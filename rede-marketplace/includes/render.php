@@ -62,6 +62,27 @@ function rtm_html_cadastur( array $agente, $com_numero ) {
 	return '<span class="rtm-cadastur"><i aria-hidden="true">✓</i>' . esc_html( $txt ) . '</span>';
 }
 
+/** Estrelas cheias/vazias (arredondadas) para uma nota de 0 a 5. */
+function rtm_estrelas( $nota ) {
+	$cheias = max( 0, min( 5, (int) round( (float) $nota ) ) );
+	return str_repeat( '★', $cheias ) . str_repeat( '☆', 5 - $cheias );
+}
+
+function rtm_nota_txt( $nota ) {
+	return number_format( (float) $nota, 1, ',', '' );
+}
+
+/** Linha "★★★★★ 4,9 · 87 avaliações no Google" (topo e card); '' sem avaliações. */
+function rtm_html_nota( array $agente ) {
+	$av = isset( $agente['avaliacoes'] ) && is_array( $agente['avaliacoes'] ) ? $agente['avaliacoes'] : array();
+	if ( empty( $av['nota'] ) || empty( $av['total'] ) ) {
+		return '';
+	}
+	$total = (int) $av['total'];
+	return '<div class="rtm-nota"><span class="rtm-estrelas" aria-hidden="true">' . rtm_estrelas( $av['nota'] ) . '</span>'
+		. '<b>' . rtm_nota_txt( $av['nota'] ) . '</b> · ' . number_format( $total, 0, ',', '.' ) . ( 1 === $total ? ' avaliação' : ' avaliações' ) . ' no Google</div>';
+}
+
 /** Redes sociais na ordem em que aparecem na página. */
 function rtm_redes() {
 	return array( 'instagram' => 'Instagram', 'facebook' => 'Facebook', 'tiktok' => 'TikTok', 'youtube' => 'YouTube', 'linkedin' => 'LinkedIn', 'site' => 'Site' );
@@ -150,6 +171,8 @@ function rtm_secao( $secao, array $agente ) {
 			if ( '' !== trim( (string) $agente['cargo'] ) ) {
 				$h .= '<p class="rtm-cargo">' . esc_html( $agente['cargo'] ) . '</p>';
 			}
+			$nota = rtm_html_nota( $agente );
+			$h   .= $nota;
 			$chips = rtm_html_chips( $agente['tipos'] );
 			if ( '' !== $chips ) {
 				$h .= '<div class="rtm-chips">' . $chips . '</div>';
@@ -170,7 +193,7 @@ function rtm_secao( $secao, array $agente ) {
 			if ( '' !== $num ) {
 				$h .= '<div class="rtm-numeros">' . $num . '</div>';
 			}
-			$h .= '<div class="rtm-acoes">' . $botao . '</div>';
+			$h .= '<div class="rtm-acoes">' . $botao . ( '' !== $nota ? '<a class="rtm-btn-sec" href="#avaliacoes">Ver avaliações</a>' : '' ) . '</div>';
 			$h .= rtm_html_redes( $agente );
 			$h .= rtm_html_agencia( $agente, true );
 			return $h . '</div></section>';
@@ -205,6 +228,38 @@ function rtm_secao( $secao, array $agente ) {
 			}
 			if ( '' !== $dest ) {
 				$h .= '<div class="rtm-destinos">' . $dest . '</div>';
+			}
+			return $h . '</section>';
+
+		case 'avaliacoes':
+			$av = isset( $agente['avaliacoes'] ) && is_array( $agente['avaliacoes'] ) ? $agente['avaliacoes'] : array();
+			if ( empty( $av['nota'] ) || empty( $av['itens'] ) ) {
+				return '';
+			}
+			$total = (int) $av['total'];
+			$h  = '<section class="rtm-bloco rtm-avaliacoes" id="avaliacoes"><div class="rtm-av-topo"><h2>Avaliações</h2>';
+			$h .= '<span class="rtm-google"><i>Google</i> avaliações do perfil da agência</span></div>';
+			if ( ! empty( $av['exemplo'] ) ) {
+				$h .= '<p class="rtm-av-exemplo">Exemplo para o ensaio: avaliações fictícias.</p>';
+			}
+			$h .= '<div class="rtm-av-resumo"><b>' . rtm_nota_txt( $av['nota'] ) . '</b><div><span class="rtm-estrelas" aria-hidden="true">' . rtm_estrelas( $av['nota'] ) . '</span>'
+				. '<span>' . number_format( $total, 0, ',', '.' ) . ( 1 === $total ? ' avaliação' : ' avaliações' ) . '</span></div></div><div class="rtm-avals">';
+			$cores = array( '#7a4fa3', '#2f6b8a', '#a35a2f', '#3f7d4e', '#8a2f55' );
+			foreach ( array_slice( (array) $av['itens'], 0, 5 ) as $i => $it ) {
+				$autor = isset( $it['autor'] ) ? (string) $it['autor'] : '';
+				$texto = isset( $it['texto'] ) ? trim( (string) $it['texto'] ) : '';
+				if ( '' === $autor || '' === $texto ) {
+					continue;
+				}
+				$n     = isset( $it['nota'] ) ? (int) $it['nota'] : 5;
+				$h    .= '<div class="rtm-av"><div class="rtm-av-cab"><span class="rtm-av-ini" style="background:' . $cores[ $i % count( $cores ) ] . '" aria-hidden="true">' . esc_html( rtm_iniciais( $autor ) ) . '</span>'
+					. '<div><b>' . esc_html( $autor ) . '</b><small>' . esc_html( isset( $it['quando'] ) ? (string) $it['quando'] : '' ) . ' · <span aria-label="' . $n . ' de 5 estrelas">' . rtm_estrelas( $n ) . '</span></small></div></div>'
+					. '<p>' . esc_html( $texto ) . '</p></div>';
+			}
+			$h  .= '</div>';
+			$url = esc_url( (string) $agente['google_perfil'] );
+			if ( '' !== $url ) {
+				$h .= '<a class="rtm-av-link" href="' . $url . '" target="_blank" rel="noopener nofollow">Ver todas as avaliações no Google</a>';
 			}
 			return $h . '</section>';
 
@@ -246,6 +301,7 @@ function rtm_card( array $agente ) {
 	$h .= '<span class="rtm-selo" aria-hidden="true">✓</span><div class="rtm-corpo">';
 	$h .= rtm_html_cadastur( $agente, false );
 	$h .= '<h3 class="rtm-card-nome">' . esc_html( $agente['nome'] ) . '</h3>';
+	$h .= rtm_html_nota( $agente );
 	$chips = rtm_html_chips( $agente['tipos'] );
 	if ( '' !== $chips ) {
 		$h .= '<div class="rtm-chips">' . $chips . '</div>';

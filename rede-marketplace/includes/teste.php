@@ -9,6 +9,31 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Nenhum anexo é criado: a foto vem de um SVG do próprio plugin (`rtm_foto_url_teste`).
  */
 
+/**
+ * Avaliações fictícias para ver o layout antes da chave do Google (só agentes de teste, marcadas como exemplo).
+ * Com a chave, as avaliações reais virão do Perfil do Google da agência.
+ */
+function rtm_avaliacoes_teste( $nome ) {
+	$dados = array(
+		'Mariana Kloss'  => array( 'nota' => 4.9, 'total' => 87, 'itens' => array(
+			array( 'autor' => 'Juliana P.', 'quando' => 'há 2 semanas', 'nota' => 5, 'texto' => 'A Mariana pensou em tudo para a nossa viagem com duas crianças. Hotel ótimo, ingressos do Snowland já comprados e dicas de restaurante perfeitas.' ),
+			array( 'autor' => 'Roberto C.', 'quando' => 'há 1 mês', 'nota' => 5, 'texto' => 'Fomos no Natal Luz com meus pais. Ela conseguiu lugar no Grande Desfile e um hotel a duas quadras da Rua Coberta. Recomendo muito.' ),
+			array( 'autor' => 'Fernanda L.', 'quando' => 'há 3 meses', 'nota' => 4, 'texto' => 'Atendimento rápido pelo WhatsApp e roteiro bem montado. Só o transfer atrasou um pouco na chegada.' ),
+		) ),
+		'Rafael Antunes' => array( 'nota' => 4.8, 'total' => 54, 'itens' => array(
+			array( 'autor' => 'Camila e André', 'quando' => 'há 3 semanas', 'nota' => 5, 'texto' => 'Nossa lua de mel foi perfeita. O chalé tinha lareira e banheira, e o jantar no Vale dos Vinhedos foi o ponto alto da viagem.' ),
+			array( 'autor' => 'Patrícia M.', 'quando' => 'há 2 meses', 'nota' => 5, 'texto' => 'O Rafael entendeu exatamente o que a gente queria: pouco roteiro, muito descanso. Hotel boutique lindo.' ),
+			array( 'autor' => 'Lucas T.', 'quando' => 'há 5 meses', 'nota' => 4, 'texto' => 'Ótimas indicações de vinícolas. A resposta demorou um dia na primeira mensagem, depois foi tudo rápido.' ),
+		) ),
+		'Camila Duarte'  => array( 'nota' => 5.0, 'total' => 31, 'itens' => array(
+			array( 'autor' => 'Grupo Amigas da Mooca', 'quando' => 'há 1 semana', 'nota' => 5, 'texto' => 'Éramos 18 pessoas e a Camila cuidou de tudo: ônibus, hotel e ingressos do Natal Luz. Ninguém precisou se preocupar com nada.' ),
+			array( 'autor' => 'Sérgio R.', 'quando' => 'há 1 mês', 'nota' => 5, 'texto' => 'Levei meus pais de 78 e 80 anos. Passeios no ritmo deles e acompanhamento pelo WhatsApp o tempo todo.' ),
+			array( 'autor' => 'Igreja Batista Central', 'quando' => 'há 4 meses', 'nota' => 5, 'texto' => 'Excursão muito bem organizada, horários cumpridos e preço justo. Já fechamos a do ano que vem.' ),
+		) ),
+	);
+	return isset( $dados[ $nome ] ) ? $dados[ $nome ] + array( 'exemplo' => true ) : array();
+}
+
 /** Os 3 agentes de teste. `destinos` lista os slugs dos destinos que devem existir no site. */
 function rtm_dados_agentes_teste() {
 	return array(

@@ -31,7 +31,7 @@ function rtm_t_shortcodes( $els ) {
 	return $res;
 }
 $sc = array();
-foreach ( array( 'trilha', 'topo', 'sobre', 'especialidades', 'onde', 'cotacao', 'barra' ) as $s ) { $sc[] = '[rt_agente secao="' . $s . '"]'; }
+foreach ( array( 'trilha', 'topo', 'sobre', 'especialidades', 'avaliacoes', 'onde', 'cotacao', 'barra' ) as $s ) { $sc[] = '[rt_agente secao="' . $s . '"]'; }
 igual( $sc, rtm_t_shortcodes( (array) $dados ), 'shortcodes na ordem da prévia' );
 foreach ( (array) $dados as $e ) { ok( 'container' === $e['elType'], 'raiz: contêiner V3' ); }
 igual( array( '[rt_agente secao="trilha"]' ), rtm_t_shortcodes( array( $dados[0] ) ), 'trilha no 1º contêiner' );
@@ -39,7 +39,7 @@ igual( array( '[rt_agente secao="topo"]' ), rtm_t_shortcodes( array( $dados[1] )
 igual( 'full', $dados[1]['settings']['content_width'], 'topo em largura total' );
 $grade = $dados[2]['elements'];
 igual( 2, count( $grade ), 'grade: coluna principal + lateral' );
-igual( array( '[rt_agente secao="sobre"]', '[rt_agente secao="especialidades"]', '[rt_agente secao="onde"]' ), rtm_t_shortcodes( array( $grade[0] ) ), 'coluna principal' );
+igual( array( '[rt_agente secao="sobre"]', '[rt_agente secao="especialidades"]', '[rt_agente secao="avaliacoes"]', '[rt_agente secao="onde"]' ), rtm_t_shortcodes( array( $grade[0] ) ), 'coluna principal' );
 igual( array( '[rt_agente secao="cotacao"]' ), rtm_t_shortcodes( array( $grade[1] ) ), 'lateral com a cotação' );
 $ids  = array();
 $cont = function ( $els ) use ( &$cont, &$ids ) { foreach ( $els as $e ) { $ids[] = $e['id']; $cont( $e['elements'] ); } };

@@ -150,6 +150,15 @@
        "elements": []
       },
       {
+       "id": "rtm000e",
+       "elType": "widget",
+       "widgetType": "shortcode",
+       "settings": {
+        "shortcode": "[rt_agente secao=\"avaliacoes\"]"
+       },
+       "elements": []
+      },
+      {
        "id": "rtm0005",
        "elType": "widget",
        "widgetType": "shortcode",

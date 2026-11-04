@@ -54,6 +54,26 @@ contem( '>MK<', $topo, 'topo: sem foto vira iniciais (Review Focus 3)' );
 nao_contem( '<img', $topo, 'topo: sem foto, nenhuma imagem' );
 nao_contem( 'Cadastur verificado', $topo, 'sem cadastur_conferido_em: sem selo' );
 nao_contem( 'Ver avaliações', $topo, 'sem botão "Ver avaliações"' );
+igual( '', rtm_secao( 'avaliacoes', $a ), 'agente real sem avaliações: seção some' );
+nao_contem( 'rtm-nota', rtm_card( $a ), 'card sem nota sem avaliações' );
+
+// Agente de teste: avaliações de exemplo
+rtm_t_post( 7, 'Rafael Antunes', array( 'ativo' => '1', 'teste' => '1', 'agencia_nome' => 'Rota Sul', 'google_perfil' => 'https://g.page/rota' ) );
+$t  = rtm_agente( 7 );
+$tt = rtm_secao( 'topo', $t );
+contem( '<b>4,8</b> · 54 avaliações no Google', $tt, 'teste: nota no topo' );
+contem( 'href="#avaliacoes">Ver avaliações</a>', $tt, 'teste: botão Ver avaliações' );
+contem( '<b>4,8</b> · 54 avaliações no Google', rtm_card( $t ), 'teste: nota no card' );
+$av = rtm_secao( 'avaliacoes', $t );
+contem( 'id="avaliacoes"', $av, 'avaliações: âncora' );
+contem( 'Exemplo para o ensaio', $av, 'avaliações de teste marcadas como exemplo' );
+contem( 'Camila e André', $av, 'avaliações: autor' );
+contem( '>CA<', $av, 'avaliações: iniciais do autor' );
+contem( 'aria-label="4 de 5 estrelas">★★★★☆', $av, 'avaliações: estrelas por depoimento' );
+contem( 'href="https://g.page/rota"', $av, 'avaliações: link para o Google' );
+igual( 3, substr_count( $av, 'class="rtm-av"' ), 'avaliações: 3 depoimentos' );
+igual( '★★★★★', rtm_estrelas( 4.9 ), 'estrelas 4,9 -> 5' );
+igual( '★★★☆☆', rtm_estrelas( 3.4 ), 'estrelas 3,4 -> 3' );
 
 $todas = rtm_t_todas( $a );
 foreach ( array( '11999990000', 'mariana@segredo.com', 'company-x' ) as $privado ) {
