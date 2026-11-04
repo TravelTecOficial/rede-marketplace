@@ -332,3 +332,7 @@ dialog.rtm-galeria-dialogo button.rtm-galeria-fechar{right:8px;top:8px;font-size
 dialog.rtm-galeria-dialogo button:hover,dialog.rtm-galeria-dialogo button:focus{background:var(--rtm-surface);color:var(--rtm-ink)}
 dialog.rtm-galeria-dialogo button:focus-visible{outline:3px solid var(--rtm-brand);outline-offset:2px}
 dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:var(--rtm-surface);color:var(--rtm-ink);font:700 12.5px var(--rtm-font-body);padding:4px 10px;border-radius:99px}
+/* Cotação: sugestão escolhida (vinda da página da sugestão) */
+.rtm-cotacao .rtm-sugestao-aviso{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--rtm-brand-soft);border-radius:12px;padding:10px 14px;margin:0 0 16px;font-size:14px;font-weight:600;color:var(--rtm-ink)}
+.rtm-cotacao .rtm-sugestao-aviso button.rtm-sugestao-tirar{background:transparent;border:0;padding:4px 6px;margin:0;font:inherit;font-weight:700;color:var(--rtm-ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;box-shadow:none;text-transform:none;letter-spacing:normal}
+.rtm-cotacao .rtm-sugestao-aviso button.rtm-sugestao-tirar:hover,.rtm-cotacao .rtm-sugestao-aviso button.rtm-sugestao-tirar:focus{background:transparent;color:var(--rtm-ink)}

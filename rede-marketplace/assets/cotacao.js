@@ -225,21 +225,36 @@
       destino_texto: destinoTexto(),
       tipo: tipo,
       agentes: selecionados().map(function (c) { return c.getAttribute('data-slug'); }),
-      rede: !!(rede && rede.checked)
+      rede: !!(rede && rede.checked),
+      sugestao: sugAtual
     };
   }
 
-  // Início: destino e agente vindos da URL.
+  // Início: destino, agente e sugestão vindos da URL.
   var params = null;
   try { params = new URLSearchParams(window.location.search); } catch (e) { params = null; }
+  var sugestoes = {};
+  try { sugestoes = JSON.parse(($('rtm-sugestoes-dados') || {}).textContent || '{}') || {}; } catch (e) { sugestoes = {}; }
+  var pedidaSug = params ? String(params.get('sugestao') || '') : '';
+  var sug = Object.prototype.hasOwnProperty.call(sugestoes, pedidaSug) ? sugestoes[pedidaSug] : null;
+  var sugAtual = sug ? pedidaSug : '';
+  var avisoSug = $('rtm-sugestao-aviso');
+  if (sug && avisoSug) {
+    $('rtm-sugestao-texto').textContent = 'Sugestão escolhida: ' + sug.titulo + ' (' + sug.agente_nome + ')';
+    avisoSug.hidden = false;
+  }
+  var tirarSug = $('rtm-sugestao-tirar');
+  if (tirarSug) {
+    tirarSug.addEventListener('click', function () { sugAtual = ''; if (avisoSug) { avisoSug.hidden = true; } });
+  }
   if (campoDestino) {
     var raiz = d.querySelector('.rtm-cotacao');
-    var achado = acharDestino(params ? params.get('destino') : '') || acharDestino(raiz ? raiz.getAttribute('data-destino') : '');
+    var achado = acharDestino(params ? params.get('destino') : '') || acharDestino(raiz ? raiz.getAttribute('data-destino') : '') || acharDestino(sug ? sug.destino : '');
     if (achado) { campoDestino.value = achado.nome; }
   }
   atualizarTitulo();
   filtrar();
-  var ag = params ? params.get('agente') : '';
+  var ag = (params ? params.get('agente') : '') || (sug ? sug.agente : '');
   if (ag) {
     cards.forEach(function (c) {
       if (c.getAttribute('data-slug') === ag && !c.hidden) { marcar(c, true); }

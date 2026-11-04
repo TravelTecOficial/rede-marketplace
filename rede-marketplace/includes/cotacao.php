@@ -42,6 +42,18 @@ function rtm_destinos_cotacao( array $agentes ) {
 	return $res;
 }
 
+/** Sugestões publicadas de agentes ativos, para a cotação marcar a que veio na URL (?sugestao=). */
+function rtm_sugestoes_cotacao() {
+	$res = array();
+	foreach ( get_posts( array( 'post_type' => 'rt_sugestao', 'post_status' => 'publish', 'posts_per_page' => -1 ) ) as $p ) {
+		$s = rtm_sugestao( $p->ID );
+		if ( $s ) {
+			$res[ $s['slug'] ] = array( 'titulo' => $s['titulo'], 'agente' => $s['agente']['slug'], 'agente_nome' => $s['agente']['nome'], 'destino' => (string) $s['destino'] );
+		}
+	}
+	return $res;
+}
+
 /** Pílulas (botões alternáveis). $itens: valor => rótulo. */
 function rtm_cot_pilulas( array $itens, $atributo, array $marcados = array() ) {
 	$h = '';
@@ -108,6 +120,9 @@ function rtm_cotacao_html( $atts = array() ) {
 	$h .= '<p class="rtm-lead">Conte como é a sua viagem, escolha quem vai montá-la e receba as propostas no seu WhatsApp. Sem custo e sem compromisso.</p>';
 	$h .= '<div class="rtm-como"><span><b>1.</b> Conte sua viagem</span><span><b>2.</b> Escolha os especialistas</span><span><b>3.</b> Compare e decida</span></div></div>';
 
+	$h .= '<div class="rtm-sugestao-aviso" id="rtm-sugestao-aviso" role="status" hidden><span id="rtm-sugestao-texto"></span>'
+		. '<button type="button" class="rtm-sugestao-tirar" id="rtm-sugestao-tirar">Tirar</button></div>';
+	$h .= '<script type="application/json" id="rtm-sugestoes-dados">' . wp_json_encode( (object) rtm_sugestoes_cotacao(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE ) . '</script>';
 	$h .= '<form id="rtm-cotacao" novalidate>';
 
 	// Etapa 1: a viagem.

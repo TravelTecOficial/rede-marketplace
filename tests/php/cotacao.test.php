@@ -124,3 +124,17 @@ $GLOBALS['rt_atual'] = 0;
 nao_contem( 'data-destino=', rtm_cotacao_html(), 'página de cotação comum: sem destino fixo' );
 contem( '<h1 class="rtm-titulo">', rtm_cotacao_html(), 'página de cotação comum: h1' );
 
+// Sugestões: dados para a cotação marcar a sugestão vinda da URL (?sugestao=)
+rtm_t_post( 5, 'Mariana Kloss', array( 'ativo' => '1' ) );
+rtm_t_post( 7, 'Inativa', array( 'ativo' => '0' ) );
+rtm_t_post( 60, 'Gramado em família, 4 dias', array( 'agente' => 5, 'destino' => 'gramado' ), 'publish', 'rt_sugestao' );
+rtm_t_post( 61, 'De inativa', array( 'agente' => 7 ), 'publish', 'rt_sugestao' );
+$hs = rtm_cotacao_html();
+preg_match( '#<script type="application/json" id="rtm-sugestoes-dados">(.*?)</script>#s', $hs, $m );
+$dados = json_decode( isset( $m[1] ) ? $m[1] : '', true );
+igual( array( 'titulo' => 'Gramado em família, 4 dias', 'agente' => 'mariana-kloss', 'agente_nome' => 'Mariana Kloss', 'destino' => 'gramado' ), isset( $dados['gramado-em-familia-4-dias'] ) ? $dados['gramado-em-familia-4-dias'] : null, 'JSON com a sugestão publicada' );
+ok( ! isset( $dados['de-inativa'] ), 'JSON sem sugestão de agente inativo' );
+preg_match( '/<div [^>]*id="rtm-sugestao-aviso"[^>]*>/', $hs, $av );
+contem( 'hidden', isset( $av[0] ) ? $av[0] : '', 'aviso da sugestão começa escondido' );
+contem( 'id="rtm-sugestao-tirar"', $hs, 'botão de tirar a sugestão' );
+

@@ -236,3 +236,37 @@ test('página de Destino: data-destino escolhe o destino sem parâmetro na URL',
   assert.equal(d.querySelector('[data-slug="camila-duarte"]').hidden, false);
   assert.equal(d.querySelector('[data-slug="mariana-kloss"]').hidden, true);
 });
+
+const SUGS = { 'gramado-em-familia-4-dias': { titulo: 'Gramado em família, 4 dias', agente: 'mariana-kloss', agente_nome: 'Mariana Kloss', destino: 'gramado' } };
+function montarSug(query) {
+  const extra = `<div id="rtm-sugestao-aviso" hidden><span id="rtm-sugestao-texto"></span><button type="button" id="rtm-sugestao-tirar">Tirar</button></div><script type="application/json" id="rtm-sugestoes-dados">${JSON.stringify(SUGS)}</script>`;
+  const dom = new JSDOM(`<!doctype html><body>${html([['gramado', 'Gramado'], ['canela', 'Canela']]).replace('<form id="rtm-cotacao" novalidate>', extra + '<form id="rtm-cotacao" novalidate>')}</body>`, { runScripts: 'outside-only', url: 'https://exemplo.test/cotacao/' + query });
+  dom.window.Element.prototype.scrollIntoView = function () {};
+  dom.window.eval(JS);
+  return dom.window;
+}
+
+test('?sugestao= mostra a sugestão, marca o agente dono e preenche o destino', () => {
+  const w = montarSug('?sugestao=gramado-em-familia-4-dias');
+  const d = w.document;
+  assert.equal(d.getElementById('rtm-sugestao-aviso').hidden, false);
+  assert.equal(d.getElementById('rtm-sugestao-texto').textContent, 'Sugestão escolhida: Gramado em família, 4 dias (Mariana Kloss)');
+  assert.equal(d.getElementById('rtm-destino').value, 'Gramado');
+  assert.equal(d.querySelector('[data-slug="mariana-kloss"]').getAttribute('aria-pressed'), 'true');
+  assert.equal(w.RTMCotacao.estado().sugestao, 'gramado-em-familia-4-dias');
+});
+
+test('?sugestao= inexistente: sem aviso e sem sugestão no estado', () => {
+  const w = montarSug('?sugestao=nao-existe');
+  assert.equal(w.document.getElementById('rtm-sugestao-aviso').hidden, true);
+  assert.equal(w.RTMCotacao.estado().sugestao, '');
+});
+
+test('tirar a sugestão esconde o aviso e mantém o agente', () => {
+  const w = montarSug('?sugestao=gramado-em-familia-4-dias');
+  w.document.getElementById('rtm-sugestao-tirar').click();
+  assert.equal(w.document.getElementById('rtm-sugestao-aviso').hidden, true);
+  assert.equal(w.RTMCotacao.estado().sugestao, '');
+  assert.equal(w.document.querySelector('[data-slug="mariana-kloss"]').getAttribute('aria-pressed'), 'true');
+});
+
