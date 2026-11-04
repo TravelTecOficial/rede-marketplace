@@ -48,6 +48,7 @@ class WP_Error {
 function is_wp_error( $x ) { return $x instanceof WP_Error; }
 
 function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
+function esc_textarea( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, "UTF-8" ); }
 function esc_attr( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
 // esc_url: como no WP, protocolo fora da lista vira '' (javascript:, data:...).
 function esc_url( $s ) {

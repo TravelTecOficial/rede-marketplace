@@ -293,7 +293,7 @@ function rtm_caixa( $post ) {
 }
 
 function rtm_scripts_admin( $tela ) {
-	$agente = in_array( $tela, array( 'post.php', 'post-new.php' ), true ) && 'rt_agente' === get_post_type();
+	$agente = in_array( $tela, array( 'post.php', 'post-new.php' ), true ) && in_array( get_post_type(), array( 'rt_agente', 'rt_sugestao' ), true );
 	if ( ! $agente && 'settings_page_rede-marketplace' !== $tela ) {
 		return;
 	}

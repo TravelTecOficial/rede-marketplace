@@ -17,6 +17,6 @@ define( 'RTM_DIR', plugin_dir_path( __FILE__ ) );
 define( 'RTM_URL', plugin_dir_url( __FILE__ ) );
 define( 'RTM_BASENAME', plugin_basename( __FILE__ ) );
 
-foreach ( array( 'opcoes', 'modelo', 'sugestao', 'admin', 'privacidade', 'render', 'agente', 'cotacao', 'instalador', 'teste', 'atualizador' ) as $rtm_arquivo ) {
+foreach ( array( 'opcoes', 'modelo', 'sugestao', 'admin', 'admin-sugestao', 'privacidade', 'render', 'agente', 'cotacao', 'instalador', 'teste', 'atualizador' ) as $rtm_arquivo ) {
 	require_once RTM_DIR . 'includes/' . $rtm_arquivo . '.php';
 }
