@@ -115,6 +115,47 @@ function rtm_html_redes( array $agente ) {
 	return '' === $h ? '' : '<div class="rtm-redes">' . $h . '</div>';
 }
 
+/**
+ * Selo "Cadastur verificado" da página do agente: botão que abre uma janela com os dados do cadastro, o
+ * certificado (imagem enviada pela agência, se houver) e o link para conferir no site oficial.
+ */
+function rtm_html_cadastur_janela( array $agente ) {
+	if ( empty( $agente['cadastur_verificado'] ) ) {
+		return '';
+	}
+	$numero = trim( (string) $agente['cadastur'] );
+	$h      = '<button type="button" class="rtm-cadastur rtm-cad-abrir" aria-haspopup="dialog" aria-controls="rtm-cad"><i aria-hidden="true">✓</i>'
+		. esc_html( 'Cadastur verificado' . ( '' !== $numero ? ' · ' . $numero : '' ) ) . '<span class="rtm-cad-ver">ver certificado</span></button>';
+	$h     .= '<dialog id="rtm-cad" class="rtm-cad-dialogo" aria-labelledby="rtm-cad-titulo"><div class="rtm-cad-caixa">'
+		. '<button type="button" class="rtm-cad-fechar" aria-label="Fechar">×</button>'
+		. '<h2 id="rtm-cad-titulo">Cadastur verificado</h2>'
+		. '<p class="rtm-cad-intro">Cadastro no Ministério do Turismo conferido pela Rede Turística.</p>';
+	$cert = esc_url( (string) $agente['certificado'] );
+	if ( '' !== $cert ) {
+		$h .= '<img class="rtm-cad-img" src="' . $cert . '" alt="' . esc_attr( 'Certificado Cadastur de ' . (string) $agente['agencia_nome'] ) . '" loading="lazy" decoding="async">';
+	}
+	$dados = array();
+	if ( '' !== trim( (string) $agente['agencia_nome'] ) ) {
+		$dados['Prestador'] = $agente['agencia_nome'];
+	}
+	if ( '' !== $numero ) {
+		$dados['Número do cadastro'] = $numero;
+	}
+	$val = (string) $agente['cadastur_validade'];
+	if ( preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', $val, $m ) ) {
+		$dados['Válido até'] = $m[3] . '/' . $m[2] . '/' . $m[1];
+	}
+	if ( $dados ) {
+		$h .= '<dl class="rtm-cad-dados">';
+		foreach ( $dados as $rot => $v ) {
+			$h .= '<div><dt>' . esc_html( $rot ) . '</dt><dd>' . esc_html( $v ) . '</dd></div>';
+		}
+		$h .= '</dl>';
+	}
+	$h .= '<a class="rtm-cad-link" href="https://cadastur.turismo.gov.br/" target="_blank" rel="noopener">Conferir no site oficial do Cadastur</a>';
+	return $h . '</div></dialog>';
+}
+
 function rtm_html_chips( array $itens ) {
 	$h = '';
 	foreach ( $itens as $t ) {
@@ -166,7 +207,7 @@ function rtm_secao( $secao, array $agente ) {
 
 		case 'topo':
 			$h  = '<section class="rtm-topo">' . rtm_html_foto( $agente, 'rtm-foto' ) . '<div class="rtm-dados">';
-			$h .= rtm_html_cadastur( $agente, true );
+			$h .= rtm_html_cadastur_janela( $agente );
 			$h .= '<h1 class="rtm-nome">' . esc_html( $agente['nome'] ) . '</h1>';
 			if ( '' !== trim( (string) $agente['cargo'] ) ) {
 				$h .= '<p class="rtm-cargo">' . esc_html( $agente['cargo'] ) . '</p>';
@@ -327,6 +368,9 @@ function rtm_enfileirar_estilo() {
 function rtm_estilos() {
 	if ( is_singular( 'rt_agente' ) || rtm_pagina_tem_cotacao() ) {
 		rtm_enfileirar_estilo();
+	}
+	if ( is_singular( 'rt_agente' ) ) {
+		wp_enqueue_script( 'rtm-agente', RTM_URL . 'assets/agente.js', array(), RTM_VERSION, true );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'rtm_estilos' );

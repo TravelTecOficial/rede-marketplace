@@ -194,6 +194,7 @@ function rtm_criar_agentes_teste() {
 		$campos['company_id']            = '';
 		$campos['ativo']                 = '1';
 		$campos['cadastur_conferido_em'] = $hoje;
+		$campos['cadastur_validade']     = '2027-03-25';
 		foreach ( $campos as $chave => $valor ) {
 			update_post_meta( $id, 'rtm_' . $chave, $valor );
 		}

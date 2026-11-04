@@ -129,6 +129,24 @@ $a2 = rtm_agente( 5 );
 contem( 'Cadastur verificado', rtm_secao( 'topo', $a2 ), 'com data: selo no topo' );
 contem( '21.123.456/0001-00', rtm_secao( 'topo', $a2 ), 'selo com o número' );
 contem( 'Cadastur verificado', rtm_card( $a2 ), 'com data: selo no card' );
+$tc = rtm_secao( 'topo', $a2 );
+contem( '<button type="button" class="rtm-cadastur rtm-cad-abrir" aria-haspopup="dialog" aria-controls="rtm-cad">', $tc, 'topo: selo é botão que abre a janela' );
+contem( '<dialog id="rtm-cad"', $tc, 'topo: janela do Cadastur' );
+contem( '<dt>Prestador</dt><dd>Serra Viagens</dd>', $tc, 'janela: prestador' );
+contem( '<dt>Número do cadastro</dt><dd>21.123.456/0001-00</dd>', $tc, 'janela: número' );
+contem( 'href="https://cadastur.turismo.gov.br/" target="_blank" rel="noopener"', $tc, 'janela: link oficial' );
+nao_contem( 'Válido até', $tc, 'janela: sem validade, sem linha' );
+nao_contem( 'rtm-cad-img', $tc, 'janela: sem certificado, sem imagem' );
+nao_contem( '2026-11-02', $tc, 'janela: data da conferência (privada) não aparece' );
+nao_contem( 'rtm-cad-abrir', rtm_card( $a2 ), 'card: selo simples, sem botão (o card já é clicável)' );
+update_post_meta( 5, 'rtm_cadastur_validade', '2027-03-25' );
+update_post_meta( 5, 'rtm_cadastur_certificado', 88 );
+$GLOBALS['rt_anexos'][88] = 'https://exemplo.test/cert.jpg';
+$tc = rtm_secao( 'topo', rtm_agente( 5 ) );
+contem( '<dt>Válido até</dt><dd>25/03/2027</dd>', $tc, 'janela: validade em dd/mm/aaaa' );
+contem( '<img class="rtm-cad-img" src="https://exemplo.test/cert.jpg" alt="Certificado Cadastur de Serra Viagens"', $tc, 'janela: imagem do certificado' );
+update_post_meta( 5, 'rtm_cadastur_validade', '' );
+update_post_meta( 5, 'rtm_cadastur_certificado', '' );
 
 // Card
 $card = rtm_card( $a );

@@ -142,6 +142,25 @@ img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 .rtm-card[aria-pressed="true"] .rtm-selo{background:var(--rtm-brand);border-color:var(--rtm-brand);color:var(--rtm-brand-ink)}
 .rtm-corpo{display:flex;flex-direction:column;gap:8px;padding:16px 50px 16px 20px;min-width:0}
 .rtm-corpo .rtm-cadastur{font-size:11.5px;padding:3px 9px 3px 5px}
+
+/* Selo Cadastur clicável e janela do certificado */
+.rtm-dados button.rtm-cad-abrir{border:0;cursor:pointer;font-family:inherit;line-height:1.3;text-transform:none;letter-spacing:normal;box-shadow:none;margin:0}
+.rtm-dados button.rtm-cad-abrir:hover,.rtm-dados button.rtm-cad-abrir:focus{background:var(--rtm-ok-soft);color:var(--rtm-ink);filter:brightness(.96)}
+.rtm-dados button.rtm-cad-abrir:focus-visible{outline:2px solid var(--rtm-ok);outline-offset:2px}
+.rtm-dados button.rtm-cad-abrir span.rtm-cad-ver{font-weight:600;text-decoration:underline;text-underline-offset:2px;margin-left:4px;color:var(--rtm-muted)}
+dialog.rtm-cad-dialogo{border:0;border-radius:18px;padding:0;max-width:min(720px,calc(100vw - 32px));width:100%;max-height:calc(100vh - 32px);background:var(--rtm-surface);color:var(--rtm-ink);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog.rtm-cad-dialogo::backdrop{background:rgba(20,16,12,.6)}
+.rtm-cad-caixa{position:relative;padding:clamp(18px,3vw,28px)}
+.rtm-cad-caixa h2#rtm-cad-titulo{font-family:var(--rtm-font-display);font-size:22px;margin:0 36px 4px 0;line-height:1.2;color:var(--rtm-ink)}
+.rtm-cad-caixa p.rtm-cad-intro{margin:0 0 16px;font-size:14px;color:var(--rtm-muted)}
+.rtm-cad-caixa button.rtm-cad-fechar{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:1px solid var(--rtm-line);background:var(--rtm-surface);color:var(--rtm-ink);font-size:22px;line-height:1;padding:0;cursor:pointer;box-shadow:none}
+.rtm-cad-caixa button.rtm-cad-fechar:hover,.rtm-cad-caixa button.rtm-cad-fechar:focus{background:var(--rtm-bg);color:var(--rtm-ink)}
+.rtm-cad-caixa img.rtm-cad-img{display:block;width:100%;height:auto;border-radius:12px;margin:0 0 16px}
+.rtm-cad-caixa dl.rtm-cad-dados{display:grid;gap:10px;margin:0 0 16px}
+.rtm-cad-dados div{padding:10px 14px;border-radius:12px;background:var(--rtm-bg)}
+.rtm-cad-dados dt{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--rtm-muted);margin:0}
+.rtm-cad-dados dd{margin:2px 0 0;font-weight:700;font-size:15px}
+.rtm-cad-caixa a.rtm-cad-link{font-weight:700;color:var(--rtm-ink);text-underline-offset:3px}
 .rtm-corpo .rtm-cadastur i{width:15px;height:15px;font-size:9px}
 .rtm-corpo h3.rtm-card-nome{font-family:var(--rtm-font-display);font-size:24px;font-weight:700;line-height:1.1;margin:0;color:var(--rtm-ink);overflow-wrap:anywhere}
 .rtm-corpo .rtm-chips{gap:6px}

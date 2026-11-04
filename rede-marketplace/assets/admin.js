@@ -2,14 +2,15 @@
 ( function ( $ ) {
 	'use strict';
 
-	// Logo da agência (guarda o id do anexo).
-	var quadro;
+	// Imagens (logo da agência, certificado Cadastur): guarda o id do anexo. Um quadro de mídia por campo.
 	$( document ).on( 'click', '.rtm-logo-escolher', function ( e ) {
 		e.preventDefault();
 		var $box = $( this ).closest( '.rtm-logo' );
 		if ( ! window.wp || ! wp.media ) { return; }
+		var quadro = $box.data( 'rtmQuadro' );
 		if ( ! quadro ) {
-			quadro = wp.media( { title: 'Logo da agência', button: { text: 'Usar este logo' }, library: { type: 'image' }, multiple: false } );
+			quadro = wp.media( { title: $box.data( 'titulo' ) || 'Imagem', button: { text: $box.data( 'botao' ) || 'Usar esta imagem' }, library: { type: 'image' }, multiple: false } );
+			$box.data( 'rtmQuadro', quadro );
 		}
 		quadro.off( 'select' ).on( 'select', function () {
 			var a   = quadro.state().get( 'selection' ).first().toJSON();

@@ -204,7 +204,18 @@ function rtm_caixa( $post ) {
 
 	// Agente
 	echo '<h3>Agente</h3><p class="description">A foto do agente é a imagem destacada (caixa à direita).</p>';
-	foreach ( array( 'cargo', 'texto_card', 'apresentacao', 'cadastur', 'anos_experiencia', 'viajantes_atendidos', 'idiomas', 'foto_url_teste' ) as $c ) {
+	foreach ( array( 'cargo', 'texto_card', 'apresentacao', 'cadastur', 'cadastur_validade' ) as $c ) {
+		rtm_campo( $c, $v[ $c ] );
+	}
+	$cert_id  = is_numeric( $v['cadastur_certificado'] ) ? (int) $v['cadastur_certificado'] : 0;
+	$cert_url = $cert_id ? wp_get_attachment_image_url( $cert_id, 'medium' ) : '';
+	echo '<div class="rtm-linha rtm-logo" data-titulo="Certificado Cadastur" data-botao="Usar esta imagem"><strong>' . esc_html( $campos['cadastur_certificado']['rotulo'] ) . '</strong><br>'
+		. '<input type="hidden" id="rtm_cadastur_certificado" name="rtm[cadastur_certificado]" value="' . esc_attr( $cert_id ? (string) $cert_id : '' ) . '">'
+		. '<span class="rtm-logo-previa">' . ( $cert_url ? '<img src="' . esc_url( $cert_url ) . '" alt="" style="max-width:120px;max-height:80px;">' : '' ) . '</span><br>'
+		. '<button type="button" class="button rtm-logo-escolher">Escolher imagem</button> '
+		. '<button type="button" class="button-link rtm-logo-remover"' . ( $cert_id ? '' : ' hidden' ) . '>Remover</button>'
+		. '<br><span class="description">Print ou PDF convertido em imagem do certificado emitido no site do Cadastur. Aparece ao clicar no selo "Cadastur verificado".</span></div>';
+	foreach ( array( 'anos_experiencia', 'viajantes_atendidos', 'idiomas', 'foto_url_teste' ) as $c ) {
 		rtm_campo( $c, $v[ $c ] );
 	}
 
@@ -213,7 +224,7 @@ function rtm_caixa( $post ) {
 	rtm_campo( 'agencia_nome', $v['agencia_nome'] );
 	$logo_id  = is_numeric( $v['agencia_logo'] ) ? (int) $v['agencia_logo'] : 0;
 	$logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'thumbnail' ) : '';
-	echo '<div class="rtm-linha rtm-logo"><strong>' . esc_html( $campos['agencia_logo']['rotulo'] ) . '</strong><br>'
+	echo '<div class="rtm-linha rtm-logo" data-titulo="Logo da agência" data-botao="Usar este logo"><strong>' . esc_html( $campos['agencia_logo']['rotulo'] ) . '</strong><br>'
 		. '<input type="hidden" id="rtm_agencia_logo" name="rtm[agencia_logo]" value="' . esc_attr( $logo_id ? (string) $logo_id : '' ) . '">'
 		. '<span class="rtm-logo-previa">' . ( $logo_url ? '<img src="' . esc_url( $logo_url ) . '" alt="" style="max-width:120px;max-height:80px;">' : '' ) . '</span><br>'
 		. '<button type="button" class="button rtm-logo-escolher">Escolher logo</button> '

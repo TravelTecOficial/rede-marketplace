@@ -48,6 +48,8 @@ function rtm_campos() {
 		'texto_card'            => $c( 'Texto do cartão', 'textarea', true, 180 ),
 		'apresentacao'          => $c( 'Apresentação', 'textarea' ),
 		'cadastur'              => $c( 'Cadastur (número)', 'texto' ),
+		'cadastur_validade'     => $c( 'Cadastur válido até', 'data' ),
+		'cadastur_certificado'  => $c( 'Certificado Cadastur (imagem)', 'imagem' ),
 		'anos_experiencia'      => $c( 'Anos de experiência', 'numero' ),
 		'viajantes_atendidos'   => $c( 'Viajantes atendidos', 'numero' ),
 		'idiomas'               => $c( 'Idiomas', 'lista' ),
@@ -180,6 +182,8 @@ function rtm_agente( $post_id ) {
 		$foto = (string) $a['foto_url_teste'];
 	}
 	$logo = $a['agencia_logo'] ? wp_get_attachment_image_url( (int) $a['agencia_logo'], 'medium' ) : '';
+	$cert = $a['cadastur_certificado'] ? wp_get_attachment_image_url( (int) $a['cadastur_certificado'], 'large' ) : '';
+	$a['certificado']         = $cert ? $cert : '';
 
 	$a['id']                  = $post_id;
 	$a['slug']                = $post->post_name;
