@@ -380,3 +380,5 @@ dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bot
 /* Bloco do Elementor que recebe o carrossel: sem o espaçamento padrão do contêiner */
 .elementor .e-con.rtm-c-carrossel{--padding-top:0px;--padding-right:0px;--padding-bottom:0px;--padding-left:0px;--gap:0px;padding:0}
 .elementor .e-con.rtm-c-carrossel > .elementor-widget{margin:0;width:100%}
+.rtm-cotacao .rtm-sugestao-aviso[hidden]{display:none}
+

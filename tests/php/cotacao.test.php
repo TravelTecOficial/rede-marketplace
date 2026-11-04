@@ -137,4 +137,5 @@ ok( ! isset( $dados['de-inativa'] ), 'JSON sem sugestão de agente inativo' );
 preg_match( '/<div [^>]*id="rtm-sugestao-aviso"[^>]*>/', $hs, $av );
 contem( 'hidden', isset( $av[0] ) ? $av[0] : '', 'aviso da sugestão começa escondido' );
 contem( 'id="rtm-sugestao-tirar"', $hs, 'botão de tirar a sugestão' );
+contem( '.rtm-cotacao .rtm-sugestao-aviso[hidden]{display:none}', file_get_contents( '/p/assets/rede-marketplace.css' ), 'aviso da sugestão escondido de verdade (o display:flex não passa por cima)' );
 

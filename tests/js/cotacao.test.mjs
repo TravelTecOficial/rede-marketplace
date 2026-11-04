@@ -16,7 +16,7 @@ function html(destinos) {
 <form id="rtm-cotacao" novalidate>
 <input type="text" id="rtm-destino" list="rtm-destinos-lista"><datalist id="rtm-destinos-lista">${opts}</datalist>
 <div id="rtm-tipos"><button type="button" class="rtm-pilula" data-tipo="Família" aria-pressed="false">Família</button><button type="button" class="rtm-pilula" data-tipo="Casal / Lua de mel" aria-pressed="false">Casal / Lua de mel</button><button type="button" class="rtm-pilula" data-tipo="Aventura" aria-pressed="false">Aventura</button></div>
-<div id="rtm-lista">${card('mariana-kloss', 'gramado', 'Família|Natal Luz')}${card('rafael-antunes', 'gramado', 'Casal / Lua de mel|Luxo')}${card('camila-duarte', 'gramado canela', 'Grupo|Natal Luz')}${card('bruno-seibel', 'gramado', 'Família')}</div>
+<section class="rtm-etapa" data-etapa="2"><p class="rtm-etapa-dica">Marque de 1 a 3.</p></section><div id="rtm-lista">${card('mariana-kloss', 'gramado', 'Família|Natal Luz')}${card('rafael-antunes', 'gramado', 'Casal / Lua de mel|Luxo')}${card('camila-duarte', 'gramado canela', 'Grupo|Natal Luz')}${card('bruno-seibel', 'gramado', 'Família')}</div>
 <div id="rtm-vazio" hidden>Nenhum</div>
 <label for="rtm-rede"><input type="checkbox" id="rtm-rede"></label>
 <div id="rtm-datas"><button type="button" class="rtm-pilula" data-v="certas" aria-pressed="true"></button><button type="button" class="rtm-pilula" data-v="mes" aria-pressed="false"></button><button type="button" class="rtm-pilula" data-v="aberto" aria-pressed="false"></button></div>
@@ -95,7 +95,7 @@ test('título recebe o destino e acompanha a troca', () => {
 
 test('?agente inexistente ou oculto não marca nada nem lança erro', () => {
   assert.deepEqual(P(montar('?agente=nao-existe').RTMCotacao.estado().agentes), []);
-  assert.deepEqual(P(montar('?destino=canela&agente=mariana-kloss').RTMCotacao.estado().agentes), []);
+  assert.deepEqual(P(montar('?destino=canela&agente=mariana-kloss').RTMCotacao.estado().agentes), ['mariana-kloss'], 'vindo do perfil: o agente vale mesmo fora do destino digitado');
 });
 
 test('sem tipo mostra todos do destino; tipo filtra e desmarca ocultos', () => {
@@ -275,5 +275,25 @@ test('?sugestao= com outro &agente: vale o dono da sugestão', () => {
   const d = w.document;
   assert.equal(d.querySelector('[data-slug="mariana-kloss"]').getAttribute('aria-pressed'), 'true');
   assert.equal(d.querySelector('[data-slug="camila-duarte"]').getAttribute('aria-pressed'), 'false');
+});
+
+test('vindo do perfil (?agente=): só esse agente, sem "a Rede escolhe", título com o nome', () => {
+  const w = montar('?destino=gramado&agente=mariana-kloss');
+  const d = w.document;
+  assert.deepEqual(P(visiveis(w)), ['mariana-kloss']);
+  assert.equal(cardDe(w, 'mariana-kloss').getAttribute('aria-pressed'), 'true');
+  assert.equal(d.getElementById('rtm-rede').closest('label').hidden, true);
+  assert.match(d.querySelector('h1').textContent, /Receba sua cotação de mariana-kloss|Receba sua cotação de/);
+  clicar(cardDe(w, 'mariana-kloss'));
+  assert.equal(cardDe(w, 'mariana-kloss').getAttribute('aria-pressed'), 'true', 'não dá para desmarcar o único agente');
+  assert.equal(d.querySelector('.rtm-etapa-dica').textContent, 'mariana-kloss vai preparar a sua cotação.');
+  d.querySelector('[data-tipo="Casal / Lua de mel"]').click();
+  assert.deepEqual(P(visiveis(w)), ['mariana-kloss'], 'tipo de viagem não esconde o agente escolhido');
+});
+
+test('?agente= que não existe: cotação normal com todos', () => {
+  const w = montar('?agente=nao-existe');
+  assert.equal(visiveis(w).length, 4);
+  assert.equal(w.document.getElementById('rtm-rede').closest('label').hidden, false);
 });
 

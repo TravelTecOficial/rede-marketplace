@@ -46,8 +46,11 @@
   function marcado(c) { return c.getAttribute('aria-pressed') === 'true'; }
   function marcar(c, v) { c.setAttribute('aria-pressed', v ? 'true' : 'false'); }
   function selecionados() { return cards.filter(function (c) { return marcado(c) && !c.hidden; }); }
+  // Vindo do perfil do agente ou de uma sugestão (?agente=): a cotação é só desse agente.
+  var unico = null;
 
   function visivel(c) {
+    if (unico) { return c === unico; }
     if (destinoTexto()) {
       var dest = (c.getAttribute('data-destinos') || '').split(/\s+/);
       if (dest.indexOf(destinoAtual()) === -1) { return false; } // em branco: todos os especialistas
@@ -74,7 +77,7 @@
   }
 
   function atualizarTitulo() {
-    if (!tituloDestino) { return; }
+    if (!tituloDestino || unico) { return; }
     var o = acharDestino(destinoTexto());
     tituloDestino.textContent = o ? ' em ' + o.nome : ' nos melhores destinos';
   }
@@ -97,7 +100,7 @@
   }
 
   function alternar(c) {
-    if (c.hidden) { return; }
+    if (c.hidden || c === unico) { return; }
     if (marcado(c)) {
       marcar(c, false);
     } else {
@@ -257,9 +260,26 @@
   var ag = sug ? sug.agente : (params ? params.get('agente') : ''); // com sugestão válida, vale o dono dela
   if (ag) {
     cards.forEach(function (c) {
-      if (c.getAttribute('data-slug') === ag && !c.hidden) { marcar(c, true); }
+      if (c.getAttribute('data-slug') === ag) { unico = c; }
     });
-    atualizarContagem();
+    if (unico) {
+      var nomeEl = unico.querySelector('.rtm-card-nome') || unico.querySelector('h3');
+      var nomeAg = nomeEl ? nomeEl.textContent.trim() : '';
+      var h = d.querySelector('.rtm-titulo') || (tituloDestino && tituloDestino.parentNode);
+      if (h) { h.textContent = 'Receba sua cotação de ' + nomeAg; }
+      var dica = d.querySelector('.rtm-etapa[data-etapa="2"] .rtm-etapa-dica');
+      if (dica) { dica.textContent = nomeAg + ' vai preparar a sua cotação.'; }
+      var raizC = d.querySelector('.rtm-cotacao');
+      if (raizC) { raizC.classList.add('rtm-cotacao-um'); }
+      if (rede) {
+        rede.checked = false;
+        var rotRede = rede.closest('label');
+        if (rotRede) { rotRede.hidden = true; }
+      }
+      filtrar();
+      marcar(unico, true);
+      atualizarContagem();
+    }
   }
 
   window.RTMCotacao = { estado: estado, validar: validar };

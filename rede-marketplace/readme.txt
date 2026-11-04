@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.12.2 (04/11/2026): cotação vinda do perfil ou de uma sugestão é só daquele agente (sem os outros e sem "a Rede escolhe"); faixa amarela vazia da sugestão escondida.
 0.12.1 (04/11/2026): bloco do carrossel na home sem faixa em branco para o visitante (ensaio) e sem espaçamento do Elementor.
 0.12.0 (04/11/2026): [rt_especialistas] — carrossel "Conheça nossos especialistas" para a home (passa sozinho, setas, pausa); no ensaio só quem edita o site vê.
 0.11.2 (04/11/2026): mapa de Onde atende mais alto.
