@@ -115,6 +115,30 @@ img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 
 /* Cartão lateral de cotação */
 .rtm-lateral{position:sticky;top:16px}
+/* Coluna lateral com sugestões (no alto) e cotação (embaixo): rola com a página. */
+.rtm-col-lateral{display:flex;flex-direction:column;gap:18px;min-width:0}
+.rtm-col-lateral .rtm-lateral{position:static}
+.rtm-sugestoes{display:flex;flex-direction:column;gap:12px;font-family:var(--rtm-font-body);color:var(--rtm-ink)}
+.rtm-sugestoes .rtm-sugs-cab{display:flex;flex-direction:column;gap:2px}
+.rtm-sugestoes h2.rtm-sugs-titulo{font-family:var(--rtm-font-display);font-size:20px;line-height:1.2;margin:0;color:var(--rtm-ink)}
+.rtm-sugestoes-celular.rtm-bloco h2.rtm-sugs-titulo{font-size:23px}
+.rtm-sugestoes p.rtm-sugs-sub{margin:0;font-size:13px;color:var(--rtm-muted)}
+.rtm-sugestoes .rtm-sugs-lista{display:flex;flex-direction:column;gap:12px}
+.rtm-sugs-lista a.rtm-sug,.rtm-outras a.rtm-sug{display:block;text-decoration:none;color:var(--rtm-ink);border:1px solid var(--rtm-line);border-radius:14px;overflow:hidden;background:var(--rtm-surface);transition:border-color .15s,transform .15s}
+.rtm-sugs-lista a.rtm-sug:hover,.rtm-outras a.rtm-sug:hover,.rtm-sugs-lista a.rtm-sug:focus,.rtm-outras a.rtm-sug:focus{border-color:var(--rtm-brand);color:var(--rtm-ink);transform:translateY(-1px)}
+.rtm-sugs-lista a.rtm-sug:focus-visible,.rtm-outras a.rtm-sug:focus-visible{outline:3px solid var(--rtm-brand);outline-offset:3px}
+.rtm-sug span.rtm-sug-img{display:block;position:relative;aspect-ratio:16/9;max-width:100%;background:var(--rtm-bg)}
+.rtm-sug span.rtm-sug-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.rtm-sug span.rtm-sug-tag{position:absolute;left:10px;top:10px;background:var(--rtm-surface);color:var(--rtm-ink);font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px}
+.rtm-sug span.rtm-sug-tag.rtm-sug-tag-solta{position:static;align-self:flex-start;background:var(--rtm-chip);border:1px solid var(--rtm-line)}
+.rtm-sug span.rtm-sug-corpo{display:flex;flex-direction:column;gap:4px;padding:12px 14px 14px}
+.rtm-sug b.rtm-sug-titulo{font-size:15px;line-height:1.3}
+.rtm-sug span.rtm-sug-texto{font-size:13px;color:var(--rtm-muted);line-height:1.45}
+.rtm-sug span.rtm-sug-preco{font-size:12.5px;color:var(--rtm-muted);margin-top:4px}
+.rtm-sug span.rtm-sug-preco strong{color:var(--rtm-ink);font-size:14px}
+.rtm-sug span.rtm-sug-ver{font-size:13px;font-weight:800;margin-top:6px;text-decoration:underline;text-underline-offset:3px}
+.rtm-principal .rtm-sugestoes-celular{display:none}
+@media (prefers-reduced-motion:reduce){.rtm-sugs-lista a.rtm-sug,.rtm-outras a.rtm-sug{transition:none}.rtm-sugs-lista a.rtm-sug:hover,.rtm-outras a.rtm-sug:hover{transform:none}}
 .e-con.rtm-c-lateral > .elementor-widget-shortcode{position:sticky;top:16px}
 /* Página do agente mais estreita (880px de conteúdo, como a cotação), mesmo no modelo já instalado (1072px). */
 body .elementor .e-con-boxed.rtm-c-trilha,body .elementor .e-con-boxed.rtm-c-grade{--content-width:880px}
@@ -129,6 +153,8 @@ body .elementor .e-con-boxed.rtm-c-trilha,body .elementor .e-con-boxed.rtm-c-gra
 @media (max-width:900px){
   .rtm-grade{grid-template-columns:1fr}
   .rtm-grade aside.rtm-lateral,.elementor .e-con.rtm-c-lateral{display:none}
+  .rtm-grade .rtm-col-lateral{display:none}
+  .rtm-principal .rtm-sugestoes-celular{display:flex}
   .elementor .e-con.rtm-c-principal{--width:100%}
 }
 

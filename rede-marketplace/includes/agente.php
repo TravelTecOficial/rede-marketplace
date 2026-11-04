@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function rtm_secoes() {
-	return array( 'trilha', 'topo', 'sobre', 'especialidades', 'avaliacoes', 'onde', 'cotacao', 'barra' );
+	return array( 'trilha', 'topo', 'sobre', 'especialidades', 'sugestoes', 'avaliacoes', 'onde', 'cotacao', 'barra' );
 }
 
 /** [rt_agente secao="topo"]: seção do agente do post atual; fora de rt_agente (ou agente inativo) → ''. */
@@ -24,6 +24,18 @@ function rtm_shortcode_agente( $atts ) {
 	return $agente ? rtm_secao( $secao, $agente ) : '';
 }
 add_shortcode( 'rt_agente', 'rtm_shortcode_agente' );
+
+/**
+ * Corpo da página do agente (modelo reserva): topo, coluna principal e lateral.
+ * Lateral: sugestões no alto e a cotação embaixo. No celular a lateral some e as sugestões vêm depois de Especialidades.
+ */
+function rtm_corpo_agente( array $agente ) {
+	$h = rtm_secao( 'trilha', $agente ) . rtm_secao( 'topo', $agente ) . '<div class="rtm-grade"><div class="rtm-principal">';
+	$h .= rtm_secao( 'sobre', $agente ) . rtm_secao( 'especialidades', $agente ) . rtm_html_sugestoes( $agente, 'celular' );
+	$h .= rtm_secao( 'avaliacoes', $agente ) . rtm_secao( 'onde', $agente ) . '</div>';
+	$h .= '<div class="rtm-col-lateral">' . rtm_html_sugestoes( $agente, 'lateral' ) . rtm_secao( 'cotacao', $agente ) . '</div></div>';
+	return $h;
+}
 
 /** Agente publicado mas inativo não tem página: responde 404. */
 function rtm_404_inativo() {

@@ -333,6 +333,9 @@ function rtm_secao( $secao, array $agente ) {
 			}
 			return '<section class="rtm-bloco rtm-onde"><h2>Onde atende</h2><div class="rtm-endereco">' . $itens . '</div></section>';
 
+		case 'sugestoes':
+			return rtm_html_sugestoes( $agente, 'lateral' );
+
 		case 'cotacao':
 			return '<aside class="rtm-lateral"><div class="rtm-bloco">'
 				. '<h3>' . esc_html( 'Peça uma cotação com ' . $nome ) . '</h3>'
