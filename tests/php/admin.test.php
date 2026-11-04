@@ -107,7 +107,6 @@ ok( ! array_key_exists( 'rtm_destinos_no_form', $GLOBALS['rt_meta'][50] ), 'marc
 
 // Caixa do agente: destino recriado no Cliente Ideal (id novo, mesmo slug) continua marcado
 function add_meta_box() {}
-function esc_textarea( $s ) { return esc_html( $s ); }
 function rtm_t_caixa( $id ) { ob_start(); rtm_caixa( get_post( $id ) ); return ob_get_clean(); }
 $GLOBALS['rt_meta'][51] = array( 'rtm_destinos' => array( array( 'id' => 99, 'slug' => 'canela' ), array( 'id' => 10, 'slug' => 'gramado' ) ), 'rtm_destino_principal' => 'canela' );
 $GLOBALS['rt_posts'][] = (object) array( 'ID' => 51, 'post_type' => 'rt_agente', 'post_status' => 'publish', 'post_title' => 'Bia', 'post_name' => 'bia' );
