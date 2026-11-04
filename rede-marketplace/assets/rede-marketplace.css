@@ -346,5 +346,5 @@ dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bot
 /* Onde atende na largura toda, fechando a página do agente */
 .rtm-largura-total{margin-top:4px}
 .rtm-largura-total .rtm-onde.rtm-bloco{margin-bottom:0}
-.rtm-largura-total .rtm-onde .rtm-mapa{aspect-ratio:21/7}
+.rtm-largura-total .rtm-onde .rtm-mapa{aspect-ratio:21/9}
 @media (max-width:620px){.rtm-largura-total .rtm-onde .rtm-mapa{aspect-ratio:4/3}}

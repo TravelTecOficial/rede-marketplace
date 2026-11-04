@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.11.2 (04/11/2026): mapa de Onde atende mais alto.
 0.11.1 (04/11/2026): Onde atende (mapa) na largura toda, abaixo das duas colunas.
 0.11.0 (04/11/2026): Google — chave nas configurações e Place ID no agente; nota, até 5 avaliações e link do Google buscados no navegador; mapa (Maps Embed) e "Como chegar" em Onde atende. Sem chave ou sem Place ID, nada muda.
 0.10.0 (04/11/2026): sugestões de viagem do agente — cadastro (Agentes › Sugestões), cartões na lateral do perfil, página /especialistas/<agente>/<sugestao>/ com galeria, cotação com a sugestão marcada; 9 sugestões de exemplo nos agentes de teste.

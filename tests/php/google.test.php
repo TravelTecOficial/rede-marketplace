@@ -67,4 +67,4 @@ contem( 'name="rtm_opcoes[google_chave]"', $tela, 'campo da chave nas configuraÃ
 $corpo = rtm_corpo_agente( rtm_agente( 5 ) );
 ok( strpos( $corpo, 'rtm-onde' ) > strpos( $corpo, 'rtm-col-lateral' ), 'Onde atende vem depois da lateral' );
 contem( '<div class="rtm-largura-total">', $corpo, 'Onde atende fora das colunas' );
-
+contem( '.rtm-largura-total .rtm-onde .rtm-mapa{aspect-ratio:21/9}', file_get_contents( '/p/assets/rede-marketplace.css' ), 'mapa mais alto na largura toda' );
