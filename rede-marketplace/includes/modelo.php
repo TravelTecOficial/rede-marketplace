@@ -293,6 +293,7 @@ function rtm_purgar_cache( $post_id ) {
 	foreach ( rtm_urls_sugestoes_do_agente( $post_id ) as $u ) {
 		do_action( 'litespeed_purge_url', $u );
 	}
+	do_action( 'litespeed_purge_url', home_url( '/' ) ); // carrossel de especialistas da home
 	rtm_purgar_cotacao();
 }
 

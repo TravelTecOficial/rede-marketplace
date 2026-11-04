@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.12.0 (04/11/2026): [rt_especialistas] — carrossel "Conheça nossos especialistas" para a home (passa sozinho, setas, pausa); no ensaio só quem edita o site vê.
 0.11.2 (04/11/2026): mapa de Onde atende mais alto.
 0.11.1 (04/11/2026): Onde atende (mapa) na largura toda, abaixo das duas colunas.
 0.11.0 (04/11/2026): Google — chave nas configurações e Place ID no agente; nota, até 5 avaliações e link do Google buscados no navegador; mapa (Maps Embed) e "Como chegar" em Onde atende. Sem chave ou sem Place ID, nada muda.
