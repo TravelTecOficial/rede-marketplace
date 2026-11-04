@@ -74,3 +74,9 @@ function rtm_template_reserva( $template ) {
 	return RTM_DIR . 'templates/agente.php';
 }
 add_filter( 'template_include', 'rtm_template_reserva', 20 );
+
+/** A página da sugestão sempre usa o modelo do plugin (templates/sugestao.php). */
+function rtm_template_sugestao( $template ) {
+	return is_singular( 'rt_sugestao' ) ? RTM_DIR . 'templates/sugestao.php' : $template;
+}
+add_filter( 'template_include', 'rtm_template_sugestao', 20 );

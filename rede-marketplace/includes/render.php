@@ -391,5 +391,9 @@ function rtm_estilos() {
 	if ( is_singular( 'rt_agente' ) ) {
 		wp_enqueue_script( 'rtm-agente', RTM_URL . 'assets/agente.js', array(), RTM_VERSION, true );
 	}
+	if ( is_singular( 'rt_sugestao' ) ) {
+		rtm_enfileirar_estilo();
+		wp_enqueue_script( 'rtm-sugestao', RTM_URL . 'assets/sugestao.js', array(), RTM_VERSION, true );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'rtm_estilos' );
