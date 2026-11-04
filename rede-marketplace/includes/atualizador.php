@@ -28,8 +28,13 @@ function rtm_token() {
 	return defined( 'RTM_GITHUB_TOKEN' ) && RTM_GITHUB_TOKEN ? RTM_GITHUB_TOKEN : '';
 }
 
+/** Guarda o resultado da última consulta ao GitHub (aparece em Configurações › Rede Marketplace). */
+function rtm_registrar_consulta( $fonte, $detalhe, $versao ) {
+	update_option( 'rtm_atualizacao', array( 'quando' => time(), 'fonte' => $fonte, 'detalhe' => (string) $detalhe, 'versao' => (string) $versao ), false );
+}
+
 /**
- * Última release publicada, em cache por 6 horas.
+ * Última release publicada, em cache por 1 hora.
  * Devolve array vazio quando não dá para consultar (sem internet, limite do GitHub, repo privado sem token).
  */
 function rtm_release( $forcar = false ) {
@@ -56,9 +61,11 @@ function rtm_release( $forcar = false ) {
 	// A API falhou — em hospedagem compartilhada é quase sempre o limite de 60 consultas/hora por IP, dividido
 	// com os outros sites do servidor. Repositório público: descobre a versão pela página (sem limite).
 	if ( is_wp_error( $resposta ) || 200 !== (int) wp_remote_retrieve_response_code( $resposta ) ) {
+		$motivo  = is_wp_error( $resposta ) ? $resposta->get_error_message() : 'HTTP ' . (int) wp_remote_retrieve_response_code( $resposta );
 		$release = rtm_token() ? array() : rtm_release_pela_pagina();
-		// Sem resposta: guarda vazio por 1h para não bater no GitHub a cada tela do painel.
-		set_site_transient( RTM_CACHE, $release, $release ? 6 * HOUR_IN_SECONDS : HOUR_IN_SECONDS );
+		rtm_registrar_consulta( $release ? 'pagina' : 'falha', 'API: ' . $motivo, $release ? $release['versao'] : '' );
+		// Sem resposta: guarda vazio por 15 min para não bater no GitHub a cada tela do painel.
+		set_site_transient( RTM_CACHE, $release, $release ? HOUR_IN_SECONDS : 15 * MINUTE_IN_SECONDS );
 		return $release;
 	}
 
@@ -72,7 +79,8 @@ function rtm_release( $forcar = false ) {
 		}
 	}
 	if ( empty( $dados['tag_name'] ) || ! $zip ) {
-		set_site_transient( RTM_CACHE, array(), HOUR_IN_SECONDS );
+		rtm_registrar_consulta( 'falha', 'Release sem o anexo ' . RTM_ANEXO, '' );
+		set_site_transient( RTM_CACHE, array(), 15 * MINUTE_IN_SECONDS );
 		return array();
 	}
 
@@ -82,7 +90,8 @@ function rtm_release( $forcar = false ) {
 		'notas'  => isset( $dados['body'] ) ? (string) $dados['body'] : '',
 		'data'   => isset( $dados['published_at'] ) ? (string) $dados['published_at'] : '',
 	);
-	set_site_transient( RTM_CACHE, $release, 6 * HOUR_IN_SECONDS );
+	rtm_registrar_consulta( 'api', 'OK', $release['versao'] );
+	set_site_transient( RTM_CACHE, $release, HOUR_IN_SECONDS );
 	return $release;
 }
 
@@ -168,7 +177,7 @@ function rtm_ficha( $release ) {
 	);
 }
 
-/** Painel › Atualizações › "Verificar novamente" (force-check=1) ignora o cache de 6 h. */
+/** Painel › Atualizações › "Verificar novamente" (force-check=1) ignora o cache de 1 h. */
 function rtm_forcar_consulta( $get ) {
 	return ! empty( $get['force-check'] );
 }
@@ -213,6 +222,73 @@ add_filter( 'plugins_api', function ( $resultado, $acao, $args ) {
 	);
 	return $ficha;
 }, 10, 3 );
+
+/**
+ * Atualização automática: o próprio WordPress instala a versão nova (rotina de atualizações, ~2 vezes por dia),
+ * sem ninguém clicar. Vale só para este plugin.
+ */
+function rtm_auto_atualizar( $atualizar, $item ) {
+	if ( is_object( $item ) && isset( $item->plugin ) && RTM_BASENAME === $item->plugin ) {
+		return true;
+	}
+	return $atualizar;
+}
+add_filter( 'auto_update_plugin', 'rtm_auto_atualizar', 10, 2 );
+
+/** Esquece o cache e pergunta de novo ao GitHub e ao WordPress agora. */
+function rtm_procurar_agora() {
+	delete_site_transient( RTM_CACHE );
+	delete_site_transient( 'update_plugins' );
+	if ( function_exists( 'wp_update_plugins' ) ) {
+		wp_update_plugins();
+	}
+	return rtm_release();
+}
+
+/** Botão "Procurar atualização agora" (admin-post.php, nonce + update_plugins). */
+function rtm_acao_procurar() {
+	if ( ! current_user_can( 'update_plugins' ) ) {
+		wp_die( 'Sem permissão.' );
+	}
+	check_admin_referer( 'rtm_procurar_atualizacao' );
+	rtm_procurar_agora();
+	wp_safe_redirect( admin_url( 'options-general.php?page=rede-marketplace&rtm_procurou=1' ) );
+	exit;
+}
+add_action( 'admin_post_rtm_procurar_atualizacao', 'rtm_acao_procurar' );
+
+/** Quadro "Atualizações" na tela de configurações. */
+function rtm_quadro_atualizacao() {
+	if ( ! current_user_can( 'update_plugins' ) ) {
+		return;
+	}
+	$u      = get_option( 'rtm_atualizacao', array() );
+	$u      = is_array( $u ) ? $u : array();
+	$ultima = isset( $u['versao'] ) ? (string) $u['versao'] : '';
+	echo '<hr><h2>Atualizações</h2>';
+	if ( ! empty( $_GET['rtm_procurou'] ) ) {
+		echo '<div class="notice notice-info"><p>Consulta ao GitHub feita agora.</p></div>';
+	}
+	echo '<p>Versão instalada: <strong>' . esc_html( RTM_VERSION ) . '</strong>';
+	if ( '' !== $ultima ) {
+		echo ' · Última no GitHub: <strong>' . esc_html( $ultima ) . '</strong>';
+	}
+	echo '</p>';
+	if ( ! empty( $u['quando'] ) ) {
+		$fontes = array( 'api' => 'API do GitHub', 'pagina' => 'página do GitHub (API indisponível)', 'falha' => 'não foi possível consultar' );
+		$fonte  = isset( $fontes[ $u['fonte'] ] ) ? $fontes[ $u['fonte'] ] : '';
+		echo '<p class="description">Última consulta: ' . esc_html( wp_date( 'd/m/Y H:i', (int) $u['quando'] ) ) . ' · ' . esc_html( $fonte ) . ( isset( $u['detalhe'] ) && 'OK' !== $u['detalhe'] ? ' · ' . esc_html( $u['detalhe'] ) : '' ) . '</p>';
+	}
+	if ( '' !== $ultima && version_compare( $ultima, RTM_VERSION, '>' ) ) {
+		echo '<p>Há versão nova. O WordPress instala sozinho em algumas horas, ou agora em <a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">Painel › Atualizações</a>.</p>';
+	} else {
+		echo '<p class="description">As versões novas são instaladas automaticamente pelo WordPress.</p>';
+	}
+	echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="rtm_procurar_atualizacao">';
+	wp_nonce_field( 'rtm_procurar_atualizacao', '_wpnonce', false );
+	echo '<button type="submit" class="button">Procurar atualização agora</button></form>';
+}
+add_action( 'rtm_configuracoes_extra', 'rtm_quadro_atualizacao', 5 );
 
 /** Depois de atualizar, esquece o cache para a tela já mostrar a versão certa. */
 add_action( 'upgrader_process_complete', function ( $upgrader, $extra ) {

@@ -1,6 +1,7 @@
 <?php
 // Base dos testes: constantes, stubs mínimos do WordPress e verificadores. Não vai no zip.
 define( 'ABSPATH', '/' );
+define( 'MINUTE_IN_SECONDS', 60 );
 define( 'HOUR_IN_SECONDS', 3600 );
 define( 'DAY_IN_SECONDS', 86400 );
 define( 'RTM_TESTE', true );
@@ -67,6 +68,7 @@ function sanitize_title( $s ) {
 	return trim( $s, '-' );
 }
 function home_url( $p = '' ) { return 'https://exemplo.test' . $p; }
+function wp_date( $f, $t = null ) { return date( $f, null === $t ? time() : $t ); }
 function admin_url( $p = '' ) { return 'https://exemplo.test/wp-admin/' . $p; }
 function get_bloginfo( $k ) { return 'Rede Turística'; }
 function wp_trim_words( $t, $n = 55, $mais = '…' ) {
