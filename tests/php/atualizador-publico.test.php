@@ -2,6 +2,12 @@
 require '/t/bootstrap.php';
 require '/p/rede-marketplace.php';
 
+// Consulta sem cache nas telas de atualização
+ok( rtm_forcar_consulta( array( 'force-check' => '1' ) ), 'force-check força' );
+ok( rtm_forcar_consulta( array(), 'update-core.php' ), 'Painel › Atualizações força' );
+ok( rtm_forcar_consulta( array(), 'plugins.php' ), 'tela Plugins força' );
+ok( ! rtm_forcar_consulta( array(), 'index.php' ), 'outras telas usam o cache' );
+
 // Atualização automática só para este plugin
 ok( true === rtm_auto_atualizar( false, (object) array( 'plugin' => RTM_BASENAME ) ), 'auto_update_plugin: liga para o Rede Marketplace' );
 ok( false === rtm_auto_atualizar( false, (object) array( 'plugin' => 'outro/outro.php' ) ), 'auto_update_plugin: não mexe nos outros plugins' );

@@ -177,9 +177,12 @@ function rtm_ficha( $release ) {
 	);
 }
 
-/** Painel › Atualizações › "Verificar novamente" (force-check=1) ignora o cache de 1 h. */
-function rtm_forcar_consulta( $get ) {
-	return ! empty( $get['force-check'] );
+/**
+ * Consulta o GitHub sem cache: "Verificar novamente" (force-check=1) e qualquer abertura das telas
+ * Painel › Atualizações e Plugins. Assim uma versão publicada há minutos já aparece ali.
+ */
+function rtm_forcar_consulta( $get, $pagina = '' ) {
+	return ! empty( $get['force-check'] ) || in_array( (string) $pagina, array( 'update-core.php', 'plugins.php' ), true );
 }
 
 /** É aqui que o WordPress descobre que existe versão nova. */
@@ -187,7 +190,7 @@ add_filter( 'pre_set_site_transient_update_plugins', function ( $transiente ) {
 	if ( ! is_object( $transiente ) ) {
 		return $transiente;
 	}
-	$release = rtm_release( rtm_forcar_consulta( $_GET ) ); // phpcs:ignore -- só lê a flag do próprio WordPress
+	$release = rtm_release( rtm_forcar_consulta( $_GET, isset( $GLOBALS['pagenow'] ) ? $GLOBALS['pagenow'] : '' ) ); // phpcs:ignore -- só lê a flag do próprio WordPress
 	if ( empty( $release['versao'] ) ) {
 		return $transiente;
 	}
