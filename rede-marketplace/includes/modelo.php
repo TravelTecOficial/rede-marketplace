@@ -23,6 +23,7 @@ function rtm_registrar() {
 		'show_in_rest' => false,
 		'rewrite'      => false,
 	) );
+	rtm_registrar_sugestao();
 }
 
 function rtm_tipos_iniciais() {
@@ -307,23 +308,24 @@ function rtm_purgar_depois_de_apagar( $post_id, $post = null ) {
 }
 
 /**
- * rt_agente não aparece em listagens do site (busca, feed, /?post_type=rt_agente): só a página de cada agente.
+ * rt_agente e rt_sugestao não aparecem em listagens do site (busca, feed, /?post_type=rt_agente): só a página de cada agente.
  * Com post_type=rt_agente sozinho a consulta fica sem resultado e deixa de ser "página inicial", e o WP responde 404.
  */
 function rtm_fora_das_listas( $q ) {
 	if ( is_admin() || ! $q->is_main_query() || $q->is_singular() ) {
 		return;
 	}
-	$tipo = $q->get( 'post_type' );
-	if ( is_array( $tipo ) && in_array( 'rt_agente', $tipo, true ) ) {
-		$resto = array_values( array_diff( $tipo, array( 'rt_agente' ) ) );
+	$ocultos = array( 'rt_agente', 'rt_sugestao' );
+	$tipo    = $q->get( 'post_type' );
+	if ( is_array( $tipo ) && array_intersect( $ocultos, $tipo ) ) {
+		$resto = array_values( array_diff( $tipo, $ocultos ) );
 		if ( $resto ) {
 			$q->set( 'post_type', $resto );
 			return;
 		}
 		$tipo = 'rt_agente';
 	}
-	if ( 'rt_agente' === $tipo ) {
+	if ( in_array( $tipo, $ocultos, true ) ) {
 		$q->set( 'post__in', array( 0 ) );
 		$q->is_home = false;
 	}

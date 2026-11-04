@@ -9,9 +9,9 @@ function rtm_ensaio() {
 	return (bool) rtm_opcoes()['ensaio'];
 }
 
-/** Página atual é do marketplace (agente ou página com [rt_cotacao)? */
+/** Página atual é do marketplace (agente, sugestão ou página com [rt_cotacao])? */
 function rtm_pagina_marketplace() {
-	return is_singular( 'rt_agente' ) || rtm_pagina_tem_cotacao();
+	return is_singular( array( 'rt_agente', 'rt_sugestao' ) ) || rtm_pagina_tem_cotacao();
 }
 
 function rtm_robots( $robots ) {
@@ -32,7 +32,7 @@ function rtm_robots_rank_math( $robots ) {
 
 function rtm_sitemaps_tipos( $tipos ) {
 	if ( rtm_ensaio() ) {
-		unset( $tipos['rt_agente'] );
+		unset( $tipos['rt_agente'], $tipos['rt_sugestao'] );
 	}
 	return $tipos;
 }
@@ -46,7 +46,7 @@ function rtm_sitemaps_args( $args, $tipo = '' ) {
 }
 
 function rtm_rank_math_excluir_tipo( $excluir, $tipo = '' ) {
-	return ( rtm_ensaio() && 'rt_agente' === $tipo ) ? true : $excluir;
+	return ( rtm_ensaio() && in_array( $tipo, array( 'rt_agente', 'rt_sugestao' ), true ) ) ? true : $excluir;
 }
 
 function rtm_rank_math_entrada( $url, $tipo = '', $objeto = null ) {

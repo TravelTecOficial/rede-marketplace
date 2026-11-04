@@ -109,6 +109,9 @@ function plugin_dir_url( $f ) { return 'https://exemplo.test/wp-content/plugins/
 function plugin_basename( $f ) { return 'rede-marketplace/rede-marketplace.php'; }
 
 // Tipos e taxonomias: só guardam a definição.
+function get_query_var( $k, $p = "" ) { return isset( $GLOBALS["rt_qv"][ $k ] ) ? $GLOBALS["rt_qv"][ $k ] : $p; }
+function add_rewrite_rule( $re, $destino, $pos = 'bottom' ) { $GLOBALS['rt_regras'][ $re ] = $destino; }
+function wp_list_pluck( $lista, $campo ) { $r = array(); foreach ( $lista as $i ) { $r[] = is_object( $i ) ? $i->$campo : $i[ $campo ]; } return $r; }
 function register_post_type( $tipo, $args = array() ) { $GLOBALS['rt_tipos'][ $tipo ] = $args; return true; }
 function register_taxonomy( $tax, $tipos, $args = array() ) { $GLOBALS['rt_taxonomias'][ $tax ] = array( 'tipos' => $tipos, 'args' => $args ); return true; }
 
