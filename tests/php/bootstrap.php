@@ -206,6 +206,8 @@ function shortcode_atts( $padrao, $atts, $tag = '' ) {
 	foreach ( $padrao as $k => $v ) { $res[ $k ] = array_key_exists( $k, $atts ) ? $atts[ $k ] : $v; }
 	return $res;
 }
+$GLOBALS['rt_inicio'] = false;
+function is_front_page() { return (bool) $GLOBALS['rt_inicio']; }
 function get_the_ID() { return (int) $GLOBALS['rt_atual']; }
 function get_queried_object_id() { return (int) $GLOBALS['rt_atual']; }
 function is_singular( $tipos = '' ) {

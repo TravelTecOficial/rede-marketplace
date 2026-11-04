@@ -40,3 +40,13 @@ contem( 'Visível só para você (modo ensaio)', rtm_carrossel_html(), 'ensaio: 
 // Sem agentes ativos: nada
 $GLOBALS['rt_meta'][5]['rtm_ativo'] = '0'; $GLOBALS['rt_meta'][6]['rtm_ativo'] = '0';
 igual( '', rtm_carrossel_html(), 'sem agentes: nada' );
+
+// Visitante no ensaio: o bloco do Elementor fica vazio e não pode deixar faixa em branco na home
+ok( in_array( 'rtm_carrossel_esconder_vazio', $GLOBALS['rt_ganchos']['wp_head'], true ), 'wp_head esconde o bloco vazio' );
+$GLOBALS['rt_inicio'] = true;
+ob_start(); rtm_carrossel_esconder_vazio(); $css = ob_get_clean();
+contem( '.e-con.rtm-c-carrossel:not(:has(.rtm-carrossel)){display:none}', $css, 'bloco sem carrossel some' );
+$GLOBALS['rt_inicio'] = false;
+ob_start(); rtm_carrossel_esconder_vazio(); igual( '', ob_get_clean(), 'fora da home: nada' );
+contem( '.elementor .e-con.rtm-c-carrossel{', file_get_contents( '/p/assets/rede-marketplace.css' ), 'bloco do carrossel sem espaçamento do Elementor' );
+

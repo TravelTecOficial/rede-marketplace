@@ -377,4 +377,6 @@ dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bot
 .rtm-carrossel a.rtm-car-cta:hover,.rtm-carrossel a.rtm-car-cta:focus{color:var(--rtm-brand-ink);filter:brightness(.95)}
 @media (max-width:620px){.rtm-carrossel .rtm-car-setas{display:none}.rtm-carrossel article.rtm-car-card{flex-basis:78%}}
 @media (prefers-reduced-motion:reduce){.rtm-carrossel .rtm-car-trilho{scroll-behavior:auto}}
-
+/* Bloco do Elementor que recebe o carrossel: sem o espaçamento padrão do contêiner */
+.elementor .e-con.rtm-c-carrossel{--padding-top:0px;--padding-right:0px;--padding-bottom:0px;--padding-left:0px;--gap:0px;padding:0}
+.elementor .e-con.rtm-c-carrossel > .elementor-widget{margin:0;width:100%}

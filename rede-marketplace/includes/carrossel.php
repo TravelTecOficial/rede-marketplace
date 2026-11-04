@@ -40,3 +40,14 @@ function rtm_carrossel_html() {
 	return $h . '</div></section>';
 }
 add_shortcode( 'rt_especialistas', 'rtm_carrossel_html' );
+
+/**
+ * Para o visitante no ensaio o shortcode volta vazio, mas o bloco do Elementor continua na página com o
+ * espaçamento dele (faixa em branco entre o banner e o buscador). Este CSS mínimo, só na home, esconde o bloco vazio.
+ */
+function rtm_carrossel_esconder_vazio() {
+	if ( is_front_page() ) {
+		echo '<style id="rtm-carrossel-vazio">.e-con.rtm-c-carrossel:not(:has(.rtm-carrossel)){display:none}</style>' . "\n";
+	}
+}
+add_action( 'wp_head', 'rtm_carrossel_esconder_vazio' );
