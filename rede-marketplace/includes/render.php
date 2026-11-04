@@ -215,12 +215,8 @@ function rtm_secao( $secao, array $agente ) {
 				. '</nav>';
 
 		case 'topo':
-			// Coluna da esquerda: foto e, abaixo dela, agência, redes e selo Cadastur. Direita: dados do agente.
-			$lado  = rtm_html_agencia( $agente, true );
-			$extra = rtm_html_redes( $agente ) . rtm_html_cadastur_selo( $agente );
-			if ( '' !== $extra ) {
-				$lado .= '<div class="rtm-extra">' . $extra . '</div>';
-			}
+			// Coluna da esquerda: foto e, abaixo dela, a agência. Direita: dados do agente, redes e selo Cadastur.
+			$lado = rtm_html_agencia( $agente, true );
 			$h  = '<section class="rtm-topo"><div class="rtm-lado">' . rtm_html_foto( $agente, 'rtm-foto' );
 			$h .= '' !== $lado ? '<div class="rtm-lado-info">' . $lado . '</div>' : '';
 			$h .= '</div><div class="rtm-dados">';
@@ -252,6 +248,10 @@ function rtm_secao( $secao, array $agente ) {
 				$h .= '<div class="rtm-numeros">' . $num . '</div>';
 			}
 			$h .= '<div class="rtm-acoes">' . $botao . ( '' !== $nota ? '<a class="rtm-btn-sec" href="#avaliacoes">Ver avaliações</a>' : '' ) . '</div>';
+			$extra = rtm_html_redes( $agente ) . rtm_html_cadastur_selo( $agente );
+			if ( '' !== $extra ) {
+				$h .= '<div class="rtm-extra">' . $extra . '</div>';
+			}
 			return $h . '</div></section>';
 
 		case 'sobre':

@@ -43,12 +43,11 @@ img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 .rtm-trilha{box-sizing:border-box;max-width:1040px;margin:0 auto 14px;font-family:var(--rtm-font-body);font-size:13px;line-height:1.4;color:var(--rtm-muted)}
 .rtm-trilha a.rtm-trilha-link,.rtm-trilha a.rtm-trilha-link:visited{color:inherit;text-decoration:none}
 .rtm-trilha a.rtm-trilha-link:hover,.rtm-trilha a.rtm-trilha-link:focus{color:var(--rtm-ink);text-decoration:underline}
-.rtm-topo{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);max-width:1040px;margin:0 auto;background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:22px;overflow:hidden}
+.rtm-topo{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr);max-width:1040px;margin:0 auto;background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:22px;overflow:hidden}
 .rtm-lado{display:flex;flex-direction:column;min-width:0;border-right:1px solid var(--rtm-line)}
-.rtm-foto{position:relative;flex:1 1 auto;min-height:260px}
-.rtm-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block}
+.rtm-foto{position:relative;flex:1 1 auto;min-height:330px}
+.rtm-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block}
 .rtm-lado-info{flex:0 0 auto;display:flex;flex-direction:column;gap:14px;padding:18px clamp(18px,2.6vw,26px);background:var(--rtm-surface);border-top:1px solid var(--rtm-line)}
-.rtm-lado-info .rtm-extra{margin-top:0}
 .rtm-dados{display:flex;flex-direction:column;gap:12px;padding:clamp(20px,3.4vw,36px);min-width:0}
 .rtm-dados h1.rtm-nome{font-family:var(--rtm-font-display);font-size:clamp(32px,5vw,46px);line-height:1.02;margin:0;color:var(--rtm-ink);text-wrap:balance;overflow-wrap:anywhere}
 .rtm-dados p.rtm-cargo{margin:0;color:var(--rtm-muted);font-size:15px}
@@ -153,7 +152,7 @@ img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 
 /* Selo Cadastur clicável e janela do certificado */
 /* O reset do Hello Elementor pinta todo [type=button] (cor #c36, fundo transparente, padding): repete o visual do selo aqui. */
-.rtm-dados button.rtm-cad-abrir.rtm-cadastur{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;background:var(--rtm-ok-soft);color:var(--rtm-ink);font-size:12.5px;font-weight:700;padding:4px 11px 4px 6px;border-radius:99px;border:0;cursor:pointer;font-family:inherit;line-height:1.3;text-align:left;text-transform:none;letter-spacing:normal;box-shadow:none;margin:0}
+.rtm-dados button.rtm-cad-abrir.rtm-cadastur{align-self:flex-start;max-width:100%;flex-wrap:wrap;display:inline-flex;align-items:center;gap:6px;background:var(--rtm-ok-soft);color:var(--rtm-ink);font-size:12.5px;font-weight:700;padding:4px 11px 4px 6px;border-radius:99px;border:0;cursor:pointer;font-family:inherit;line-height:1.3;text-align:left;text-transform:none;letter-spacing:normal;box-shadow:none;margin:0}
 .rtm-dados button.rtm-cad-abrir:hover,.rtm-dados button.rtm-cad-abrir:focus{background:var(--rtm-ok-soft);color:var(--rtm-ink);filter:brightness(.96)}
 .rtm-dados button.rtm-cad-abrir:focus-visible{outline:2px solid var(--rtm-ok);outline-offset:2px}
 .rtm-dados button.rtm-cad-abrir span.rtm-cad-ver{font-weight:600;text-decoration:underline;text-underline-offset:2px;margin-left:4px;color:var(--rtm-muted)}
