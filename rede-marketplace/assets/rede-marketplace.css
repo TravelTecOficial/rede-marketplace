@@ -343,4 +343,8 @@ dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bot
 .rtm-avaliacoes .rtm-av-cab b a{color:var(--rtm-ink);text-decoration:none}
 .rtm-avaliacoes .rtm-av-cab b a:hover,.rtm-avaliacoes .rtm-av-cab b a:focus{text-decoration:underline}
 .rtm-avaliacoes .rtm-av-cab img.rtm-av-foto{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none}
-
+/* Onde atende na largura toda, fechando a página do agente */
+.rtm-largura-total{margin-top:4px}
+.rtm-largura-total .rtm-onde.rtm-bloco{margin-bottom:0}
+.rtm-largura-total .rtm-onde .rtm-mapa{aspect-ratio:21/7}
+@media (max-width:620px){.rtm-largura-total .rtm-onde .rtm-mapa{aspect-ratio:4/3}}

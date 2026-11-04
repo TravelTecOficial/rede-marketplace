@@ -62,3 +62,9 @@ $GLOBALS['rt_atual'] = 0;
 // Tela de configurações: campo da chave
 ob_start(); rtm_tela_configuracoes(); $tela = ob_get_clean();
 contem( 'name="rtm_opcoes[google_chave]"', $tela, 'campo da chave nas configurações' );
+
+// Onde atende ocupa a largura toda, depois da grade de duas colunas
+$corpo = rtm_corpo_agente( rtm_agente( 5 ) );
+ok( strpos( $corpo, 'rtm-onde' ) > strpos( $corpo, 'rtm-col-lateral' ), 'Onde atende vem depois da lateral' );
+contem( '<div class="rtm-largura-total">', $corpo, 'Onde atende fora das colunas' );
+

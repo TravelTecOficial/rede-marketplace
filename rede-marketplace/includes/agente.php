@@ -28,12 +28,18 @@ add_shortcode( 'rt_agente', 'rtm_shortcode_agente' );
 /**
  * Corpo da página do agente (modelo reserva): topo, coluna principal e lateral.
  * Lateral: sugestões no alto e a cotação embaixo. No celular a lateral some e as sugestões vêm depois de Especialidades.
+ * Onde atende fica abaixo das duas colunas, na largura toda.
  */
 function rtm_corpo_agente( array $agente ) {
 	$h = rtm_secao( 'trilha', $agente ) . rtm_secao( 'topo', $agente ) . '<div class="rtm-grade"><div class="rtm-principal">';
 	$h .= rtm_secao( 'sobre', $agente ) . rtm_secao( 'especialidades', $agente ) . rtm_html_sugestoes( $agente, 'celular' );
-	$h .= rtm_secao( 'avaliacoes', $agente ) . rtm_secao( 'onde', $agente ) . '</div>';
+	$h .= rtm_secao( 'avaliacoes', $agente ) . '</div>';
 	$h .= '<div class="rtm-col-lateral">' . rtm_html_sugestoes( $agente, 'lateral' ) . rtm_secao( 'cotacao', $agente ) . '</div></div>';
+	// Onde atende (mapa) fecha a página na largura toda, abaixo das duas colunas.
+	$onde = rtm_secao( 'onde', $agente );
+	if ( '' !== $onde ) {
+		$h .= '<div class="rtm-largura-total">' . $onde . '</div>';
+	}
 	return $h;
 }
 
