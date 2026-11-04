@@ -20,6 +20,19 @@ test('selo abre e o X fecha a janela do Cadastur (sem showModal: atributo open)'
   assert.ok(!d.hasAttribute('open'));
 });
 
+test('selo oficial também abre e o foco volta para ele', () => {
+  const { window } = new JSDOM(html.replace('Cadastur</button>', 'Cadastur</button><button type="button" class="rtm-cad-selo rtm-cad-abrir">selo</button>'), { runScripts: 'outside-only' });
+  window.HTMLDialogElement.prototype.showModal = undefined;
+  window.HTMLDialogElement.prototype.close = undefined;
+  window.eval(codigo);
+  const d = window.document.getElementById('rtm-cad');
+  const selo = window.document.querySelector('.rtm-cad-selo');
+  selo.click();
+  assert.ok(d.hasAttribute('open'));
+  d.querySelector('.rtm-cad-fechar').click();
+  assert.equal(window.document.activeElement, selo);
+});
+
 test('sem selo na página: não faz nada', () => {
   const { window } = new JSDOM('<p>x</p>', { runScripts: 'outside-only' });
   assert.doesNotThrow(() => window.eval(codigo));

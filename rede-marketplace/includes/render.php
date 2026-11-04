@@ -156,6 +156,15 @@ function rtm_html_cadastur_janela( array $agente ) {
 	return $h . '</div></dialog>';
 }
 
+/** Selo oficial "Somos certificados Cadastur" (imagem enviada pelo dono), clicável: abre a mesma janela. */
+function rtm_html_cadastur_selo( array $agente ) {
+	if ( empty( $agente['cadastur_verificado'] ) ) {
+		return '';
+	}
+	return '<button type="button" class="rtm-cad-selo rtm-cad-abrir" aria-haspopup="dialog" aria-controls="rtm-cad">'
+		. '<img src="' . esc_url( RTM_URL . 'assets/cadastur-selo.png' ) . '" width="160" height="71" alt="Somos certificados Cadastur: ver o certificado" decoding="async"></button>';
+}
+
 function rtm_html_chips( array $itens ) {
 	$h = '';
 	foreach ( $itens as $t ) {
@@ -235,7 +244,10 @@ function rtm_secao( $secao, array $agente ) {
 				$h .= '<div class="rtm-numeros">' . $num . '</div>';
 			}
 			$h .= '<div class="rtm-acoes">' . $botao . ( '' !== $nota ? '<a class="rtm-btn-sec" href="#avaliacoes">Ver avaliações</a>' : '' ) . '</div>';
-			$h .= rtm_html_redes( $agente );
+			$extra = rtm_html_redes( $agente ) . rtm_html_cadastur_selo( $agente );
+			if ( '' !== $extra ) {
+				$h .= '<div class="rtm-extra">' . $extra . '</div>';
+			}
 			$h .= rtm_html_agencia( $agente, true );
 			return $h . '</div></section>';
 
