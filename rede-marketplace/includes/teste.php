@@ -130,6 +130,128 @@ function rtm_dados_agentes_teste() {
 	);
 }
 
+/**
+ * Sugestões de exemplo por agente de teste (slug do agente => lista). Ilustrações do próprio plugin
+ * (assets/teste/sug-*.svg), nada de foto de terceiros. Textos da Mariana iguais à prévia aprovada (04/11/2026).
+ */
+function rtm_dados_sugestoes_teste() {
+	$fam_dias = array(
+		array( 'titulo' => 'Chegada e Rua Coberta', 'descricao' => 'Transfer até o hotel, fim de tarde no centro e chocolate quente.' ),
+		array( 'titulo' => 'Snowland', 'descricao' => 'Manhã na neve indoor; tarde livre no hotel com recreação.' ),
+		array( 'titulo' => 'Canela e Mini Mundo', 'descricao' => 'Catedral de Pedra, Caracol e Mini Mundo; jantar de fondue.' ),
+		array( 'titulo' => 'Café colonial e volta', 'descricao' => 'Café colonial tranquilo antes do transfer para o aeroporto.' ),
+	);
+	return array(
+		'mariana-kloss'  => array(
+			array( 'slug' => 'gramado-em-familia-4-dias', 'titulo' => 'Gramado em família, 4 dias', 'img' => 'sug-familia', 'destino' => 'gramado', 'campos' => array(
+				'destinos_texto' => 'Gramado e Canela', 'tipo' => 'Família', 'preco' => 2890,
+				'texto_card'     => 'Parques, Snowland e café colonial num ritmo que funciona com criança.',
+				'resumo'         => 'Parques, Snowland e café colonial num ritmo que funciona com criança: um passeio grande por dia e tarde livre no hotel com recreação.',
+				'duracao'        => '4 dias · 3 noites', 'ideal_para' => 'Família com crianças', 'melhor_epoca' => 'Mar a jun · Ago a out', 'saida' => 'De qualquer cidade',
+				'inclui'         => array( '3 noites em hotel com recreação infantil', 'Ingressos Snowland e Mini Mundo', 'Transfer aeroporto de Porto Alegre', 'Tour Gramado e Canela com guia', 'Café colonial para a família', 'Aéreo cotado à parte, se quiser' ),
+				'dias'           => $fam_dias,
+			) ),
+			array( 'slug' => 'natal-luz-com-ingressos-garantidos', 'titulo' => 'Natal Luz com ingressos garantidos', 'img' => 'sug-natal', 'destino' => 'gramado', 'campos' => array(
+				'destinos_texto' => 'Gramado', 'tipo' => 'Natal Luz', 'preco' => 3450,
+				'texto_card'     => '3 noites perto da Rua Coberta e lugar no Grande Desfile.',
+				'resumo'         => 'Três noites a poucas quadras da Rua Coberta, com ingressos do Grande Desfile e do Nativitaten já garantidos.',
+				'duracao'        => '4 dias · 3 noites', 'ideal_para' => 'Casais e famílias', 'melhor_epoca' => 'Nov a jan',
+				'inclui'         => array( 'Hotel no centro de Gramado', 'Ingressos Grande Desfile e Nativitaten', 'Transfer aeroporto', 'Jantar de Natal típico' ),
+				'dias'           => array(
+					array( 'titulo' => 'Chegada e luzes da cidade', 'descricao' => 'Passeio a pé pela Rua Coberta iluminada.' ),
+					array( 'titulo' => 'Grande Desfile', 'descricao' => 'Lugar reservado na arquibancada do desfile de Natal.' ),
+					array( 'titulo' => 'Nativitaten', 'descricao' => 'Espetáculo no Lago Joaquina Rita Bier à noite.' ),
+				),
+			) ),
+			array( 'slug' => 'serra-gaucha-sem-pressa-5-dias', 'titulo' => 'Serra Gaúcha sem pressa, 5 dias', 'img' => 'sug-serra', 'destino' => 'gramado', 'campos' => array(
+				'destinos_texto' => 'Gramado, Canela e Bento Gonçalves', 'tipo' => 'Melhor idade', 'preco' => 3980,
+				'texto_card'     => 'Hotéis no centro, transfers e vinícolas do Vale dos Vinhedos.',
+				'resumo'         => 'Dias leves, hotel perto de tudo e transfers em todos os passeios, com um dia no Vale dos Vinhedos.',
+				'duracao'        => '5 dias · 4 noites', 'ideal_para' => 'Melhor idade', 'melhor_epoca' => 'Abr a jun · Set a nov',
+				'inclui'         => array( 'Hotel no centro, com elevador', 'Transfers em todos os passeios', 'Dia no Vale dos Vinhedos com almoço', 'Café colonial' ),
+			) ),
+		),
+		'rafael-antunes' => array(
+			array( 'slug' => 'lua-de-mel-em-gramado-4-noites', 'titulo' => 'Lua de mel em Gramado, 4 noites', 'img' => 'sug-romance', 'destino' => 'gramado', 'campos' => array(
+				'destinos_texto' => 'Gramado', 'tipo' => 'Casal / Lua de mel', 'preco' => 4200,
+				'texto_card'     => 'Chalé com lareira, jantar a dois e um dia sem roteiro.',
+				'resumo'         => 'Quatro noites num chalé com lareira e banheira, jantares reservados e um dia livre para o casal.',
+				'duracao'        => '5 dias · 4 noites', 'ideal_para' => 'Recém-casados', 'melhor_epoca' => 'O ano todo',
+				'inclui'         => array( 'Chalé com lareira e banheira', 'Jantar romântico de fondue', 'Transfer privativo', 'Espumante de boas-vindas' ),
+			) ),
+			array( 'slug' => 'vale-dos-vinhedos-a-dois', 'titulo' => 'Vale dos Vinhedos a dois, 3 dias', 'img' => 'sug-vinho', 'destino' => 'gramado', 'campos' => array(
+				'destinos_texto' => 'Bento Gonçalves e Gramado', 'tipo' => 'Luxo', 'preco' => 3600,
+				'texto_card'     => 'Degustações, almoço harmonizado e pousada entre as videiras.',
+				'resumo'         => 'Duas noites numa pousada entre as videiras, com degustações guiadas e um almoço harmonizado.',
+				'duracao'        => '3 dias · 2 noites', 'ideal_para' => 'Casais', 'melhor_epoca' => 'Jan a mar (vindima)',
+				'inclui'         => array( 'Pousada boutique no Vale', 'Três degustações guiadas', 'Almoço harmonizado', 'Motorista nos passeios' ),
+			) ),
+			array( 'slug' => 'gramado-luxo-com-spa', 'titulo' => 'Gramado de luxo com spa', 'img' => 'sug-chale', 'destino' => 'gramado', 'campos' => array(
+				'destinos_texto' => 'Gramado', 'tipo' => 'Luxo', 'preco' => 5900,
+				'texto_card'     => 'Hotel cinco estrelas, dia de spa e restaurantes premiados.',
+				'resumo'         => 'Hotel cinco estrelas, um dia inteiro de spa e reservas nos restaurantes mais disputados da cidade.',
+				'duracao'        => '4 dias · 3 noites', 'ideal_para' => 'Casais', 'melhor_epoca' => 'Mai a ago',
+				'inclui'         => array( 'Hotel cinco estrelas', 'Circuito de spa para dois', 'Reservas em restaurantes', 'Transfer privativo' ),
+			) ),
+		),
+		'camila-duarte'  => array(
+			array( 'slug' => 'natal-luz-em-grupo-saindo-de-sao-paulo', 'titulo' => 'Natal Luz em grupo, saindo de São Paulo', 'img' => 'sug-grupo', 'destino' => 'gramado', 'campos' => array(
+				'destinos_texto' => 'Gramado', 'tipo' => 'Grupo', 'preco' => 2490,
+				'texto_card'     => 'Ônibus de São Paulo, hotel e ingressos para o grupo todo.',
+				'resumo'         => 'Saída de São Paulo de ônibus, hotel para o grupo e ingressos dos espetáculos garantidos com antecedência.',
+				'duracao'        => '6 dias · 3 noites', 'ideal_para' => 'Grupos de 15 a 40 pessoas', 'melhor_epoca' => 'Nov a jan', 'saida' => 'São Paulo/SP',
+				'inclui'         => array( 'Ônibus de turismo ida e volta', 'Hotel para o grupo', 'Ingressos do Natal Luz', 'Guia acompanhante' ),
+			) ),
+			array( 'slug' => 'gramado-e-canela-melhor-idade', 'titulo' => 'Gramado e Canela para a melhor idade', 'img' => 'sug-canela', 'destino' => 'canela', 'campos' => array(
+				'destinos_texto' => 'Gramado e Canela', 'tipo' => 'Melhor idade', 'preco' => 2790,
+				'texto_card'     => 'Passeios tranquilos, paradas e acompanhamento o tempo todo.',
+				'resumo'         => 'Passeios no ritmo do grupo, com paradas, restaurantes acessíveis e acompanhamento pelo WhatsApp.',
+				'duracao'        => '5 dias · 4 noites', 'ideal_para' => 'Melhor idade', 'melhor_epoca' => 'Mar a jun',
+				'inclui'         => array( 'Hotel acessível no centro', 'Passeios com guia', 'Café colonial', 'Acompanhamento pelo WhatsApp' ),
+			) ),
+			array( 'slug' => 'excursao-de-onibus-natal-luz', 'titulo' => 'Excursão de ônibus para o Natal Luz', 'img' => 'sug-onibus', 'destino' => 'gramado', 'campos' => array(
+				'destinos_texto' => 'Gramado', 'tipo' => 'Natal Luz', 'preco' => 1890,
+				'texto_card'     => 'Fim de semana do Natal Luz com ônibus, hotel e guia.',
+				'resumo'         => 'Um fim de semana do Natal Luz com tudo resolvido: ônibus, hotel, guia e o Grande Desfile.',
+				'duracao'        => '4 dias · 2 noites', 'ideal_para' => 'Turmas de amigos', 'melhor_epoca' => 'Nov a jan', 'saida' => 'São Paulo/SP',
+				'inclui'         => array( 'Ônibus ida e volta', 'Duas noites de hotel', 'Ingresso Grande Desfile', 'Guia acompanhante' ),
+			) ),
+		),
+	);
+}
+
+/** Cria (ou atualiza) as sugestões de teste de um agente de teste. */
+function rtm_criar_sugestoes_teste( $agente_id, $agente_slug ) {
+	$dados = rtm_dados_sugestoes_teste();
+	if ( empty( $dados[ $agente_slug ] ) ) {
+		return;
+	}
+	$existentes = array();
+	foreach ( get_posts( array( 'post_type' => 'rt_sugestao', 'post_status' => 'any', 'meta_key' => 'rtm_teste', 'meta_value' => '1', 'posts_per_page' => -1 ) ) as $p ) {
+		$existentes[ $p->post_name ] = (int) $p->ID;
+	}
+	foreach ( $dados[ $agente_slug ] as $ordem => $s ) {
+		$id = isset( $existentes[ $s['slug'] ] ) ? $existentes[ $s['slug'] ] : wp_insert_post( array(
+			'post_type'   => 'rt_sugestao',
+			'post_status' => 'publish',
+			'post_title'  => $s['titulo'],
+			'post_name'   => $s['slug'],
+		) );
+		if ( is_wp_error( $id ) || ! $id ) {
+			continue;
+		}
+		$campos              = $s['campos'];
+		$campos['agente']    = (int) $agente_id;
+		$campos['destino']   = rtm_teste_destino( $s['destino'] ) ? $s['destino'] : '';
+		$campos['ordem']     = (int) $ordem + 1;
+		$campos['img_teste'] = RTM_URL . 'assets/teste/' . $s['img'] . '.svg';
+		foreach ( $campos as $chave => $valor ) {
+			update_post_meta( $id, 'rtm_' . $chave, $valor );
+		}
+		update_post_meta( $id, 'rtm_teste', '1' );
+	}
+}
+
 /** Destino publicado (tipo `destinos`) pelo slug: ['id'=>, 'slug'=>] ou null. */
 function rtm_teste_destino( $slug ) {
 	$achados = get_posts( array(
@@ -200,6 +322,7 @@ function rtm_criar_agentes_teste() {
 		}
 		update_post_meta( $id, 'rtm_teste', '1' );
 		wp_set_object_terms( $id, $a['tipos'], 'rt_tipo_viagem' );
+		rtm_criar_sugestoes_teste( $id, $a['slug'] );
 		$ids[] = (int) $id;
 	}
 	// wp_insert_post purgou antes dos metas: limpa de novo com o agente completo (página dele e cotação).
@@ -219,6 +342,9 @@ function rtm_apagar_agentes_teste() {
 		if ( wp_delete_post( $p->ID, true ) ) {
 			$n++;
 		}
+	}
+	foreach ( get_posts( array( 'post_type' => 'rt_sugestao', 'post_status' => 'any', 'meta_key' => 'rtm_teste', 'meta_value' => '1', 'posts_per_page' => -1 ) ) as $p ) {
+		wp_delete_post( $p->ID, true );
 	}
 	rtm_purgar_cotacao(); // apagar de vez não passa por save_post_rt_agente
 	return $n;

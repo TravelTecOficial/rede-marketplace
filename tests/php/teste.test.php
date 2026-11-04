@@ -39,6 +39,21 @@ igual( 4, rtm_t_contar( 'rt_agente' ), '3 de teste + 1 real' );
 $ids2 = rtm_criar_agentes_teste();
 igual( $ids, $ids2, 'criar de novo devolve os mesmos ids' );
 igual( 4, rtm_t_contar( 'rt_agente' ), 'não duplica ao criar duas vezes' );
+igual( 9, rtm_t_contar( 'rt_sugestao' ), '3 sugestões por agente de teste, sem duplicar' );
+$sugs_mariana = rtm_sugestoes_do_agente( $ids[0] );
+igual( array( 'Gramado em família, 4 dias', 'Natal Luz com ingressos garantidos', 'Serra Gaúcha sem pressa, 5 dias' ), wp_list_pluck( $sugs_mariana, 'titulo' ), 'sugestões da Mariana, na ordem' );
+$g = $sugs_mariana[0];
+igual( array( 'Família', 2890, '4 dias · 3 noites', 6, 4 ), array( $g['tipo'], (int) $g['preco'], $g['duracao'], count( $g['inclui'] ), count( $g['dias'] ) ), 'Gramado em família: tipo, preço, duração, 6 itens, 4 dias' );
+igual( 'Parques, Snowland e café colonial num ritmo que funciona com criança.', $g['texto_card'], 'texto do cartão igual à prévia' );
+igual( 3450, (int) $sugs_mariana[1]['preco'], 'Natal Luz: R$ 3.450' );
+igual( array( 'Melhor idade', 3980 ), array( $sugs_mariana[2]['tipo'], (int) $sugs_mariana[2]['preco'] ), 'Serra sem pressa: melhor idade, R$ 3.980' );
+contem( 'assets/teste/sug-', $g['imagem'], 'imagem ilustrativa do plugin' );
+foreach ( $GLOBALS['rt_posts'] as $p ) {
+	if ( 'rt_sugestao' === $p->post_type ) {
+		igual( '1', get_post_meta( $p->ID, 'rtm_teste', true ), "sugestão {$p->ID} marcada rtm_teste" );
+		ok( in_array( (int) get_post_meta( $p->ID, 'rtm_agente', true ), $ids, true ), "sugestão {$p->ID} ligada a um agente de teste" );
+	}
+}
 
 foreach ( $ids as $id ) {
 	igual( '1', get_post_meta( $id, 'rtm_teste', true ), "post $id marcado rtm_teste" );
@@ -94,15 +109,20 @@ foreach ( array( 'mariana', 'rafael', 'camila' ) as $n ) {
 	contem( 'viewBox="0 0 300 340"', $x, "$n.svg com viewBox" );
 	ok( false !== simplexml_load_string( $x ), "$n.svg é XML válido" );
 }
+foreach ( array( 'sug-familia', 'sug-natal', 'sug-serra', 'sug-romance', 'sug-vinho', 'sug-chale', 'sug-grupo', 'sug-canela', 'sug-onibus' ) as $n ) {
+	$f = "/p/assets/teste/$n.svg";
+	ok( file_exists( $f ) && false !== simplexml_load_string( file_get_contents( $f ) ), "$n.svg existe e é XML válido" );
+}
 
 // Apagar
 igual( 3, rtm_apagar_agentes_teste(), 'apagar devolve 3' );
 igual( 1, rtm_t_contar( 'rt_agente' ), 'só o agente real sobra' );
+igual( 0, rtm_t_contar( 'rt_sugestao' ), 'apagar remove as sugestões de teste' );
 ok( null !== get_post( 50 ), 'agente real não foi apagado' );
 $forcados = array_filter( $GLOBALS['rt_apagados'], function ( $a ) {
 	return true === $a[1];
 } );
-igual( 3, count( $forcados ), 'apagou com force' );
+igual( 12, count( $forcados ), 'apagou com force (3 agentes + 9 sugestões)' );
 igual( 0, rtm_apagar_agentes_teste(), 'apagar de novo devolve 0' );
 igual( 3, count( rtm_criar_agentes_teste() ), 'recriar depois de apagar' );
 igual( 4, rtm_t_contar( 'rt_agente' ), 'total 4 após recriar' );
