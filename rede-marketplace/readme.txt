@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.8.0 (04/11/2026): [rt_cotacao destino="atual"] no modelo da página de Destino — destino da própria página (mesmo sem especialista), título h2, barra que acompanha só o formulário.
 0.7.5 (04/11/2026): página do agente mais estreita (880px), como a cotação.
 0.7.4 (04/11/2026): no celular o selo verde não corta mais (some o "ver certificado"; o selo oficial ao lado continua abrindo).
 0.7.3 (04/11/2026): selo oficial Cadastur pequeno, ao lado do selo verde no alto (sai de baixo dos botões).

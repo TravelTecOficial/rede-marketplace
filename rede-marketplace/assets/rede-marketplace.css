@@ -232,6 +232,10 @@ dialog.rtm-cad-dialogo::backdrop{background:rgba(20,16,12,.6)}
 .rtm-cotacao div.rtm-vazio{margin-top:14px;padding:16px;border-radius:12px;background:var(--rtm-bg);color:var(--rtm-muted);font-size:14px}
 .rtm-cotacao div.rtm-aviso-ensaio{margin-top:14px;padding:14px;border-radius:12px;background:var(--rtm-ok-soft);color:var(--rtm-ink);font-weight:600}
 
+/* Dentro da página de Destino: a barra acompanha só enquanto o formulário está na tela. */
+.rtm-cotacao.rtm-cotacao-destino{padding-bottom:20px}
+.rtm-cotacao.rtm-cotacao-destino .rtm-cbarra{position:sticky;border:1px solid var(--rtm-line);border-radius:14px;margin-top:16px}
+.rtm-cotacao.rtm-cotacao-destino h2.rtm-titulo{margin-top:0}
 .rtm-cotacao .rtm-cbarra{position:fixed;left:0;right:0;bottom:0;background:var(--rtm-surface);border-top:1px solid var(--rtm-line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:50}
 .rtm-cotacao .rtm-cbarra-in{max-width:780px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .rtm-cotacao .rtm-contagem{font-weight:700}

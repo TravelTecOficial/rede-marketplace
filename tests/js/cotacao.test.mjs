@@ -207,3 +207,13 @@ test('faixa de acentos combinantes escrita com escapes (sem caracteres invisíve
   const literal = Array.from(JS).some((c) => c.charCodeAt(0) >= 0x300 && c.charCodeAt(0) <= 0x36f);
   assert.ok(!literal, 'nenhum caractere combinante literal no arquivo');
 });
+
+test('página de Destino: data-destino escolhe o destino sem parâmetro na URL', () => {
+  const dom = new JSDOM(`<!doctype html><body>${html([['gramado', 'Gramado'], ['canela', 'Canela']]).replace('<div class="rtm-cotacao">', '<div class="rtm-cotacao rtm-cotacao-destino" data-destino="canela">')}</body>`, { runScripts: 'outside-only', url: 'https://exemplo.test/destinos/canela/' });
+  dom.window.Element.prototype.scrollIntoView = function () {};
+  dom.window.eval(JS);
+  const d = dom.window.document;
+  assert.equal(d.getElementById('rtm-destino').value, 'canela');
+  assert.equal(d.querySelector('[data-slug="camila-duarte"]').hidden, false);
+  assert.equal(d.querySelector('[data-slug="mariana-kloss"]').hidden, true);
+});

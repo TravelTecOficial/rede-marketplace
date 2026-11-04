@@ -206,7 +206,8 @@
   var params = null;
   try { params = new URLSearchParams(window.location.search); } catch (e) { params = null; }
   if (selDestino && selDestino.options.length) {
-    var pedido = slugar(params ? params.get('destino') : '');
+    var raiz = document.querySelector('.rtm-cotacao');
+    var pedido = slugar(params ? params.get('destino') : '') || slugar(raiz ? raiz.getAttribute('data-destino') : '');
     var achou = false;
     for (var i = 0; i < selDestino.options.length; i++) {
       if (selDestino.options[i].value === pedido) { selDestino.selectedIndex = i; achou = true; break; }

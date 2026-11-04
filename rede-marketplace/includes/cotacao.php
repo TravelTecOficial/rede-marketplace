@@ -63,21 +63,48 @@ function rtm_cot_etapa_titulo( $n, $titulo, $dica ) {
 	return '<div class="rtm-etapa-tit"><span class="rtm-num" aria-hidden="true">' . (int) $n . '</span><div><h2 class="rtm-etapa-h">' . esc_html( $titulo ) . '</h2><p class="rtm-etapa-dica">' . esc_html( $dica ) . '</p></div></div>';
 }
 
-/** Shortcode [rt_cotacao]: HTML completo da página de cotação. Nada é enviado pela rede a partir daqui. */
-function rtm_cotacao_html() {
+/**
+ * Destino fixo do shortcode: destino="atual" (ou vazio) dentro de uma página do tipo `destinos` usa o próprio
+ * destino; destino="<slug>" usa esse. Devolve [slug, título] ou null (página de cotação comum).
+ */
+function rtm_cotacao_destino_fixo( $atributo ) {
+	$atributo = trim( (string) $atributo );
+	if ( '' === $atributo || 'atual' === $atributo ) {
+		if ( ! is_singular( 'destinos' ) ) {
+			return null;
+		}
+		$p = get_post( get_queried_object_id() );
+		return $p ? array( (string) $p->post_name, (string) $p->post_title ) : null;
+	}
+	$posts = get_posts( array( 'post_type' => 'destinos', 'post_status' => 'publish', 'name' => sanitize_title( $atributo ), 'posts_per_page' => 1 ) );
+	return $posts ? array( (string) $posts[0]->post_name, (string) $posts[0]->post_title ) : null;
+}
+
+/**
+ * Shortcode [rt_cotacao]: HTML completo da página de cotação. Nada é enviado pela rede a partir daqui.
+ * No modelo da página de Destino ([rt_cotacao destino="atual"]) o destino vem da página, o título vira h2
+ * (a página já tem h1) e a barra de envio só acompanha enquanto o formulário está na tela.
+ */
+function rtm_cotacao_html( $atts = array() ) {
+	$atts = shortcode_atts( array( 'destino' => '' ), $atts, 'rt_cotacao' );
 	// Também aqui (e não só em rtm_estilos): o shortcode pode estar num modelo do Elementor, fora do conteúdo da página.
 	rtm_enfileirar_estilo();
 	wp_enqueue_script( 'rtm-cotacao', RTM_URL . 'assets/cotacao.js', array(), RTM_VERSION, true );
 
 	$agentes  = rtm_agentes_ativos();
 	$destinos = rtm_destinos_cotacao( $agentes );
+	$fixo     = rtm_cotacao_destino_fixo( $atts['destino'] );
+	if ( $fixo && ! isset( $destinos[ $fixo[0] ] ) ) {
+		$destinos = array( $fixo[0] => $fixo[1] ) + $destinos; // destino ainda sem especialista: aparece assim mesmo
+	}
+	$tag      = $fixo ? 'h2' : 'h1';
 	$tipos    = rtm_tipos_cotacao();
 	$politica = esc_url( (string) get_privacy_policy_url() );
 	$inclui   = array( 'Aéreo', 'Hospedagem', 'Passeios', 'Ingressos Natal Luz', 'Transfer', 'Carro' );
 
-	$h  = '<div class="rtm-cotacao">';
+	$h  = '<div class="rtm-cotacao' . ( $fixo ? ' rtm-cotacao-destino" data-destino="' . esc_attr( $fixo[0] ) : '' ) . '">';
 	$h .= '<div class="rtm-intro"><small>Pedido de cotação</small>';
-	$h .= '<h1 class="rtm-titulo">Receba até 3 cotações de especialistas<span id="rtm-titulo-destino"></span></h1>';
+	$h .= '<' . $tag . ' class="rtm-titulo">Receba até 3 cotações de especialistas<span id="rtm-titulo-destino"></span></' . $tag . '>';
 	$h .= '<p class="rtm-lead">Conte como é a sua viagem, escolha quem vai montá-la e receba as propostas no seu WhatsApp. Sem custo e sem compromisso.</p>';
 	$h .= '<div class="rtm-como"><span><b>1.</b> Conte sua viagem</span><span><b>2.</b> Escolha os especialistas</span><span><b>3.</b> Compare e decida</span></div></div>';
 

@@ -106,3 +106,17 @@ $css = file_get_contents( '/p/assets/rede-marketplace.css' );
 foreach ( array( '.rtm-cotacao h1.rtm-titulo', '.rtm-cotacao label.rtm-rot', '.rtm-cotacao input[type=text]', '.rtm-cotacao .rtm-cbarra button.rtm-enviar', '.rtm-cotacao h2.rtm-etapa-h' ) as $s ) {
 	contem( $s, $css, "CSS: $s" );
 }
+
+// Dentro da página de Destino: destino da própria página
+$GLOBALS['rt_posts'][] = (object) array( 'ID' => 950, 'post_type' => 'destinos', 'post_status' => 'publish', 'post_title' => 'Bariloche', 'post_name' => 'bariloche', 'post_content' => '' );
+$GLOBALS['rt_atual'] = 950;
+$hd = rtm_cotacao_html( array( 'destino' => 'atual' ) );
+contem( 'class="rtm-cotacao rtm-cotacao-destino" data-destino="bariloche"', $hd, 'destino: raiz marca o destino da página' );
+contem( '<option value="bariloche">Bariloche</option>', $hd, 'destino sem especialista aparece no seletor' );
+contem( '<h2 class="rtm-titulo">', $hd, 'destino: título vira h2 (a página já tem h1)' );
+nao_contem( '<h1', $hd, 'destino: sem h1' );
+igual( $hd, rtm_cotacao_html( array() ), 'sem atributo, numa página de destino, também usa o destino da página' );
+$GLOBALS['rt_atual'] = 0;
+nao_contem( 'data-destino=', rtm_cotacao_html(), 'página de cotação comum: sem destino fixo' );
+contem( '<h1 class="rtm-titulo">', rtm_cotacao_html(), 'página de cotação comum: h1' );
+
