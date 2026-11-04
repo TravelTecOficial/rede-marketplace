@@ -254,7 +254,7 @@
   }
   atualizarTitulo();
   filtrar();
-  var ag = (params ? params.get('agente') : '') || (sug ? sug.agente : '');
+  var ag = sug ? sug.agente : (params ? params.get('agente') : ''); // com sugestão válida, vale o dono dela
   if (ag) {
     cards.forEach(function (c) {
       if (c.getAttribute('data-slug') === ag && !c.hidden) { marcar(c, true); }

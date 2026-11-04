@@ -61,3 +61,22 @@ igual( 1, $GLOBALS['rt_flush'], 'mesma versão: não renova de novo' );
 $q = new RT_Consulta( array( 'post_type' => 'rt_sugestao' ) );
 rtm_fora_das_listas( $q );
 igual( array( 0 ), $q->get( 'post__in' ), 'listagem de rt_sugestao vazia' );
+
+// Cache (LiteSpeed): salvar/apagar sugestão limpa a sugestão, o agente dono, as outras sugestões e a cotação
+$reg = array();
+add_action( 'litespeed_purge_post', function ( $id ) use ( &$reg ) { $reg[] = array( 'post', $id ); } );
+add_action( 'litespeed_purge_url', function ( $url ) use ( &$reg ) { $reg[] = array( 'url', $url ); } );
+$i = array_search( 'rtm_purgar_sugestao', $GLOBALS['rt_ganchos']['save_post_rt_sugestao'], true );
+ok( false !== $i && 20 === $GLOBALS['rt_prioridades']['save_post_rt_sugestao'][ $i ], 'save_post_rt_sugestao -> rtm_purgar_sugestao (prioridade 20)' );
+rtm_purgar_sugestao( 20 );
+ok( in_array( array( 'post', 20 ), $reg, true ), 'purga a sugestão' );
+ok( in_array( array( 'post', 5 ), $reg, true ), 'purga o agente dono' );
+ok( in_array( array( 'url', 'https://exemplo.test/especialistas/mariana-kloss/natal-luz/' ), $reg, true ), 'purga as outras sugestões do agente' );
+ok( in_array( array( 'url', 'https://exemplo.test/cotacao-especialistas/' ), $reg, true ) || in_array( array( 'url', '' ), $reg, true ) || count( array_filter( $reg, function ( $r ) { return 'url' === $r[0] && false !== strpos( $r[1], 'cotacao' ); } ) ) > 0, 'purga a cotação' );
+$reg = array();
+rtm_purgar_cache( 5 );
+ok( in_array( array( 'url', 'https://exemplo.test/especialistas/mariana-kloss/gramado-em-familia/' ), $reg, true ), 'purgar o agente também limpa as páginas das sugestões dele' );
+$reg = array();
+rtm_purgar_ao_apagar( 21 );
+ok( in_array( array( 'post', 21 ), $reg, true ) && in_array( array( 'post', 5 ), $reg, true ), 'apagar sugestão purga a sugestão e o agente' );
+

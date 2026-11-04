@@ -165,7 +165,36 @@ function rtm_404_sugestao() {
 	nocache_headers();
 }
 
+/** URLs das sugestões (qualquer status) de um agente, para limpar o cache. */
+function rtm_urls_sugestoes_do_agente( $agente_id ) {
+	$agente = rtm_agente( (int) $agente_id );
+	$posts  = get_posts( array( 'post_type' => 'rt_sugestao', 'post_status' => 'any', 'posts_per_page' => -1, 'meta_key' => 'rtm_agente', 'meta_value' => (int) $agente_id ) );
+	$urls   = array();
+	foreach ( $posts as $p ) {
+		if ( $agente && '' !== (string) $p->post_name ) {
+			$urls[] = rtm_url_sugestao( $agente, $p->post_name );
+		}
+	}
+	return $urls;
+}
+
+/**
+ * Limpa o LiteSpeed depois de salvar/apagar uma sugestão (save_post_rt_sugestao, prioridade 20):
+ * a sugestão, o agente dono (cartões), as outras sugestões dele e a cotação (JSON das sugestões).
+ */
+function rtm_purgar_sugestao( $post_id ) {
+	$post_id = (int) $post_id;
+	do_action( 'litespeed_purge_post', $post_id );
+	$agente_id = (int) get_post_meta( $post_id, 'rtm_agente', true );
+	if ( $agente_id ) {
+		rtm_purgar_cache( $agente_id ); // agente + URLs das sugestões dele + cotação
+	} else {
+		rtm_purgar_cotacao();
+	}
+}
+
 add_filter( 'query_vars', 'rtm_sugestao_query_vars' );
+add_action( 'save_post_rt_sugestao', 'rtm_purgar_sugestao', 20 );
 add_action( 'init', 'rtm_renovar_regras', 99 );
 add_filter( 'post_type_link', 'rtm_link_sugestao', 10, 2 );
 add_action( 'template_redirect', 'rtm_404_sugestao' );

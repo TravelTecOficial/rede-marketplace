@@ -270,3 +270,10 @@ test('tirar a sugestão esconde o aviso e mantém o agente', () => {
   assert.equal(w.document.querySelector('[data-slug="mariana-kloss"]').getAttribute('aria-pressed'), 'true');
 });
 
+test('?sugestao= com outro &agente: vale o dono da sugestão', () => {
+  const w = montarSug('?sugestao=gramado-em-familia-4-dias&agente=camila-duarte');
+  const d = w.document;
+  assert.equal(d.querySelector('[data-slug="mariana-kloss"]').getAttribute('aria-pressed'), 'true');
+  assert.equal(d.querySelector('[data-slug="camila-duarte"]').getAttribute('aria-pressed'), 'false');
+});
+

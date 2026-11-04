@@ -289,6 +289,9 @@ function rtm_purgar_cache( $post_id ) {
 	if ( $url ) {
 		do_action( 'litespeed_purge_url', $url );
 	}
+	foreach ( rtm_urls_sugestoes_do_agente( $post_id ) as $u ) {
+		do_action( 'litespeed_purge_url', $u );
+	}
 	rtm_purgar_cotacao();
 }
 
@@ -297,6 +300,8 @@ function rtm_purgar_ao_apagar( $post_id ) {
 	$p = get_post( $post_id );
 	if ( $p && 'rt_agente' === $p->post_type ) {
 		rtm_purgar_cache( $post_id );
+	} elseif ( $p && 'rt_sugestao' === $p->post_type ) {
+		rtm_purgar_sugestao( $post_id );
 	}
 }
 

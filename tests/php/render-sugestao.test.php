@@ -76,3 +76,10 @@ $GLOBALS['rt_estilos'] = array(); $GLOBALS['rt_scripts'] = array();
 rtm_estilos();
 ok( isset( $GLOBALS['rt_estilos']['rede-marketplace'] ) && isset( $GLOBALS['rt_scripts']['rtm-sugestao'] ), 'página da sugestão carrega CSS e JS' );
 $GLOBALS['rt_atual'] = 0;
+
+// CSS: cotação continua fixa ao rolar quando não há sugestões; no celular a página da sugestão mostra preço e mini perfil
+$css = file_get_contents( '/p/assets/rede-marketplace.css' );
+nao_contem( '.rtm-col-lateral .rtm-lateral{position:static}', $css, 'sem sugestões a cotação continua sticky' );
+contem( '.rtm-col-lateral .rtm-sugestoes-lateral ~ .rtm-lateral{position:static}', $css, 'com sugestões a cotação rola com a página' );
+nao_contem( 'aside.rtm-sug-lateral{display:none}', $css, 'celular: preço e mini perfil da sugestão continuam visíveis' );
+

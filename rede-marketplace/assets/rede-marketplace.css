@@ -117,7 +117,7 @@ img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 .rtm-lateral{position:sticky;top:16px}
 /* Coluna lateral com sugestões (no alto) e cotação (embaixo): rola com a página. */
 .rtm-col-lateral{display:flex;flex-direction:column;gap:18px;min-width:0}
-.rtm-col-lateral .rtm-lateral{position:static}
+.rtm-col-lateral .rtm-sugestoes-lateral ~ .rtm-lateral{position:static}
 .rtm-sugestoes{display:flex;flex-direction:column;gap:12px;font-family:var(--rtm-font-body);color:var(--rtm-ink)}
 .rtm-sugestoes .rtm-sugs-cab{display:flex;flex-direction:column;gap:2px}
 .rtm-sugestoes h2.rtm-sugs-titulo{font-family:var(--rtm-font-display);font-size:20px;line-height:1.2;margin:0;color:var(--rtm-ink)}
@@ -320,7 +320,7 @@ dialog.rtm-cad-dialogo::backdrop{background:rgba(20,16,12,.6)}
 .rtm-pagina-sugestao .rtm-mini-agente small{color:var(--rtm-muted);font-size:13px}
 .rtm-pagina-sugestao .rtm-lateral a.rtm-btn-sec{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--rtm-ink);border:1.5px solid var(--rtm-line);border-radius:11px;padding:12px 18px;font:inherit;font-weight:700;text-decoration:none}
 .rtm-pagina-sugestao .rtm-lateral a.rtm-btn-sec:hover,.rtm-pagina-sugestao .rtm-lateral a.rtm-btn-sec:focus{border-color:var(--rtm-ink);color:var(--rtm-ink)}
-@media (max-width:900px){.rtm-pagina-sugestao .rtm-sug-grade aside.rtm-sug-lateral{display:none}}
+@media (max-width:900px){.rtm-pagina-sugestao .rtm-sug-grade aside.rtm-sug-lateral{display:block;position:static}}
 dialog.rtm-galeria-dialogo{border:0;padding:0;background:transparent;max-width:min(1100px,calc(100vw - 32px));width:100%;max-height:calc(100vh - 32px);overflow:visible}
 dialog.rtm-galeria-dialogo::backdrop{background:rgba(10,8,6,.88)}
 dialog.rtm-galeria-dialogo .rtm-galeria-caixa{position:relative;display:flex;align-items:center;justify-content:center}

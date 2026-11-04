@@ -88,8 +88,13 @@ function rtm_salvar_sugestao( $post_id ) {
 		return;
 	}
 	$entrada = ( isset( $_POST['rtm_s'] ) && is_array( $_POST['rtm_s'] ) ) ? wp_unslash( $_POST['rtm_s'] ) : array();
-	foreach ( rtm_limpar_sugestao( $entrada ) as $chave => $valor ) {
+	$antigo  = (int) get_post_meta( $post_id, 'rtm_agente', true );
+	$campos  = rtm_limpar_sugestao( $entrada );
+	foreach ( $campos as $chave => $valor ) {
 		update_post_meta( $post_id, 'rtm_' . $chave, $valor );
+	}
+	if ( $antigo && $antigo !== (int) $campos['agente'] ) {
+		rtm_purgar_cache( $antigo ); // os cartões saem da página do agente antigo
 	}
 }
 
