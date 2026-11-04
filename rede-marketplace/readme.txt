@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.7.3 (04/11/2026): selo oficial Cadastur pequeno, ao lado do selo verde no alto (sai de baixo dos botões).
 0.7.2 (04/11/2026): Painel › Atualizações e Plugins consultam o GitHub na hora (versão recém-publicada aparece sem esperar o cache).
 0.7.1 (04/11/2026): rosto inteiro na foto; redes e selo Cadastur voltam para a coluna dos dados (embaixo da foto só a agência); selo verde quebra linha no celular.
 0.7.0 (04/11/2026): topo do agente com foto menor e, abaixo dela, agência, redes e selo Cadastur.

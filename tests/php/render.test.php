@@ -147,6 +147,8 @@ nao_contem( 'rtm-cad-abrir', rtm_card( $a2 ), 'card: selo simples, sem botão (o
 contem( 'class="rtm-cad-selo rtm-cad-abrir"', $tc, 'topo: selo oficial clicável' );
 contem( 'assets/cadastur-selo.png', $tc, 'topo: imagem do selo do plugin' );
 igual( 1, substr_count( $tc, '<dialog' ), 'uma só janela para os dois botões' );
+igual( 1, substr_count( $tc, 'rtm-cad-selo' ), 'selo oficial aparece uma vez só' );
+ok( strpos( $tc, 'rtm-cad-selo' ) < strpos( $tc, 'rtm-nome' ), 'selo oficial no alto, antes do nome' );
 nao_contem( 'rtm-cad-selo', rtm_secao( 'topo', $a ), 'sem Cadastur conferido: sem selo oficial' );
 update_post_meta( 5, 'rtm_cadastur_validade', '2027-03-25' );
 update_post_meta( 5, 'rtm_cadastur_certificado', 88 );

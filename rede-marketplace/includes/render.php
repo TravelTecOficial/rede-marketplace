@@ -162,7 +162,7 @@ function rtm_html_cadastur_selo( array $agente ) {
 		return '';
 	}
 	return '<button type="button" class="rtm-cad-selo rtm-cad-abrir" aria-haspopup="dialog" aria-controls="rtm-cad">'
-		. '<img src="' . esc_url( RTM_URL . 'assets/cadastur-selo.png' ) . '" width="160" height="71" alt="Somos certificados Cadastur: ver o certificado" decoding="async"></button>';
+		. '<img src="' . esc_url( RTM_URL . 'assets/cadastur-selo.png' ) . '" width="81" height="36" alt="Somos certificados Cadastur: ver o certificado" decoding="async"></button>';
 }
 
 function rtm_html_chips( array $itens ) {
@@ -220,7 +220,11 @@ function rtm_secao( $secao, array $agente ) {
 			$h  = '<section class="rtm-topo"><div class="rtm-lado">' . rtm_html_foto( $agente, 'rtm-foto' );
 			$h .= '' !== $lado ? '<div class="rtm-lado-info">' . $lado . '</div>' : '';
 			$h .= '</div><div class="rtm-dados">';
-			$h .= rtm_html_cadastur_janela( $agente );
+			// Selo verde e, ao lado, o selo oficial pequeno: os dois abrem a janela do certificado.
+			$cad = rtm_html_cadastur_janela( $agente );
+			if ( '' !== $cad ) {
+				$h .= '<div class="rtm-cad-linha">' . rtm_html_cadastur_selo( $agente ) . $cad . '</div>';
+			}
 			$h .= '<h1 class="rtm-nome">' . esc_html( $agente['nome'] ) . '</h1>';
 			if ( '' !== trim( (string) $agente['cargo'] ) ) {
 				$h .= '<p class="rtm-cargo">' . esc_html( $agente['cargo'] ) . '</p>';
@@ -248,10 +252,7 @@ function rtm_secao( $secao, array $agente ) {
 				$h .= '<div class="rtm-numeros">' . $num . '</div>';
 			}
 			$h .= '<div class="rtm-acoes">' . $botao . ( '' !== $nota ? '<a class="rtm-btn-sec" href="#avaliacoes">Ver avaliações</a>' : '' ) . '</div>';
-			$extra = rtm_html_redes( $agente ) . rtm_html_cadastur_selo( $agente );
-			if ( '' !== $extra ) {
-				$h .= '<div class="rtm-extra">' . $extra . '</div>';
-			}
+			$h .= rtm_html_redes( $agente );
 			return $h . '</div></section>';
 
 		case 'sobre':
