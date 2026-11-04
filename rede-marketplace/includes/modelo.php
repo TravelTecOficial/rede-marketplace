@@ -64,6 +64,7 @@ function rtm_campos() {
 		'endereco'              => $c( 'Endereço', 'texto' ),
 		'horario'               => $c( 'Horário de atendimento', 'texto' ),
 		'google_perfil'         => $c( 'Perfil no Google (URL)', 'texto' ),
+		'google_place_id'       => $c( 'Place ID do Google', 'place_id' ),
 		'instagram'             => $c( 'Instagram', 'rede' ),
 		'facebook'              => $c( 'Facebook', 'rede' ),
 		'tiktok'                => $c( 'TikTok', 'rede' ),

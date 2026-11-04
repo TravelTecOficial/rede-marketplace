@@ -336,3 +336,11 @@ dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bot
 .rtm-cotacao .rtm-sugestao-aviso{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--rtm-brand-soft);border-radius:12px;padding:10px 14px;margin:0 0 16px;font-size:14px;font-weight:600;color:var(--rtm-ink)}
 .rtm-cotacao .rtm-sugestao-aviso button.rtm-sugestao-tirar{background:transparent;border:0;padding:4px 6px;margin:0;font:inherit;font-weight:700;color:var(--rtm-ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;box-shadow:none;text-transform:none;letter-spacing:normal}
 .rtm-cotacao .rtm-sugestao-aviso button.rtm-sugestao-tirar:hover,.rtm-cotacao .rtm-sugestao-aviso button.rtm-sugestao-tirar:focus{background:transparent;color:var(--rtm-ink)}
+/* Google: mapa em Onde atende e autor dos depoimentos */
+.rtm-onde .rtm-mapa{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:16/8;max-width:100%;background:var(--rtm-bg);margin:0 0 14px}
+.rtm-onde .rtm-mapa iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.rtm-onde a.rtm-rota{color:var(--rtm-ink);font-weight:700;text-underline-offset:3px}
+.rtm-avaliacoes .rtm-av-cab b a{color:var(--rtm-ink);text-decoration:none}
+.rtm-avaliacoes .rtm-av-cab b a:hover,.rtm-avaliacoes .rtm-av-cab b a:focus{text-decoration:underline}
+.rtm-avaliacoes .rtm-av-cab img.rtm-av-foto{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none}
+

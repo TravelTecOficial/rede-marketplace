@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.11.0 (04/11/2026): Google — chave nas configurações e Place ID no agente; nota, até 5 avaliações e link do Google buscados no navegador; mapa (Maps Embed) e "Como chegar" em Onde atende. Sem chave ou sem Place ID, nada muda.
 0.10.0 (04/11/2026): sugestões de viagem do agente — cadastro (Agentes › Sugestões), cartões na lateral do perfil, página /especialistas/<agente>/<sugestao>/ com galeria, cotação com a sugestão marcada; 9 sugestões de exemplo nos agentes de teste.
 0.9.0 (04/11/2026): destino digitável com sugestões; sem destino, título "nos melhores destinos" e todos os especialistas; destino sem especialista mostra aviso com o nome.
 0.8.0 (04/11/2026): [rt_cotacao destino="atual"] no modelo da página de Destino — destino da própria página (mesmo sem especialista), título h2, barra que acompanha só o formulário.

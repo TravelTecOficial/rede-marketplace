@@ -62,6 +62,11 @@ function rtm_html_cadastur( array $agente, $com_numero ) {
 	return '<span class="rtm-cadastur"><i aria-hidden="true">✓</i>' . esc_html( $txt ) . '</span>';
 }
 
+/** Chave do Google + Place ID do agente: nota, avaliações e mapa vêm do Google (no navegador, a cada visita). */
+function rtm_google_ativo( array $agente ) {
+	return '' !== (string) rtm_opcoes()['google_chave'] && '' !== trim( (string) ( isset( $agente['google_place_id'] ) ? $agente['google_place_id'] : '' ) );
+}
+
 /** Estrelas cheias/vazias (arredondadas) para uma nota de 0 a 5. */
 function rtm_estrelas( $nota ) {
 	$cheias = max( 0, min( 5, (int) round( (float) $nota ) ) );
@@ -229,7 +234,8 @@ function rtm_secao( $secao, array $agente ) {
 			if ( '' !== trim( (string) $agente['cargo'] ) ) {
 				$h .= '<p class="rtm-cargo">' . esc_html( $agente['cargo'] ) . '</p>';
 			}
-			$nota = rtm_html_nota( $agente );
+			$google = rtm_google_ativo( $agente );
+			$nota   = $google ? '<div class="rtm-nota" data-rtm-google-nota hidden></div>' : rtm_html_nota( $agente );
 			$h   .= $nota;
 			$chips = rtm_html_chips( $agente['tipos'] );
 			if ( '' !== $chips ) {
@@ -251,7 +257,8 @@ function rtm_secao( $secao, array $agente ) {
 			if ( '' !== $num ) {
 				$h .= '<div class="rtm-numeros">' . $num . '</div>';
 			}
-			$h .= '<div class="rtm-acoes">' . $botao . ( '' !== $nota ? '<a class="rtm-btn-sec" href="#avaliacoes">Ver avaliações</a>' : '' ) . '</div>';
+			$ver = $google ? '<a class="rtm-btn-sec" href="#avaliacoes" data-rtm-google-ver hidden>Ver avaliações</a>' : ( '' !== $nota ? '<a class="rtm-btn-sec" href="#avaliacoes">Ver avaliações</a>' : '' );
+			$h  .= '<div class="rtm-acoes">' . $botao . $ver . '</div>';
 			$h .= rtm_html_redes( $agente );
 			return $h . '</div></section>';
 
@@ -289,6 +296,13 @@ function rtm_secao( $secao, array $agente ) {
 			return $h . '</section>';
 
 		case 'avaliacoes':
+			if ( rtm_google_ativo( $agente ) ) {
+				// Preenchido por assets/google.js (os termos do Google não deixam guardar nota e depoimentos no servidor).
+				return '<section class="rtm-bloco rtm-avaliacoes" id="avaliacoes" data-rtm-google="' . esc_attr( $agente['google_place_id'] ) . '" data-chave="' . esc_attr( rtm_opcoes()['google_chave'] ) . '" hidden>'
+					. '<div class="rtm-av-topo"><h2>Avaliações</h2><span class="rtm-google"><i>Google</i> avaliações do perfil da agência</span></div>'
+					. '<div class="rtm-av-resumo"></div><div class="rtm-avals"></div>'
+					. '<a class="rtm-av-link" target="_blank" rel="noopener nofollow" hidden>Ver todas as avaliações no Google</a></section>';
+			}
 			$av = isset( $agente['avaliacoes'] ) && is_array( $agente['avaliacoes'] ) ? $agente['avaliacoes'] : array();
 			if ( empty( $av['nota'] ) || empty( $av['itens'] ) ) {
 				return '';
@@ -328,10 +342,18 @@ function rtm_secao( $secao, array $agente ) {
 			if ( '' !== trim( (string) $agente['horario'] ) ) {
 				$itens .= '<div><b>Horário</b>' . esc_html( $agente['horario'] ) . '</div>';
 			}
+			$mapa = '';
+			if ( rtm_google_ativo( $agente ) ) {
+				$pid   = (string) $agente['google_place_id'];
+				$embed = 'https://www.google.com/maps/embed/v1/place?key=' . rawurlencode( (string) rtm_opcoes()['google_chave'] ) . '&q=place_id:' . rawurlencode( $pid );
+				$rota  = 'https://www.google.com/maps/dir/?api=1&destination=' . urlencode( '' !== trim( (string) $agente['agencia_nome'] ) ? (string) $agente['agencia_nome'] : (string) $agente['nome'] ) . '&destination_place_id=' . rawurlencode( $pid );
+				$mapa  = '<div class="rtm-mapa"><iframe src="' . esc_url( $embed ) . '" title="' . esc_attr( 'Mapa: ' . ( '' !== trim( (string) $agente['agencia_nome'] ) ? $agente['agencia_nome'] : $agente['nome'] ) ) . '" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>';
+				$itens .= '<div><b>Como chegar</b><a class="rtm-rota" href="' . esc_url( $rota ) . '" target="_blank" rel="noopener">Abrir no Google Maps</a></div>';
+			}
 			if ( '' === $itens ) {
 				return '';
 			}
-			return '<section class="rtm-bloco rtm-onde"><h2>Onde atende</h2><div class="rtm-endereco">' . $itens . '</div></section>';
+			return '<section class="rtm-bloco rtm-onde"><h2>Onde atende</h2>' . $mapa . '<div class="rtm-endereco">' . $itens . '</div></section>';
 
 		case 'sugestoes':
 			return rtm_html_sugestoes( $agente, 'lateral' );
@@ -390,6 +412,10 @@ function rtm_estilos() {
 	}
 	if ( is_singular( 'rt_agente' ) ) {
 		wp_enqueue_script( 'rtm-agente', RTM_URL . 'assets/agente.js', array(), RTM_VERSION, true );
+		$ag = rtm_agente( get_queried_object_id() );
+		if ( $ag && rtm_google_ativo( $ag ) ) {
+			wp_enqueue_script( 'rtm-google', RTM_URL . 'assets/google.js', array(), RTM_VERSION, true );
+		}
 	}
 	if ( is_singular( 'rt_sugestao' ) ) {
 		rtm_enfileirar_estilo();

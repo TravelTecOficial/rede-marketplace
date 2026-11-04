@@ -99,6 +99,10 @@ function rtm_limpar_campos( array $entrada ) {
 				$saida[ $chave ] = rtm_rede_url( $chave, $texto );
 				break;
 
+			case 'place_id':
+				$saida[ $chave ] = preg_match( '/^[A-Za-z0-9_\-]{10,300}$/', $texto ) ? $texto : '';
+				break;
+
 			default: // texto, textarea
 				if ( 'apresentacao' === $chave ) {
 					$saida[ $chave ] = wp_kses_post( $texto );
@@ -232,6 +236,7 @@ function rtm_caixa( $post ) {
 	foreach ( array( 'agencia_cidade', 'agencia_desde', 'endereco', 'horario', 'google_perfil' ) as $c ) {
 		rtm_campo( $c, $v[ $c ] );
 	}
+	rtm_linha( 'Place ID do Google', 'rtm_google_place_id', '<input type="text" class="regular-text" id="rtm_google_place_id" name="rtm[google_place_id]" value="' . esc_attr( (string) $v['google_place_id'] ) . '" autocomplete="off" spellcheck="false">', 'Código do Perfil do Google da agência (começa com ChIJ…). Encontre em developers.google.com/maps/documentation/places/web-service/place-id. Com a chave nas configurações, mostra nota, avaliações e mapa.' );
 
 	// Redes sociais
 	echo '<h3>Redes sociais</h3><p class="description">Cole o link do perfil (ou @usuario no Instagram e no TikTok). Em branco, o ícone não aparece.</p>';
@@ -311,9 +316,11 @@ function rtm_scripts_admin( $tela ) {
 function rtm_limpar_opcoes( $entrada ) {
 	$entrada = is_array( $entrada ) ? $entrada : array();
 	$url     = isset( $entrada['url_cotacao'] ) ? esc_url_raw( trim( (string) $entrada['url_cotacao'] ) ) : '';
+	$chave = isset( $entrada['google_chave'] ) && is_scalar( $entrada['google_chave'] ) ? preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $entrada['google_chave'] ) : '';
 	return array(
-		'url_cotacao' => '' !== $url ? $url : home_url( '/cotacao-especialistas/' ),
-		'ensaio'      => ! empty( $entrada['ensaio'] ),
+		'url_cotacao'  => '' !== $url ? $url : home_url( '/cotacao-especialistas/' ),
+		'ensaio'       => ! empty( $entrada['ensaio'] ),
+		'google_chave' => $chave,
 	);
 }
 
@@ -339,6 +346,7 @@ function rtm_tela_configuracoes() {
 	settings_fields( 'rtm_opcoes_grupo' );
 	echo '<table class="form-table" role="presentation">'
 		. '<tr><th scope="row"><label for="rtm_url_cotacao">Página de cotação</label></th><td><input type="url" class="regular-text" id="rtm_url_cotacao" name="rtm_opcoes[url_cotacao]" value="' . esc_attr( $o['url_cotacao'] ) . '"><p class="description">Endereço da página onde o viajante pede a cotação.</p></td></tr>'
+		. '<tr><th scope="row"><label for="rtm_google_chave">Chave do Google Maps</label></th><td><input type="text" class="regular-text" id="rtm_google_chave" name="rtm_opcoes[google_chave]" value="' . esc_attr( (string) $o['google_chave'] ) . '" autocomplete="off" spellcheck="false"><p class="description">Chave restrita ao site (redeturistica.com.br) com Maps JavaScript, Places (New) e Maps Embed. Com ela e o Place ID no agente, a página mostra nota, avaliações e mapa do Google.</p></td></tr>'
 		. '<tr><th scope="row">Modo ensaio</th><td><label><input type="checkbox" name="rtm_opcoes[ensaio]" value="1"' . checked( ! empty( $o['ensaio'] ), true, false ) . '> Ensaio (nenhum lead é enviado de verdade ao CRM)</label></td></tr>'
 		. '</table>';
 	submit_button();
