@@ -250,7 +250,9 @@ $r = rtm_template_reserva( '/tema/single.php' );
 igual( '/p/templates/agente.php', $r, 'rt_agente sem modelo do Elementor: modelo reserva' );
 ok( file_exists( $r ), 'modelo reserva existe' );
 $reserva = file_get_contents( $r );
-ok( false !== strpos( $reserva, "rtm_secao( 'trilha'" ) && strpos( $reserva, "rtm_secao( 'trilha'" ) < strpos( $reserva, "rtm_secao( 'topo'" ), 'modelo reserva: trilha antes do topo' );
+contem( 'rtm_corpo_agente(', $reserva, 'modelo reserva monta o corpo com rtm_corpo_agente()' );
+$corpo = rtm_corpo_agente( rtm_agente( 5 ) );
+ok( false !== strpos( $corpo, 'rtm-trilha' ) && strpos( $corpo, 'rtm-trilha' ) < strpos( $corpo, 'rtm-topo' ), 'modelo reserva: trilha antes do topo' );
 
 // CSS só em rt_agente e na página com [rt_cotacao
 ok( in_array( 'rtm_estilos', $GLOBALS['rt_ganchos']['wp_enqueue_scripts'], true ), 'wp_enqueue_scripts -> rtm_estilos' );
