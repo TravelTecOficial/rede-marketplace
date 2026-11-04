@@ -66,8 +66,10 @@ nao_contem( 'data-tipo="Luxo"', $h2, 'tipos: termos substituem a lista inicial' 
 unset( $GLOBALS['rt_taxonomias']['rt_tipo_viagem'] );
 
 // Destinos: só publicados com agente ativo
-preg_match( '/<select [^>]*id="rtm-destino".*?<\/select>/s', $html, $sel );
-contem( '<option value="gramado">Gramado</option>', $sel[0], 'destino: gramado listado (value=slug, label=título)' );
+contem( '<input type="text" id="rtm-destino" name="destino" list="rtm-destinos-lista"', $html, 'destino: campo de digitar com sugestões' );
+contem( 'nos melhores destinos</span>', $html, 'título genérico sem destino' );
+preg_match( '/<datalist id="rtm-destinos-lista">.*?<\/datalist>/s', $html, $sel );
+contem( '<option value="Gramado" data-slug="gramado"></option>', $sel[0], 'destino: gramado sugerido (value=título, data-slug)' );
 nao_contem( 'paris', $sel[0], 'destino: paris (só agente inativo) não listado' );
 nao_contem( 'canela', $sel[0], 'destino: canela (rascunho) não listado' );
 
@@ -112,7 +114,9 @@ $GLOBALS['rt_posts'][] = (object) array( 'ID' => 950, 'post_type' => 'destinos',
 $GLOBALS['rt_atual'] = 950;
 $hd = rtm_cotacao_html( array( 'destino' => 'atual' ) );
 contem( 'class="rtm-cotacao rtm-cotacao-destino" data-destino="bariloche"', $hd, 'destino: raiz marca o destino da página' );
-contem( '<option value="bariloche">Bariloche</option>', $hd, 'destino sem especialista aparece no seletor' );
+contem( '<option value="Bariloche" data-slug="bariloche"></option>', $hd, 'destino sem especialista aparece nas sugestões' );
+contem( 'value="Bariloche">', $hd, 'destino da página já preenchido' );
+contem( ' em Bariloche</span>', $hd, 'título com o destino da página' );
 contem( '<h2 class="rtm-titulo">', $hd, 'destino: título vira h2 (a página já tem h1)' );
 nao_contem( '<h1', $hd, 'destino: sem h1' );
 igual( $hd, rtm_cotacao_html( array() ), 'sem atributo, numa página de destino, também usa o destino da página' );

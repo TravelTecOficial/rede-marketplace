@@ -7,7 +7,7 @@
   var d = document;
   var $ = function (id) { return d.getElementById(id); };
 
-  var selDestino = $('rtm-destino');
+  var campoDestino = $('rtm-destino');
   var lista = $('rtm-lista');
   if (!lista) { return; }
 
@@ -26,14 +26,32 @@
     return t.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   }
 
-  function destinoAtual() { return selDestino ? selDestino.value : ''; }
+  // Destinos com especialista (sugestões do campo): [{ slug, nome }].
+  var opcoesDestino = Array.prototype.slice.call(d.querySelectorAll('#rtm-destinos-lista option')).map(function (o) {
+    return { slug: o.getAttribute('data-slug') || slugar(o.value), nome: o.value };
+  });
+  var textoVazio = vazio ? vazio.textContent : '';
+
+  function destinoTexto() { return campoDestino ? String(campoDestino.value || '').trim() : ''; }
+  function acharDestino(texto) {
+    var s = slugar(texto);
+    if (!s) { return null; }
+    for (var i = 0; i < opcoesDestino.length; i++) {
+      if (opcoesDestino[i].slug === s || slugar(opcoesDestino[i].nome) === s) { return opcoesDestino[i]; }
+    }
+    return null;
+  }
+  // Slug do destino digitado, se ele tem especialista; '' se em branco ou sem especialista.
+  function destinoAtual() { var o = acharDestino(destinoTexto()); return o ? o.slug : ''; }
   function marcado(c) { return c.getAttribute('aria-pressed') === 'true'; }
   function marcar(c, v) { c.setAttribute('aria-pressed', v ? 'true' : 'false'); }
   function selecionados() { return cards.filter(function (c) { return marcado(c) && !c.hidden; }); }
 
   function visivel(c) {
-    var dest = (c.getAttribute('data-destinos') || '').split(/\s+/);
-    if (dest.indexOf(destinoAtual()) === -1) { return false; }
+    if (destinoTexto()) {
+      var dest = (c.getAttribute('data-destinos') || '').split(/\s+/);
+      if (dest.indexOf(destinoAtual()) === -1) { return false; } // em branco: todos os especialistas
+    }
     if (!tipo) { return true; }
     return (c.getAttribute('data-tipos') || '').split('|').indexOf(tipo) !== -1;
   }
@@ -57,8 +75,8 @@
 
   function atualizarTitulo() {
     if (!tituloDestino) { return; }
-    var o = selDestino && selDestino.selectedIndex >= 0 ? selDestino.options[selDestino.selectedIndex] : null;
-    tituloDestino.textContent = o ? ' em ' + o.text : '';
+    var o = acharDestino(destinoTexto());
+    tituloDestino.textContent = o ? ' em ' + o.nome : ' nos melhores destinos';
   }
 
   function filtrar() {
@@ -68,7 +86,13 @@
       c.hidden = !v;
       if (!v) { marcar(c, false); } else { algum = true; }
     });
-    if (vazio) { vazio.hidden = algum; }
+    if (vazio) {
+      var texto = destinoTexto();
+      vazio.textContent = texto && !destinoAtual()
+        ? 'Ainda não temos especialista para ' + texto + '. Marque "a Rede escolhe" e indicamos o melhor para você.'
+        : textoVazio;
+      vazio.hidden = algum;
+    }
     atualizarContagem();
   }
 
@@ -103,8 +127,10 @@
     });
   }
 
-  if (selDestino) {
-    selDestino.addEventListener('change', function () { atualizarTitulo(); filtrar(); });
+  if (campoDestino) {
+    var aoMudarDestino = function () { atualizarTitulo(); filtrar(); };
+    campoDestino.addEventListener('input', aoMudarDestino);
+    campoDestino.addEventListener('change', aoMudarDestino);
   }
 
   // Pílulas: tipo (uma só, clicar de novo limpa), datas (uma só) e itens (várias).
@@ -153,7 +179,7 @@
   function validar() {
     var erros = [];
     var algumAgente = selecionados().length > 0 || (rede && rede.checked);
-    if (!destinoAtual()) { erros.push('rtm-destino'); }
+    if (!destinoTexto()) { erros.push('rtm-destino'); }
     if (!algumAgente) { erros.push('rtm-lista'); }
     if (!valor('rtm-adultos')) { erros.push('rtm-adultos'); }
     if (!valor('rtm-nome')) { erros.push('rtm-nome'); }
@@ -196,6 +222,7 @@
   function estado() {
     return {
       destino: destinoAtual(),
+      destino_texto: destinoTexto(),
       tipo: tipo,
       agentes: selecionados().map(function (c) { return c.getAttribute('data-slug'); }),
       rede: !!(rede && rede.checked)
@@ -205,14 +232,10 @@
   // Início: destino e agente vindos da URL.
   var params = null;
   try { params = new URLSearchParams(window.location.search); } catch (e) { params = null; }
-  if (selDestino && selDestino.options.length) {
-    var raiz = document.querySelector('.rtm-cotacao');
-    var pedido = slugar(params ? params.get('destino') : '') || slugar(raiz ? raiz.getAttribute('data-destino') : '');
-    var achou = false;
-    for (var i = 0; i < selDestino.options.length; i++) {
-      if (selDestino.options[i].value === pedido) { selDestino.selectedIndex = i; achou = true; break; }
-    }
-    if (!achou) { selDestino.selectedIndex = 0; }
+  if (campoDestino) {
+    var raiz = d.querySelector('.rtm-cotacao');
+    var achado = acharDestino(params ? params.get('destino') : '') || acharDestino(raiz ? raiz.getAttribute('data-destino') : '');
+    if (achado) { campoDestino.value = achado.nome; }
   }
   atualizarTitulo();
   filtrar();

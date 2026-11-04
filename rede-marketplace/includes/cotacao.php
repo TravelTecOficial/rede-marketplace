@@ -104,7 +104,7 @@ function rtm_cotacao_html( $atts = array() ) {
 
 	$h  = '<div class="rtm-cotacao' . ( $fixo ? ' rtm-cotacao-destino" data-destino="' . esc_attr( $fixo[0] ) : '' ) . '">';
 	$h .= '<div class="rtm-intro"><small>Pedido de cotação</small>';
-	$h .= '<' . $tag . ' class="rtm-titulo">Receba até 3 cotações de especialistas<span id="rtm-titulo-destino"></span></' . $tag . '>';
+	$h .= '<' . $tag . ' class="rtm-titulo">Receba até 3 cotações de especialistas<span id="rtm-titulo-destino">' . esc_html( $fixo ? ' em ' . $fixo[1] : ' nos melhores destinos' ) . '</span></' . $tag . '>';
 	$h .= '<p class="rtm-lead">Conte como é a sua viagem, escolha quem vai montá-la e receba as propostas no seu WhatsApp. Sem custo e sem compromisso.</p>';
 	$h .= '<div class="rtm-como"><span><b>1.</b> Conte sua viagem</span><span><b>2.</b> Escolha os especialistas</span><span><b>3.</b> Compare e decida</span></div></div>';
 
@@ -113,11 +113,13 @@ function rtm_cotacao_html( $atts = array() ) {
 	// Etapa 1: a viagem.
 	$h .= '<section class="rtm-etapa" data-etapa="1">' . rtm_cot_etapa_titulo( 1, 'Sua viagem', 'O tipo de viagem mostra os especialistas certos para você.' );
 	$h .= '<div class="rtm-campos">';
-	$h .= '<label class="rtm-rot" for="rtm-destino">Destino<select id="rtm-destino" name="destino">';
+	// Destino digitável (qualquer lugar); a lista sugere os destinos que têm especialista.
+	$h .= '<label class="rtm-rot" for="rtm-destino">Destino<input type="text" id="rtm-destino" name="destino" list="rtm-destinos-lista" autocomplete="off" placeholder="Para onde você quer ir?" value="' . esc_attr( $fixo ? $fixo[1] : '' ) . '"></label>';
+	$h .= '<datalist id="rtm-destinos-lista">';
 	foreach ( $destinos as $slug => $titulo ) {
-		$h .= '<option value="' . esc_attr( $slug ) . '">' . esc_html( $titulo ) . '</option>';
+		$h .= '<option value="' . esc_attr( $titulo ) . '" data-slug="' . esc_attr( $slug ) . '"></option>';
 	}
-	$h .= '</select></label>';
+	$h .= '</datalist>';
 	$h .= '<label class="rtm-rot" for="rtm-origem">Cidade de saída<input type="text" id="rtm-origem" name="origem" placeholder="Ex.: Campinas/SP" autocomplete="address-level2"></label>';
 	$h .= '<div class="rtm-grupo rtm-cheio" role="group" aria-labelledby="rtm-tipos-rot"><span id="rtm-tipos-rot">Tipo de viagem</span><div class="rtm-pilulas" id="rtm-tipos">'
 		. rtm_cot_pilulas( array_combine( $tipos, $tipos ), 'data-tipo' ) . '</div></div>';

@@ -11,10 +11,10 @@ const card = (slug, destinos, tipos) =>
 const sel = (id, ops, v) => `<select id="${id}">${ops.map((o) => `<option value="${o}"${o === v ? ' selected' : ''}>${o}</option>`).join('')}</select>`;
 
 function html(destinos) {
-  const opts = destinos.map(([s, t]) => `<option value="${s}">${t}</option>`).join('');
+  const opts = destinos.map(([s, t]) => `<option value="${t}" data-slug="${s}"></option>`).join('');
   return `<div class="rtm-cotacao"><h1>Receba até 3 cotações de especialistas<span id="rtm-titulo-destino"></span></h1>
 <form id="rtm-cotacao" novalidate>
-<select id="rtm-destino">${opts}</select>
+<input type="text" id="rtm-destino" list="rtm-destinos-lista"><datalist id="rtm-destinos-lista">${opts}</datalist>
 <div id="rtm-tipos"><button type="button" class="rtm-pilula" data-tipo="Família" aria-pressed="false">Família</button><button type="button" class="rtm-pilula" data-tipo="Casal / Lua de mel" aria-pressed="false">Casal / Lua de mel</button><button type="button" class="rtm-pilula" data-tipo="Aventura" aria-pressed="false">Aventura</button></div>
 <div id="rtm-lista">${card('mariana-kloss', 'gramado', 'Família|Natal Luz')}${card('rafael-antunes', 'gramado', 'Casal / Lua de mel|Luxo')}${card('camila-duarte', 'gramado canela', 'Grupo|Natal Luz')}${card('bruno-seibel', 'gramado', 'Família')}</div>
 <div id="rtm-vazio" hidden>Nenhum</div>
@@ -57,17 +57,37 @@ test('?destino=Gramado&agente=camila-duarte', () => {
   assert.equal($(w, 'rtm-contagem').textContent.replace(/\s+/g, ' ').trim(), '1 especialista · 1 cotação');
 });
 
-test('destino com acento e destino inexistente', () => {
+test('destino com acento e destino inexistente na URL', () => {
   assert.equal(montar('?destino=gramadô').RTMCotacao.estado().destino, 'gramado');
   const w = montar('?destino=xyz', [['canela', 'Canela'], ['gramado', 'Gramado']]);
-  assert.equal(w.RTMCotacao.estado().destino, 'canela');
+  assert.equal(w.RTMCotacao.estado().destino, '');
+  assert.equal($(w, 'rtm-destino').value, '');
+  assert.equal(visiveis(w).length, 4, 'destino em branco: todos os especialistas');
+});
+
+test('sem destino: título genérico e todos os especialistas', () => {
+  const w = montar();
+  assert.equal($(w, 'rtm-titulo-destino').textContent, ' nos melhores destinos');
+  assert.equal(visiveis(w).length, 4);
+});
+
+test('destino digitado sem especialista: aviso com o nome e nenhum card', () => {
+  const w = montar();
+  $(w, 'rtm-destino').value = 'Paris';
+  $(w, 'rtm-destino').dispatchEvent(new w.Event('input', { bubbles: true }));
+  assert.equal(visiveis(w).length, 0);
+  assert.equal($(w, 'rtm-vazio').hidden, false);
+  assert.match($(w, 'rtm-vazio').textContent, /Ainda não temos especialista para Paris/);
+  assert.equal($(w, 'rtm-titulo-destino').textContent, ' nos melhores destinos');
+  assert.equal(w.RTMCotacao.estado().destino_texto, 'Paris');
+  assert.ok(!w.RTMCotacao.validar().includes('rtm-destino'), 'destino digitado vale');
 });
 
 test('título recebe o destino e acompanha a troca', () => {
-  const w = montar();
+  const w = montar('?destino=gramado');
   assert.equal($(w, 'rtm-titulo-destino').textContent, ' em Gramado');
-  $(w, 'rtm-destino').value = 'canela';
-  $(w, 'rtm-destino').dispatchEvent(new w.Event('change', { bubbles: true }));
+  $(w, 'rtm-destino').value = 'Canela';
+  $(w, 'rtm-destino').dispatchEvent(new w.Event('input', { bubbles: true }));
   assert.equal($(w, 'rtm-titulo-destino').textContent, ' em Canela');
   assert.deepEqual(P(visiveis(w)), ['camila-duarte']);
   assert.equal($(w, 'rtm-vazio').hidden, true);
@@ -155,15 +175,14 @@ test('pílulas de datas alternam campos e as de inclui alternam sozinhas', () =>
   assert.equal(pilula(w, 'rtm-inclui', 'data-item', 'Aéreo').getAttribute('aria-pressed'), 'true');
 });
 
-test('sem destinos não lança erro e mostra rtm-vazio', () => {
+test('sem destinos não lança erro; destino em branco é obrigatório', () => {
   const w = montar('', []);
-  assert.equal($(w, 'rtm-vazio').hidden, false);
   assert.equal(w.RTMCotacao.estado().destino, '');
   assert.ok(w.RTMCotacao.validar().includes('rtm-destino'));
 });
 
 test('enviar vazio aponta erros; preenchido mostra o aviso de ensaio sem rede', () => {
-  const w = montar();
+  const w = montar('?destino=gramado');
   clicar($(w, 'rtm-enviar'));
   const erros = w.RTMCotacao.validar();
   for (const id of ['rtm-nome', 'rtm-whats', 'rtm-email', 'rtm-lgpd']) assert.ok(erros.includes(id), id);
@@ -186,7 +205,7 @@ test('enviar vazio aponta erros; preenchido mostra o aviso de ensaio sem rede', 
 });
 
 test('WhatsApp e e-mail inválidos são recusados', () => {
-  const w = montar();
+  const w = montar('?destino=gramado');
   clicar(cardDe(w, 'mariana-kloss'));
   $(w, 'rtm-nome').value = 'Ana';
   $(w, 'rtm-lgpd').checked = true;
@@ -213,7 +232,7 @@ test('página de Destino: data-destino escolhe o destino sem parâmetro na URL',
   dom.window.Element.prototype.scrollIntoView = function () {};
   dom.window.eval(JS);
   const d = dom.window.document;
-  assert.equal(d.getElementById('rtm-destino').value, 'canela');
+  assert.equal(d.getElementById('rtm-destino').value, 'Canela');
   assert.equal(d.querySelector('[data-slug="camila-duarte"]').hidden, false);
   assert.equal(d.querySelector('[data-slug="mariana-kloss"]').hidden, true);
 });
