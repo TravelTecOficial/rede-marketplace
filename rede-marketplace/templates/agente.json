@@ -14,7 +14,7 @@
     "content_width": "boxed",
     "boxed_width": {
      "unit": "px",
-     "size": 1072,
+     "size": 912,
      "sizes": []
     },
     "flex_direction": "column",
@@ -77,7 +77,7 @@
     "content_width": "boxed",
     "boxed_width": {
      "unit": "px",
-     "size": 1072,
+     "size": 912,
      "sizes": []
     },
     "flex_direction": "row",

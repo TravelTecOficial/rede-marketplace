@@ -40,10 +40,10 @@ img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 
 /* Topo */
 /* Trilha: Rede Turística › Especialistas › nome */
-.rtm-trilha{box-sizing:border-box;max-width:1040px;margin:0 auto 14px;font-family:var(--rtm-font-body);font-size:13px;line-height:1.4;color:var(--rtm-muted)}
+.rtm-trilha{box-sizing:border-box;max-width:880px;margin:0 auto 14px;font-family:var(--rtm-font-body);font-size:13px;line-height:1.4;color:var(--rtm-muted)}
 .rtm-trilha a.rtm-trilha-link,.rtm-trilha a.rtm-trilha-link:visited{color:inherit;text-decoration:none}
 .rtm-trilha a.rtm-trilha-link:hover,.rtm-trilha a.rtm-trilha-link:focus{color:var(--rtm-ink);text-decoration:underline}
-.rtm-topo{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr);max-width:1040px;margin:0 auto;background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:22px;overflow:hidden}
+.rtm-topo{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr);max-width:880px;margin:0 auto;background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:22px;overflow:hidden}
 .rtm-lado{display:flex;flex-direction:column;min-width:0;border-right:1px solid var(--rtm-line)}
 .rtm-foto{position:relative;flex:1 1 auto;min-height:330px}
 .rtm-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block}
@@ -116,13 +116,15 @@ img.rtm-logo{background:var(--rtm-surface);border:1px solid var(--rtm-line)}
 /* Cartão lateral de cotação */
 .rtm-lateral{position:sticky;top:16px}
 .e-con.rtm-c-lateral > .elementor-widget-shortcode{position:sticky;top:16px}
+/* Página do agente mais estreita (880px de conteúdo, como a cotação), mesmo no modelo já instalado (1072px). */
+body .elementor .e-con-boxed.rtm-c-trilha,body .elementor .e-con-boxed.rtm-c-grade{--content-width:880px}
 .rtm-lateral .rtm-bloco{display:flex;flex-direction:column;gap:12px}
 .rtm-lateral .rtm-bloco h3{font-family:var(--rtm-font-display);font-size:20px;margin:0;line-height:1.2;color:var(--rtm-ink)}
 .rtm-lateral .rtm-bloco p{margin:0;font-size:14px;color:var(--rtm-muted)}
 .rtm-lateral ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:4px}
 
 /* Modelo reserva (sem Elementor) */
-.rtm-wrap{max-width:1072px;margin:0 auto;padding:20px 16px 40px}
+.rtm-wrap{max-width:912px;margin:0 auto;padding:20px 16px 40px}
 .rtm-grade{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;margin-top:22px}
 @media (max-width:900px){
   .rtm-grade{grid-template-columns:1fr}
