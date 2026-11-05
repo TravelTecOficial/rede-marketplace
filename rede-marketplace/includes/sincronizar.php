@@ -131,12 +131,16 @@ function rtm_ci_salvar_agente( array $a ) {
 			return array( 0, array() );
 		}
 		$destinos = array();
+		// Destinos = categorias do blog (slug + nome). Com página de Destino no site, guarda também o id dela.
 		foreach ( isset( $a['destinos'] ) && is_array( $a['destinos'] ) ? $a['destinos'] : array() as $d ) {
-			$local = is_array( $d ) && ! empty( $d['slug'] ) ? rtm_teste_destino( sanitize_title( (string) $d['slug'] ) ) : null;
-			if ( $local ) {
-				$destinos[] = $local;
+			$slug_d = is_array( $d ) && ! empty( $d['slug'] ) ? sanitize_title( (string) $d['slug'] ) : '';
+			if ( '' === $slug_d ) {
+				continue;
 			}
+			$local      = rtm_teste_destino( $slug_d );
+			$destinos[] = array( 'id' => $local ? $local['id'] : 0, 'slug' => $slug_d, 'nome' => rtm_ci_txt( $d, 'nome' ) );
 		}
+		$slugs_d   = wp_list_pluck( $destinos, 'slug' );
 		$principal = sanitize_title( rtm_ci_txt( $a, 'destino_principal' ) );
 		$conferido = (string) get_post_meta( $id, 'rtm_cadastur_conferido_em', true );
 		$campos    = array(
@@ -151,7 +155,7 @@ function rtm_ci_salvar_agente( array $a ) {
 			'idiomas'               => rtm_ci_lista( $a, 'idiomas' ),
 			'especialidades'        => rtm_especialidades_normalizar( isset( $a['especialidades'] ) ? $a['especialidades'] : array() ),
 			'destinos'              => $destinos,
-			'destino_principal'     => $principal && rtm_teste_destino( $principal ) ? $principal : ( $destinos ? $destinos[0]['slug'] : '' ),
+			'destino_principal'     => in_array( $principal, $slugs_d, true ) ? $principal : ( $destinos ? $destinos[0]['slug'] : '' ),
 			'agencia_nome'          => rtm_ci_txt( $a, 'agencia_nome' ),
 			'agencia_cidade'        => rtm_ci_txt( $a, 'agencia_cidade' ),
 			'agencia_desde'         => rtm_ci_num( $a, 'agencia_desde' ),
@@ -234,7 +238,7 @@ function rtm_ci_salvar_sugestao( array $s, $agente_id, $ordem_padrao ) {
 	$ordem   = rtm_ci_num( $s, 'ordem' );
 	$campos  = array(
 		'agente'         => (int) $agente_id,
-		'destino'        => $destino && rtm_teste_destino( $destino ) ? $destino : '',
+		'destino'        => $destino,
 		'destinos_texto' => rtm_ci_txt( $s, 'destinos_texto' ),
 		'tipo'           => rtm_ci_txt( $s, 'tipo' ),
 		'texto_card'     => rtm_ci_txt( $s, 'texto_card' ),

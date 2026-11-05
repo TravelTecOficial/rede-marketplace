@@ -24,21 +24,22 @@ function rtm_tipos_cotacao() {
 	return $nomes ? $nomes : rtm_tipos_iniciais();
 }
 
-/** Destinos publicados (post type `destinos`) com ao menos um agente ativo: slug => título. */
+/** Destinos com ao menos um agente ativo: slug => nome (título da página de Destino, se houver; senão o da categoria). */
 function rtm_destinos_cotacao( array $agentes ) {
-	$com_agente = array();
+	$res = array();
 	foreach ( $agentes as $a ) {
-		foreach ( $a['destinos_slugs'] as $s ) {
-			$com_agente[ (string) $s ] = true;
+		foreach ( $a['destinos'] as $d ) {
+			if ( is_array( $d ) && ! empty( $d['slug'] ) && ! isset( $res[ (string) $d['slug'] ] ) ) {
+				$nome = rtm_titulo_destino( $d );
+				if ( '' !== $nome ) {
+					$res[ (string) $d['slug'] ] = $nome;
+				}
+			}
 		}
 	}
-	$res   = array();
-	$posts = get_posts( array( 'post_type' => 'destinos', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC' ) );
-	foreach ( $posts as $p ) {
-		if ( isset( $com_agente[ $p->post_name ] ) ) {
-			$res[ $p->post_name ] = $p->post_title;
-		}
-	}
+	uasort( $res, function ( $x, $y ) {
+		return strcmp( mb_strtolower( remove_accents( $x ) ), mb_strtolower( remove_accents( $y ) ) );
+	} );
 	return $res;
 }
 

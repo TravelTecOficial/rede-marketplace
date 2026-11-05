@@ -211,7 +211,10 @@ function rtm_titulo_destino( $d ) {
 			$p = $achados[0];
 		}
 	}
-	return $p ? (string) $p->post_title : '';
+	if ( $p ) {
+		return (string) $p->post_title;
+	}
+	return isset( $d['nome'] ) && is_scalar( $d['nome'] ) ? (string) $d['nome'] : ''; // categoria do blog sem página de Destino
 }
 
 /** HTML de uma seção da página do agente; '' quando não há dado para mostrar. */

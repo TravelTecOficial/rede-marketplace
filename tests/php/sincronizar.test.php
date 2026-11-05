@@ -30,7 +30,7 @@ igual( $api[0]['foto'], $a['foto'], 'foto do Cliente Ideal tem prioridade' );
 igual( $api[0]['certificado'], $a['certificado'], 'certificado do Cliente Ideal' );
 igual( 'Bem Viajar', $a['agencia_nome'], 'agência' );
 ok( false !== strpos( $a['apresentacao'], "\n\n" ), 'apresentação mantém parágrafos' );
-igual( array( array( 'id' => 10, 'slug' => 'gramado' ) ), $a['destinos'], 'destino ligado ao post local' );
+igual( array( array( 'id' => 10, 'slug' => 'gramado', 'nome' => 'Gramado' ) ), $a['destinos'], 'destino ligado ao post local' );
 ok( ! $a['cadastur_verificado'], 'Cadastur não verificado segue a API' );
 igual( array( 'Grupo', 'Natal Luz', 'Melhor idade' ), $GLOBALS['rt_obj_termos'][50]['rt_tipo_viagem'], 'tipos de viagem' );
 igual( 'draft', get_post_status( 51 ), 'agente fora da API foi para rascunho' );
@@ -154,3 +154,17 @@ contem( 'src="https://lh3.googleusercontent.com/a.png"', $h, 'foto do autor' );
 contem( '<i>Google</i>', $h, 'atribuição Google' );
 nao_contem( 'fictícias', $h, 'sem aviso de exemplo' );
 contem( '4,1', rtm_html_nota( $a ), 'nota no topo' );
+
+// Destino que é só categoria do blog (sem página de Destino)
+$api4 = $api;
+$api4[0]['destinos'][] = array( 'slug' => 'comandatuba', 'nome' => 'Comandatuba' );
+$api4[0]['destino_principal'] = 'comandatuba';
+resposta_falsa( 200, $api4 );
+rtm_ci_sincronizar();
+$a = rtm_agente( 50 );
+igual( array( 'id' => 0, 'slug' => 'comandatuba', 'nome' => 'Comandatuba' ), $a['destinos'][1], 'categoria sem página é mantida' );
+igual( 'comandatuba', $a['destino_principal'], 'destino principal pode ser categoria' );
+ok( in_array( 'comandatuba', $a['destinos_slugs'], true ), 'filtro por destino inclui a categoria' );
+igual( 'Comandatuba', rtm_titulo_destino( $a['destinos'][1] ), 'nome da categoria nos chips' );
+$dc = rtm_destinos_cotacao( array( $a ) );
+igual( array( 'comandatuba' => 'Comandatuba', 'gramado' => 'Gramado' ), $dc, 'lista de destinos com página e categoria, por nome' );

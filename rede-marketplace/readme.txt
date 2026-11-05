@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.17.0 (05/11/2026): destinos do agente = categorias do blog (vindas do Cliente Ideal); destino sem página de Destino aparece com o nome da categoria nos chips, filtros e cotação.
 0.16.0 (05/11/2026): avaliações reais do Google vindas do Cliente Ideal (nota, total, até 5 depoimentos com autor, foto e link). Fim das avaliações fictícias.
 0.15.1 (05/11/2026): webhook POST /wp-json/rede-marketplace/v1/sincronizar — o Cliente Ideal avisa e o site sincroniza na hora. Reserva automática passa a ser de hora em hora.
 0.15.0 (05/11/2026): agentes e sugestões vêm do módulo Rede Turística do Cliente Ideal (API pública, a cada 10 minutos e no botão "Sincronizar agora"). O que sai da API vai para rascunho.
