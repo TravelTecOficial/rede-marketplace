@@ -34,6 +34,65 @@ function rtm_envio_txt( array $p, $k, $max = 200 ) {
 	return mb_substr( $v, 0, $max );
 }
 
+/** WhatsApp só com dígitos, sem +55 nem 0 antes do DDD; '' se não for um celular ou fixo do Brasil válido. */
+function rtm_envio_tel( $v ) {
+	$t = preg_replace( '/\D+/', '', (string) $v );
+	if ( strlen( $t ) > 11 && 0 === strpos( $t, '55' ) ) {
+		$t = substr( $t, 2 );
+	}
+	if ( strlen( $t ) > 10 && '0' === $t[0] ) {
+		$t = substr( $t, 1 );
+	}
+	return preg_match( '/^[1-9][1-9](9\d{8}|[2-5]\d{7})$/', $t ) ? $t : '';
+}
+
+/** Nome com espaços normalizados; '' se tiver números/símbolos ou for curto demais. */
+function rtm_envio_nome( $v ) {
+	$n = trim( preg_replace( '/\s+/u', ' ', (string) $v ) );
+	$l = mb_strlen( $n );
+	if ( $l < 3 || $l > 120 || ! preg_match( "/^[\p{L}' .-]+$/u", $n ) || ! preg_match( '/\p{L}{2}/u', $n ) ) {
+		return '';
+	}
+	return $n;
+}
+
+/** Data AAAA-MM-DD válida ou ''. */
+function rtm_envio_data( $v ) {
+	$v = (string) $v;
+	if ( ! preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', $v, $m ) || ! checkdate( (int) $m[2], (int) $m[3], (int) $m[1] ) ) {
+		return '';
+	}
+	return $v;
+}
+
+/**
+ * Datas certas (ida/volta): ida não pode ser no passado e volta não pode ser antes da ida.
+ * Devolve o texto "Ida dd/mm/aaaa · volta dd/mm/aaaa", '' sem datas, ou WP_Error.
+ */
+function rtm_envio_datas( array $p ) {
+	$ida_raw   = rtm_envio_txt( $p, 'ida', 20 );
+	$volta_raw = rtm_envio_txt( $p, 'volta', 20 );
+	if ( '' === $ida_raw && '' === $volta_raw ) {
+		return '';
+	}
+	$ida   = rtm_envio_data( $ida_raw );
+	$volta = rtm_envio_data( $volta_raw );
+	if ( ( '' !== $ida_raw && '' === $ida ) || ( '' !== $volta_raw && '' === $volta ) ) {
+		return new WP_Error( 'datas', 'Data de viagem inválida.' );
+	}
+	$ontem = wp_date( 'Y-m-d', time() - DAY_IN_SECONDS ); // um dia de folga para fusos diferentes
+	if ( ( '' !== $ida && $ida < $ontem ) || ( '' !== $volta && $volta < $ontem ) ) {
+		return new WP_Error( 'datas', 'A data da viagem não pode ser no passado.' );
+	}
+	if ( '' !== $ida && '' !== $volta && $volta < $ida ) {
+		return new WP_Error( 'datas', 'A data de volta não pode ser antes da ida.' );
+	}
+	$br = function ( $x ) {
+		return '' === $x ? '?' : substr( $x, 8, 2 ) . '/' . substr( $x, 5, 2 ) . '/' . substr( $x, 0, 4 );
+	};
+	return 'Ida ' . $br( $ida ) . ' · volta ' . $br( $volta );
+}
+
 /**
  * Agentes do pedido: slugs escolhidos (1 a 3, ativos e vindos do Cliente Ideal) => ids do Cliente Ideal.
  * "A Rede escolhe" (sem agente marcado): até 3 que atendem o destino; sem nenhum, os 3 primeiros.
@@ -71,14 +130,21 @@ function rtm_envio_corpo( array $p ) {
 	if ( '' !== rtm_envio_txt( $p, 'site' ) ) { // campo isca: robô preenche, pessoa não vê
 		return new WP_Error( 'robo', 'Pedido recusado.' );
 	}
-	$nome  = rtm_envio_txt( $p, 'nome', 120 );
-	$email = sanitize_email( rtm_envio_txt( $p, 'email', 160 ) );
-	$tel   = preg_replace( '/\D+/', '', rtm_envio_txt( $p, 'telefone', 30 ) );
+	$nome  = rtm_envio_nome( rtm_envio_txt( $p, 'nome', 160 ) );
+	$email = strtolower( sanitize_email( rtm_envio_txt( $p, 'email', 160 ) ) );
+	$tel   = rtm_envio_tel( rtm_envio_txt( $p, 'telefone', 30 ) );
 	if ( '' === $nome ) {
-		return new WP_Error( 'nome', 'Informe o seu nome.' );
+		return new WP_Error( 'nome', 'Informe o seu nome (só letras).' );
 	}
-	if ( ! is_email( $email ) && ( strlen( $tel ) < 10 || strlen( $tel ) > 13 ) ) {
-		return new WP_Error( 'contato', 'Informe um WhatsApp ou e-mail válido.' );
+	if ( '' === $tel ) {
+		return new WP_Error( 'whats', 'Informe um WhatsApp válido com DDD.' );
+	}
+	if ( ! is_email( $email ) || ! preg_match( '/\.[a-z]{2,}$/', $email ) ) {
+		return new WP_Error( 'email', 'Informe um e-mail válido.' );
+	}
+	$datas = rtm_envio_datas( $p );
+	if ( is_wp_error( $datas ) ) {
+		return $datas;
 	}
 	if ( empty( $p['lgpd'] ) ) {
 		return new WP_Error( 'lgpd', 'É preciso autorizar o envio dos dados aos especialistas.' );
@@ -112,10 +178,10 @@ function rtm_envio_corpo( array $p ) {
 	$corpo = array(
 		'agentes'    => array_values( wp_list_pluck( $agentes, 'ci' ) ),
 		'nome'       => $nome,
-		'email'      => is_email( $email ) ? $email : '',
+		'email'      => $email,
 		'telefone'   => $tel,
 		'destino'    => rtm_envio_txt( $p, 'destino', 120 ),
-		'datas'      => rtm_envio_txt( $p, 'datas', 120 ),
+		'datas'      => '' !== $datas ? $datas : rtm_envio_txt( $p, 'datas', 120 ),
 		'pessoas'    => rtm_envio_txt( $p, 'pessoas', 120 ),
 		'orcamento'  => rtm_envio_txt( $p, 'orcamento', 80 ),
 		'mensagem'   => implode( "\n", $msg ),

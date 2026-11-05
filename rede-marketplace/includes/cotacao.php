@@ -159,8 +159,8 @@ function rtm_cotacao_html( $atts = array() ) {
 	$h .= '<div class="rtm-campos">';
 	$h .= '<div class="rtm-grupo rtm-cheio" role="group" aria-labelledby="rtm-datas-rot"><span id="rtm-datas-rot">Datas</span><div class="rtm-pilulas" id="rtm-datas">'
 		. rtm_cot_pilulas( array( 'certas' => 'Já tenho as datas', 'mes' => 'Só sei o mês', 'aberto' => 'Ainda não sei' ), 'data-v', array( 'certas' ) ) . '</div></div>';
-	$h .= '<label class="rtm-rot" for="rtm-ida">Ida<input type="date" id="rtm-ida" name="ida"></label>';
-	$h .= '<label class="rtm-rot" for="rtm-volta">Volta<input type="date" id="rtm-volta" name="volta"></label>';
+	$h .= '<label class="rtm-rot" for="rtm-ida">Ida<input type="date" id="rtm-ida" name="ida" min="' . esc_attr( wp_date( 'Y-m-d' ) ) . '"></label>';
+	$h .= '<label class="rtm-rot" for="rtm-volta">Volta<input type="date" id="rtm-volta" name="volta" min="' . esc_attr( wp_date( 'Y-m-d' ) ) . '"></label>';
 	$h .= '<label class="rtm-rot rtm-cheio" for="rtm-mes" hidden>Mês da viagem<input type="month" id="rtm-mes" name="mes"></label>';
 	$h .= '<div class="rtm-grupo rtm-cheio" role="group" aria-labelledby="rtm-quem-rot"><span id="rtm-quem-rot">Quem vai</span><div class="rtm-cont">'
 		. rtm_cot_select( 'rtm-adultos', array( '1', '2', '3', '4', '5+' ), '2', 'Adultos' )
@@ -175,9 +175,9 @@ function rtm_cotacao_html( $atts = array() ) {
 	// Etapa 4: contato.
 	$h .= '<section class="rtm-etapa" data-etapa="4">' . rtm_cot_etapa_titulo( 4, 'Seu contato', 'As cotações chegam por aqui.' );
 	$h .= '<div class="rtm-campos">';
-	$h .= '<label class="rtm-rot rtm-cheio" for="rtm-nome">Nome completo<input type="text" id="rtm-nome" name="nome" autocomplete="name"></label>';
-	$h .= '<label class="rtm-rot" for="rtm-whats">WhatsApp<input type="tel" id="rtm-whats" name="whats" autocomplete="tel" placeholder="(11) 99999-9999"></label>';
-	$h .= '<label class="rtm-rot" for="rtm-email">E-mail<input type="email" id="rtm-email" name="email" autocomplete="email"></label>';
+	$h .= '<label class="rtm-rot rtm-cheio" for="rtm-nome">Nome completo<input type="text" id="rtm-nome" name="nome" autocomplete="name" maxlength="120"></label>';
+	$h .= '<label class="rtm-rot" for="rtm-whats">WhatsApp<input type="tel" id="rtm-whats" name="whats" autocomplete="tel" inputmode="numeric" maxlength="15" placeholder="(11) 99999-9999"></label>';
+	$h .= '<label class="rtm-rot" for="rtm-email">E-mail<input type="email" id="rtm-email" name="email" autocomplete="email" maxlength="160" placeholder="nome@exemplo.com"></label>';
 	$h .= rtm_cot_select( 'rtm-horario', array( 'Qualquer horário', 'Manhã', 'Tarde', 'Noite' ), 'Qualquer horário', 'Melhor horário para contato', true );
 	$link = '' !== $politica ? '<a href="' . $politica . '" target="_blank" rel="noopener">Política de Privacidade</a>' : 'Política de Privacidade';
 	$h .= '<label class="rtm-lgpd rtm-cheio" for="rtm-lgpd"><input type="checkbox" id="rtm-lgpd" name="lgpd"><span>Autorizo a Rede Turística a enviar meus dados aos especialistas escolhidos para que preparem as cotações, conforme a ' . $link . '.</span></label>';

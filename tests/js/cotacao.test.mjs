@@ -212,8 +212,12 @@ test('WhatsApp e e-mail inválidos são recusados', () => {
   $(w, 'rtm-whats').value = '12345';
   $(w, 'rtm-email').value = 'ana@';
   assert.deepEqual(P(w.RTMCotacao.validar().sort()), ['rtm-email', 'rtm-whats']);
+  $(w, 'rtm-whats').value = '(11) 89999-9999';
+  assert.ok(w.RTMCotacao.validar().includes('rtm-whats'), 'celular sem o 9');
+  $(w, 'rtm-whats').value = '(01) 99999-9999';
+  assert.ok(w.RTMCotacao.validar().includes('rtm-whats'), 'DDD inválido');
   $(w, 'rtm-whats').value = '+55 (11) 99999-9999';
-  assert.ok(w.RTMCotacao.validar().includes('rtm-whats'));
+  assert.ok(!w.RTMCotacao.validar().includes('rtm-whats'), '+55 aceito');
   $(w, 'rtm-whats').value = '1133334444';
   $(w, 'rtm-email').value = 'a@b.co';
   assert.deepEqual(P(w.RTMCotacao.validar()), []);
@@ -345,4 +349,53 @@ test('com data-envio: erro do servidor mostra a mensagem e libera o botão', asy
   assert.ok($(w, 'rtm-aviso-ensaio').classList.contains('rtm-erro'));
   assert.equal($(w, 'rtm-enviar').disabled, false);
   assert.equal(w.document.querySelector('.rtm-obrigado'), null);
+});
+
+test('máscara do WhatsApp, mensagens de erro e nome inválido', () => {
+  const w = montar('?destino=gramado');
+  const t = $(w, 'rtm-whats');
+  const digitar = (v) => { t.value = v; t.dispatchEvent(new w.Event('input', { bubbles: true })); };
+  digitar('11999998888'); assert.equal(t.value, '(11) 99999-8888');
+  digitar('1133334444'); assert.equal(t.value, '(11) 3333-4444');
+  digitar('+55 11 99999-8888 123'); assert.equal(t.value, '(11) 99999-8888');
+  digitar('119'); assert.equal(t.value, '(11) 9');
+  $(w, 'rtm-nome').value = 'Ana 123';
+  clicar($(w, 'rtm-enviar'));
+  assert.ok(w.RTMCotacao.validar().includes('rtm-nome'));
+  assert.equal($(w, 'rtm-nome-erro').hidden, false);
+  assert.match($(w, 'rtm-nome-erro').textContent, /só letras/);
+  $(w, 'rtm-nome').value = 'Ana  Souza';
+  $(w, 'rtm-nome').dispatchEvent(new w.Event('input', { bubbles: true }));
+  assert.equal($(w, 'rtm-nome-erro').hidden, true, 'aviso some ao corrigir');
+  $(w, 'rtm-nome').dispatchEvent(new w.Event('blur'));
+  assert.equal($(w, 'rtm-nome').value, 'Ana Souza');
+  digitar('11999998888');
+  assert.equal(w.RTMCotacao.pedido().telefone, '11999998888');
+});
+
+test('volta antes da ida e ida no passado são recusadas; volta mínima segue a ida', () => {
+  const w = montar('?destino=gramado');
+  const z = (n) => String(n).padStart(2, '0');
+  const dia = (k) => { const a = new w.Date(); a.setDate(a.getDate() + k); return a.getFullYear() + '-' + z(a.getMonth() + 1) + '-' + z(a.getDate()); };
+  const ida = $(w, 'rtm-ida'), volta = $(w, 'rtm-volta');
+  assert.equal(ida.min, dia(0));
+  ida.value = dia(10); ida.dispatchEvent(new w.Event('change', { bubbles: true }));
+  assert.equal(volta.min, dia(10));
+  volta.value = dia(5);
+  assert.ok(w.RTMCotacao.validar().includes('rtm-volta'));
+  volta.value = dia(10);
+  assert.ok(!w.RTMCotacao.validar().includes('rtm-volta'), 'mesmo dia vale');
+  ida.value = dia(-1);
+  assert.ok(w.RTMCotacao.validar().includes('rtm-ida'));
+  ida.value = dia(20); ida.dispatchEvent(new w.Event('change', { bubbles: true }));
+  assert.equal(volta.value, '', 'volta antes da nova ida é limpa');
+  volta.value = dia(25);
+  const p = w.RTMCotacao.pedido();
+  assert.equal(p.ida, dia(20));
+  assert.equal(p.volta, dia(25));
+  assert.match(p.datas, /^Ida \d{2}\/\d{2}\/\d{4} · volta \d{2}\/\d{2}\/\d{4}$/);
+  clicar(pilula(w, 'rtm-datas', 'data-v', 'aberto'));
+  volta.value = dia(1);
+  assert.ok(!w.RTMCotacao.validar().includes('rtm-volta'), 'sem datas certas não valida ida/volta');
+  assert.equal(w.RTMCotacao.pedido().ida, '');
 });
