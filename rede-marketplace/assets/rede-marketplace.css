@@ -420,4 +420,7 @@ dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bot
 .rtm-lista .rtm-lista-corpo .rtm-agencia{padding-top:10px;border-top:1px solid var(--rtm-line)}
 .rtm-lista p.rtm-lista-vazio{margin:0;padding:16px;border-radius:12px;background:var(--rtm-bg);font-size:14px}
 .rtm-lista p.rtm-lista-vazio a{color:var(--rtm-ink);font-weight:700}
+.rtm-lista .rtm-lista-filtros label.rtm-lista-busca-rot{flex:1 1 260px}
+.rtm-lista .rtm-lista-filtros input[type=search]{font:inherit;font-weight:500;font-size:15px;padding:10px 12px;border:1px solid var(--rtm-line);border-radius:10px;background:var(--rtm-bg);color:var(--rtm-ink);width:100%}
+.rtm-lista .rtm-lista-filtros input[type=search]:focus-visible,.rtm-lista .rtm-lista-filtros select:focus-visible{outline:2px solid var(--rtm-brand);outline-offset:1px}
 

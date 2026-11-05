@@ -33,6 +33,9 @@ contem( '>Ver perfil</a>', $h, 'botão Ver perfil' );
 contem( 'href="https://exemplo.test/cotacao-de-viagens/?destino=gramado&amp;agente=mariana-kloss"', $h, 'Pedir cotação vai só com aquele agente' );
 contem( 'id="rtm-lista-vazio" hidden', $h, 'aviso de filtro sem resultado começa escondido' );
 contem( 'id="rtm-lista-conta"', $h, 'contagem de especialistas' );
+contem( '<input type="search" id="rtm-lista-busca"', $h, 'campo de busca por nome ou agência' );
+contem( 'placeholder="Nome do agente ou da agência"', $h, 'dica do campo de busca' );
+contem( 'data-busca="mariana kloss', $h, 'card com o texto de busca (nome + agência)' );
 
 // Ensaio: visitante não vê os agentes
 $GLOBALS['rt_opcoes']['rtm_opcoes']['ensaio'] = true;

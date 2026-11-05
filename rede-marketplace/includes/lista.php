@@ -26,7 +26,8 @@ function rtm_card_lista( array $a ) {
 			$nomes[] = $n;
 		}
 	}
-	return '<article class="rtm-lista-card" data-slug="' . esc_attr( $a['slug'] ) . '" data-destinos="' . esc_attr( implode( ' ', $a['destinos_slugs'] ) ) . '" data-tipos="' . esc_attr( implode( '|', $a['tipos'] ) ) . '">'
+	$busca = mb_strtolower( remove_accents( trim( $a['nome'] . ' ' . (string) $a['agencia_nome'] ) ) );
+	return '<article class="rtm-lista-card" data-slug="' . esc_attr( $a['slug'] ) . '" data-busca="' . esc_attr( $busca ) . '" data-destinos="' . esc_attr( implode( ' ', $a['destinos_slugs'] ) ) . '" data-tipos="' . esc_attr( implode( '|', $a['tipos'] ) ) . '">'
 		. rtm_html_foto( $a, 'rtm-lista-foto' ) . '<div class="rtm-lista-corpo">'
 		. rtm_html_cadastur( $a, false )
 		. '<h2 class="rtm-lista-nome">' . esc_html( $a['nome'] ) . '</h2>'
@@ -60,7 +61,8 @@ function rtm_lista_html() {
 		$h .= '<p class="rtm-car-ensaio">Visível só para você (modo ensaio): os visitantes veem "Em breve".</p>';
 	}
 	$h .= '<h1 class="rtm-lista-titulo">Nossos especialistas</h1><p class="rtm-lista-sub">Agentes de viagem certificados, cada um com seu destino e seu jeito de viajar. Escolha quem vai montar a sua viagem.</p>';
-	$h .= '<div class="rtm-lista-filtros"><label class="rtm-rot" for="rtm-lista-destino">Destino<select id="rtm-lista-destino"><option value="">Todos os destinos</option>';
+	$h .= '<div class="rtm-lista-filtros"><label class="rtm-rot rtm-lista-busca-rot" for="rtm-lista-busca">Buscar<input type="search" id="rtm-lista-busca" placeholder="Nome do agente ou da agência" autocomplete="off"></label>'
+		. '<label class="rtm-rot" for="rtm-lista-destino">Destino<select id="rtm-lista-destino"><option value="">Todos os destinos</option>';
 	foreach ( $destinos as $slug => $nome ) {
 		$h .= '<option value="' . esc_attr( $slug ) . '">' . esc_html( $nome ) . '</option>';
 	}

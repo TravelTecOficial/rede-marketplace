@@ -1,4 +1,4 @@
-/* Rede Marketplace — página /especialistas/: filtro por destino e tipo de viagem (no navegador). */
+/* Rede Marketplace — página /especialistas/: busca por nome ou agência e filtro por destino e tipo de viagem (no navegador). */
 ( function () {
 	'use strict';
 	var cards = Array.prototype.slice.call( document.querySelectorAll( '.rtm-lista-card' ) );
@@ -8,14 +8,23 @@
 	var vazio = document.getElementById( 'rtm-lista-vazio' );
 	var tipos = Array.prototype.slice.call( document.querySelectorAll( '#rtm-lista-tipos button.rtm-pilula' ) );
 	var tipo  = '';
+	var busca = document.getElementById( 'rtm-lista-busca' );
+
+	function normal( s ) {
+		var t = String( s || '' ).toLowerCase();
+		if ( t.normalize ) { t = t.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' ); }
+		return t.replace( /\s+/g, ' ' ).trim();
+	}
 
 	function filtrar() {
 		var dest = sel ? sel.value : '';
+		var q    = normal( busca ? busca.value : '' );
 		var n = 0;
 		cards.forEach( function ( c ) {
 			var okDest = ! dest || ( c.getAttribute( 'data-destinos' ) || '' ).split( /\s+/ ).indexOf( dest ) !== -1;
 			var okTipo = ! tipo || ( c.getAttribute( 'data-tipos' ) || '' ).split( '|' ).indexOf( tipo ) !== -1;
-			c.hidden = ! ( okDest && okTipo );
+			var okBusca = ! q || normal( c.getAttribute( 'data-busca' ) ).indexOf( q ) !== -1;
+			c.hidden = ! ( okDest && okTipo && okBusca );
 			if ( ! c.hidden ) { n++; }
 		} );
 		if ( conta ) { conta.textContent = n + ( n === 1 ? ' especialista' : ' especialistas' ); }
@@ -31,6 +40,7 @@
 			filtrar();
 		} );
 	} );
+	if ( busca ) { busca.addEventListener( 'input', filtrar ); }
 	if ( sel ) {
 		sel.addEventListener( 'change', filtrar );
 		var pedido = '';

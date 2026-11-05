@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.13.1 (05/11/2026): busca por nome do agente ou da agência na página /especialistas/.
 0.13.0 (05/11/2026): página /especialistas/ ([rt_especialistas_lista]) com filtros por destino e tipo; item de menu "Especialistas" (classe rtm-menu-especialistas); trilha e carrossel levam à lista. No ensaio, só quem edita o site vê.
 0.12.2 (04/11/2026): cotação vinda do perfil ou de uma sugestão é só daquele agente (sem os outros e sem "a Rede escolhe"); faixa amarela vazia da sugestão escondida.
 0.12.1 (04/11/2026): bloco do carrossel na home sem faixa em branco para o visitante (ensaio) e sem espaçamento do Elementor.
