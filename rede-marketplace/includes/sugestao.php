@@ -92,11 +92,21 @@ function rtm_sugestao( $post_id ) {
 		}
 		$s[ $chave ] = $v;
 	}
+	$urls   = get_post_meta( $post_id, 'rtm_galeria_urls', true ); // fotos vindas do Cliente Ideal
+	$urls   = is_array( $urls ) ? array_values( array_filter( $urls, 'is_string' ) ) : array();
 	$imagem = get_the_post_thumbnail_url( $post_id, 'large' );
+	if ( ! $imagem && $urls ) {
+		$imagem = $urls[0];
+	}
 	if ( ! $imagem ) {
 		$imagem = (string) $s['img_teste'];
 	}
 	$fotos = $imagem ? array( $imagem ) : array();
+	foreach ( $urls as $u ) {
+		if ( ! in_array( $u, $fotos, true ) ) {
+			$fotos[] = $u;
+		}
+	}
 	foreach ( $s['galeria'] as $id ) {
 		$u = wp_get_attachment_image_url( (int) $id, 'large' );
 		if ( $u && ! in_array( $u, $fotos, true ) ) {

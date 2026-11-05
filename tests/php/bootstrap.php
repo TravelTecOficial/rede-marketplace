@@ -229,6 +229,21 @@ function did_action( $g ) { return isset( $GLOBALS['rt_acoes'][ $g ] ) ? $GLOBAL
 function wp_enqueue_style( $h, $src = '', $deps = array(), $ver = false ) { $GLOBALS['rt_estilos'][ $h ] = $src; }
 function url_to_postid( $url ) { return isset( $GLOBALS['rt_urls'][ $url ] ) ? (int) $GLOBALS['rt_urls'][ $url ] : 0; }
 function wp_slash( $v ) { return is_array( $v ) ? array_map( 'wp_slash', $v ) : addslashes( (string) $v ); }
+function wp_update_post( $dados, $erro = false ) {
+	foreach ( $GLOBALS['rt_posts'] as $p ) {
+		if ( (int) $p->ID !== (int) $dados['ID'] ) { continue; }
+		foreach ( array( 'post_status', 'post_title', 'post_name' ) as $k ) { if ( isset( $dados[ $k ] ) ) { $p->$k = $dados[ $k ]; } }
+		$GLOBALS['rt_atualizados'][] = (int) $p->ID;
+		return (int) $p->ID;
+	}
+	return 0;
+}
+function sanitize_textarea_field( $s ) { return trim( strip_tags( (string) $s ) ); }
+function untrailingslashit( $s ) { return rtrim( (string) $s, '/\\' ); }
+$GLOBALS['rt_agenda'] = array();
+function wp_next_scheduled( $g ) { return isset( $GLOBALS['rt_agenda'][ $g ] ) ? $GLOBALS['rt_agenda'][ $g ] : false; }
+function wp_schedule_event( $t, $rec, $g ) { $GLOBALS['rt_agenda'][ $g ] = $t; return true; }
+function wp_clear_scheduled_hook( $g ) { unset( $GLOBALS['rt_agenda'][ $g ] ); return 1; }
 function wp_set_object_terms( $id, $termos, $tax ) { $GLOBALS['rt_obj_termos'][ $id ][ $tax ] = (array) $termos; return array(); }
 function wp_insert_post( $dados, $erro = false ) {
 	static $n = 1000;

@@ -1,0 +1,485 @@
+[
+ {
+  "id": "19d88a7b-785c-4570-9763-14074031b3cb",
+  "slug": "camila-duarte",
+  "nome": "Camila Duarte",
+  "iniciais": "CD",
+  "cargo": "Especialista em grupos e excursões para o Natal Luz",
+  "texto_card": "Especialista em grupos para o Natal Luz desde 2015: hospedagem, ingressos e transporte resolvidos.",
+  "apresentacao": "Organizo grupos para Gramado e Canela desde 2015: famílias grandes, turmas de amigos e excursões da melhor idade. Cuido de tudo, da saída em São Paulo à volta para casa, com hospedagem, ingressos e transporte combinados com antecedência.\n\nNo Natal Luz, os grupos têm lugar garantido nos principais espetáculos. Eu acompanho o grupo pelo WhatsApp durante toda a viagem.",
+  "foto": "https://mrkvvgofjyvlutqpvedt.supabase.co/storage/v1/object/public/rede-turistica/19d88a7b-785c-4570-9763-14074031b3cb/foto-1793873676464.jpg",
+  "logo": "",
+  "certificado": "https://mrkvvgofjyvlutqpvedt.supabase.co/storage/v1/object/public/rede-turistica/19d88a7b-785c-4570-9763-14074031b3cb/certificado-1793873729061.png",
+  "cadastur": "45.678.901/0001-23",
+  "cadastur_validade": "2027-03-25",
+  "cadastur_verificado": false,
+  "anos_experiencia": 10,
+  "viajantes_atendidos": 2300,
+  "idiomas": [
+   "Português"
+  ],
+  "especialidades": [
+   {
+    "titulo": "Grupos",
+    "descricao": "Roteiros para turmas de amigos, igrejas e empresas."
+   },
+   {
+    "titulo": "Natal Luz",
+    "descricao": "Pacotes com ingressos, hospedagem e transporte para o Natal Luz."
+   },
+   {
+    "titulo": "Melhor idade",
+    "descricao": "Passeios tranquilos, com paradas e acompanhamento."
+   },
+   {
+    "titulo": "Excursões",
+    "descricao": "Saídas em grupo com ônibus, guia e hotel incluídos."
+   }
+  ],
+  "destinos": [
+   {
+    "slug": "gramado",
+    "nome": "Gramado"
+   }
+  ],
+  "destinos_slugs": [
+   "gramado"
+  ],
+  "destino_principal": "gramado",
+  "tipos": [
+   "Grupo",
+   "Natal Luz",
+   "Melhor idade"
+  ],
+  "agencia_nome": "Bem Viajar",
+  "agencia_iniciais": "BV",
+  "agencia_cidade": "São Paulo/SP",
+  "agencia_desde": 2015,
+  "endereco": "Av. Paulista, 1000 · Bela Vista, São Paulo/SP",
+  "horario": "Seg a sex, 9h às 18h · Sáb, 9h às 12h",
+  "google_perfil": "",
+  "google_place_id": "",
+  "instagram": "",
+  "facebook": "",
+  "tiktok": "",
+  "youtube": "",
+  "linkedin": "",
+  "site": "",
+  "sugestoes": [
+   {
+    "id": "db817f04-b1fc-4086-aae1-89dae730d0ba",
+    "slug": "natal-luz-em-grupo-saindo-de-sao-paulo",
+    "titulo": "Natal Luz em grupo, saindo de São Paulo",
+    "destino": "gramado",
+    "destino_nome": "Gramado",
+    "destinos_texto": "Gramado",
+    "tipo": "Grupo",
+    "texto_card": "Ônibus de São Paulo, hotel e ingressos para o grupo todo.",
+    "resumo": "Saída de São Paulo de ônibus, hotel para o grupo e ingressos dos espetáculos garantidos com antecedência.",
+    "galeria": [
+     "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/sug-grupo.svg"
+    ],
+    "duracao": "6 dias · 3 noites",
+    "ideal_para": "Grupos de 15 a 40 pessoas",
+    "melhor_epoca": "Nov a jan",
+    "saida": "São Paulo/SP",
+    "inclui": [
+     "Ônibus de turismo ida e volta",
+     "Hotel para o grupo",
+     "Ingressos do Natal Luz",
+     "Guia acompanhante"
+    ],
+    "dias": [],
+    "preco": 2490,
+    "ordem": 1
+   },
+   {
+    "id": "176aab38-ccb3-49b7-98ca-58dde7d92e05",
+    "slug": "gramado-e-canela-melhor-idade",
+    "titulo": "Gramado e Canela para a melhor idade",
+    "destino": "",
+    "destino_nome": "",
+    "destinos_texto": "Gramado e Canela",
+    "tipo": "Melhor idade",
+    "texto_card": "Passeios tranquilos, paradas e acompanhamento o tempo todo.",
+    "resumo": "Passeios no ritmo do grupo, com paradas, restaurantes acessíveis e acompanhamento pelo WhatsApp.",
+    "galeria": [
+     "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/sug-canela.svg"
+    ],
+    "duracao": "5 dias · 4 noites",
+    "ideal_para": "Melhor idade",
+    "melhor_epoca": "Mar a jun",
+    "saida": "",
+    "inclui": [
+     "Hotel acessível no centro",
+     "Passeios com guia",
+     "Café colonial",
+     "Acompanhamento pelo WhatsApp"
+    ],
+    "dias": [],
+    "preco": 2790,
+    "ordem": 2
+   },
+   {
+    "id": "942fc289-c2e1-4db7-98ef-5389d5d51f46",
+    "slug": "excursao-de-onibus-natal-luz",
+    "titulo": "Excursão de ônibus para o Natal Luz",
+    "destino": "gramado",
+    "destino_nome": "Gramado",
+    "destinos_texto": "Gramado",
+    "tipo": "Natal Luz",
+    "texto_card": "Fim de semana do Natal Luz com ônibus, hotel e guia.",
+    "resumo": "Um fim de semana do Natal Luz com tudo resolvido: ônibus, hotel, guia e o Grande Desfile.",
+    "galeria": [
+     "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/sug-onibus.svg"
+    ],
+    "duracao": "4 dias · 2 noites",
+    "ideal_para": "Turmas de amigos",
+    "melhor_epoca": "Nov a jan",
+    "saida": "São Paulo/SP",
+    "inclui": [
+     "Ônibus ida e volta",
+     "Duas noites de hotel",
+     "Ingresso Grande Desfile",
+     "Guia acompanhante"
+    ],
+    "dias": [],
+    "preco": 1890,
+    "ordem": 3
+   }
+  ]
+ },
+ {
+  "id": "e97e9d2e-a205-4870-bfbe-5b8a93a2abe1",
+  "slug": "mariana-kloss",
+  "nome": "Mariana Kloss",
+  "iniciais": "MK",
+  "cargo": "Especialista em Gramado e Serra Gaúcha",
+  "texto_card": "Há 12 anos levo famílias para a Serra Gaúcha. Conheço cada parque, café colonial e chocolateria de Gramado.",
+  "apresentacao": "Nasci em Nova Petrópolis e trabalho com turismo na Serra Gaúcha há 12 anos. Comecei montando viagens para famílias de amigos e hoje cuido de roteiros completos: hotel, passeios, ingressos e os cafés coloniais que valem a viagem.\n\nGosto de entender o ritmo de cada família. Com criança pequena, monto dias mais leves; com avós, escolho hotéis perto da Rua Coberta para ninguém se cansar.",
+  "foto": "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/mariana.svg",
+  "logo": "",
+  "certificado": "",
+  "cadastur": "21.123.456/0001-00",
+  "cadastur_validade": "2027-03-25",
+  "cadastur_verificado": true,
+  "anos_experiencia": 12,
+  "viajantes_atendidos": 1400,
+  "idiomas": [
+   "Português",
+   "Espanhol"
+  ],
+  "especialidades": [
+   {
+    "titulo": "Família",
+    "descricao": "Parques, Snowland, Mini Mundo e hotéis com recreação."
+   },
+   {
+    "titulo": "Natal Luz",
+    "descricao": "Ingressos para o Grande Desfile e o Nativitaten, com hotel perto do centro."
+   },
+   {
+    "titulo": "Melhor idade",
+    "descricao": "Roteiros sem pressa, transfers e restaurantes acessíveis."
+   },
+   {
+    "titulo": "Gastronomia",
+    "descricao": "Café colonial, fondue e vinícolas do Vale dos Vinhedos."
+   }
+  ],
+  "destinos": [
+   {
+    "slug": "gramado",
+    "nome": "Gramado"
+   }
+  ],
+  "destinos_slugs": [
+   "gramado"
+  ],
+  "destino_principal": "gramado",
+  "tipos": [
+   "Família",
+   "Natal Luz",
+   "Melhor idade"
+  ],
+  "agencia_nome": "Serra Viagens",
+  "agencia_iniciais": "SV",
+  "agencia_cidade": "Gramado/RS",
+  "agencia_desde": 2009,
+  "endereco": "Av. Borges de Medeiros, 1500 · Centro, Gramado/RS",
+  "horario": "Seg a sex, 9h às 18h · Sáb, 9h às 13h",
+  "google_perfil": "",
+  "google_place_id": "",
+  "instagram": "https://www.instagram.com/redeturistica/",
+  "facebook": "https://www.facebook.com/redeturistica",
+  "tiktok": "",
+  "youtube": "",
+  "linkedin": "",
+  "site": "https://redeturistica.com.br/",
+  "sugestoes": [
+   {
+    "id": "1b9dae86-88c9-4ae2-a34b-30b3ab246532",
+    "slug": "gramado-em-familia-4-dias",
+    "titulo": "Gramado em família, 4 dias",
+    "destino": "gramado",
+    "destino_nome": "Gramado",
+    "destinos_texto": "Gramado e Canela",
+    "tipo": "Família",
+    "texto_card": "Parques, Snowland e café colonial num ritmo que funciona com criança.",
+    "resumo": "Parques, Snowland e café colonial num ritmo que funciona com criança: um passeio grande por dia e tarde livre no hotel com recreação.",
+    "galeria": [
+     "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/sug-familia.svg"
+    ],
+    "duracao": "4 dias · 3 noites",
+    "ideal_para": "Família com crianças",
+    "melhor_epoca": "Mar a jun · Ago a out",
+    "saida": "De qualquer cidade",
+    "inclui": [
+     "3 noites em hotel com recreação infantil",
+     "Ingressos Snowland e Mini Mundo",
+     "Transfer aeroporto de Porto Alegre",
+     "Tour Gramado e Canela com guia",
+     "Café colonial para a família",
+     "Aéreo cotado à parte, se quiser"
+    ],
+    "dias": [
+     {
+      "texto": "Transfer até o hotel, fim de tarde no centro e chocolate quente.",
+      "titulo": "Chegada e Rua Coberta"
+     },
+     {
+      "texto": "Manhã na neve indoor; tarde livre no hotel com recreação.",
+      "titulo": "Snowland"
+     },
+     {
+      "texto": "Catedral de Pedra, Caracol e Mini Mundo; jantar de fondue.",
+      "titulo": "Canela e Mini Mundo"
+     },
+     {
+      "texto": "Café colonial tranquilo antes do transfer para o aeroporto.",
+      "titulo": "Café colonial e volta"
+     }
+    ],
+    "preco": 2890,
+    "ordem": 1
+   },
+   {
+    "id": "e747372c-8fa2-4308-841f-ce66e78cca8e",
+    "slug": "natal-luz-com-ingressos-garantidos",
+    "titulo": "Natal Luz com ingressos garantidos",
+    "destino": "gramado",
+    "destino_nome": "Gramado",
+    "destinos_texto": "Gramado",
+    "tipo": "Natal Luz",
+    "texto_card": "3 noites perto da Rua Coberta e lugar no Grande Desfile.",
+    "resumo": "Três noites a poucas quadras da Rua Coberta, com ingressos do Grande Desfile e do Nativitaten já garantidos.",
+    "galeria": [
+     "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/sug-natal.svg"
+    ],
+    "duracao": "4 dias · 3 noites",
+    "ideal_para": "Casais e famílias",
+    "melhor_epoca": "Nov a jan",
+    "saida": "",
+    "inclui": [
+     "Hotel no centro de Gramado",
+     "Ingressos Grande Desfile e Nativitaten",
+     "Transfer aeroporto",
+     "Jantar de Natal típico"
+    ],
+    "dias": [
+     {
+      "texto": "Passeio a pé pela Rua Coberta iluminada.",
+      "titulo": "Chegada e luzes da cidade"
+     },
+     {
+      "texto": "Lugar reservado na arquibancada do desfile de Natal.",
+      "titulo": "Grande Desfile"
+     },
+     {
+      "texto": "Espetáculo no Lago Joaquina Rita Bier à noite.",
+      "titulo": "Nativitaten"
+     }
+    ],
+    "preco": 3450,
+    "ordem": 2
+   },
+   {
+    "id": "9b19be0b-610b-4dd6-ae2c-e45377a2891a",
+    "slug": "serra-gaucha-sem-pressa-5-dias",
+    "titulo": "Serra Gaúcha sem pressa, 5 dias",
+    "destino": "gramado",
+    "destino_nome": "Gramado",
+    "destinos_texto": "Gramado, Canela e Bento Gonçalves",
+    "tipo": "Melhor idade",
+    "texto_card": "Hotéis no centro, transfers e vinícolas do Vale dos Vinhedos.",
+    "resumo": "Dias leves, hotel perto de tudo e transfers em todos os passeios, com um dia no Vale dos Vinhedos.",
+    "galeria": [
+     "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/sug-serra.svg"
+    ],
+    "duracao": "5 dias · 4 noites",
+    "ideal_para": "Melhor idade",
+    "melhor_epoca": "Abr a jun · Set a nov",
+    "saida": "",
+    "inclui": [
+     "Hotel no centro, com elevador",
+     "Transfers em todos os passeios",
+     "Dia no Vale dos Vinhedos com almoço",
+     "Café colonial"
+    ],
+    "dias": [],
+    "preco": 3980,
+    "ordem": 3
+   }
+  ]
+ },
+ {
+  "id": "d9434ea6-2224-42a6-a2fd-a4c93ddaede7",
+  "slug": "rafael-antunes",
+  "nome": "Rafael Antunes",
+  "iniciais": "RA",
+  "cargo": "Especialista em lua de mel e viagens de luxo na Serra Gaúcha",
+  "texto_card": "Monto roteiros românticos com hotéis boutique em Gramado e um dia no Vale dos Vinhedos.",
+  "apresentacao": "Sou de Porto Alegre e há 9 anos desenho viagens a dois pela Serra Gaúcha. Meu foco são casais que querem tempo de qualidade: hotéis boutique, jantares reservados e passeios sem fila.\n\nCada roteiro tem um momento especial, como um piquenique nos vinhedos ou um fondue em um restaurante escondido. Antes de fechar, converso com o casal para acertar o ritmo e o orçamento.",
+  "foto": "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/rafael.svg",
+  "logo": "",
+  "certificado": "",
+  "cadastur": "34.567.890/0001-12",
+  "cadastur_validade": "2027-03-25",
+  "cadastur_verificado": true,
+  "anos_experiencia": 9,
+  "viajantes_atendidos": 820,
+  "idiomas": [
+   "Português",
+   "Inglês"
+  ],
+  "especialidades": [
+   {
+    "titulo": "Casal / Lua de mel",
+    "descricao": "Chalés românticos, jantares a dois e passeios sem pressa."
+   },
+   {
+    "titulo": "Luxo",
+    "descricao": "Hotéis cinco estrelas, spa e experiências exclusivas."
+   },
+   {
+    "titulo": "Vinícolas",
+    "descricao": "Degustações e almoços harmonizados no Vale dos Vinhedos."
+   },
+   {
+    "titulo": "Hotéis boutique",
+    "descricao": "Pousadas charmosas, pequenas e com atendimento próximo."
+   }
+  ],
+  "destinos": [
+   {
+    "slug": "gramado",
+    "nome": "Gramado"
+   }
+  ],
+  "destinos_slugs": [
+   "gramado"
+  ],
+  "destino_principal": "gramado",
+  "tipos": [
+   "Casal / Lua de mel",
+   "Luxo"
+  ],
+  "agencia_nome": "Rota Sul Turismo",
+  "agencia_iniciais": "RT",
+  "agencia_cidade": "Porto Alegre/RS",
+  "agencia_desde": 2014,
+  "endereco": "Rua Padre Chagas, 220 · Moinhos de Vento, Porto Alegre/RS",
+  "horario": "Seg a sex, 9h às 18h",
+  "google_perfil": "",
+  "google_place_id": "",
+  "instagram": "",
+  "facebook": "",
+  "tiktok": "",
+  "youtube": "",
+  "linkedin": "",
+  "site": "",
+  "sugestoes": [
+   {
+    "id": "361a6981-1767-4432-9d0b-e995af8915d2",
+    "slug": "lua-de-mel-em-gramado-4-noites",
+    "titulo": "Lua de mel em Gramado, 4 noites",
+    "destino": "gramado",
+    "destino_nome": "Gramado",
+    "destinos_texto": "Gramado",
+    "tipo": "Casal / Lua de mel",
+    "texto_card": "Chalé com lareira, jantar a dois e um dia sem roteiro.",
+    "resumo": "Quatro noites num chalé com lareira e banheira, jantares reservados e um dia livre para o casal.",
+    "galeria": [
+     "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/sug-romance.svg"
+    ],
+    "duracao": "5 dias · 4 noites",
+    "ideal_para": "Recém-casados",
+    "melhor_epoca": "O ano todo",
+    "saida": "",
+    "inclui": [
+     "Chalé com lareira e banheira",
+     "Jantar romântico de fondue",
+     "Transfer privativo",
+     "Espumante de boas-vindas"
+    ],
+    "dias": [],
+    "preco": 4200,
+    "ordem": 1
+   },
+   {
+    "id": "736bb285-03e2-41e1-928f-d3d893515e44",
+    "slug": "vale-dos-vinhedos-a-dois",
+    "titulo": "Vale dos Vinhedos a dois, 3 dias",
+    "destino": "gramado",
+    "destino_nome": "Gramado",
+    "destinos_texto": "Bento Gonçalves e Gramado",
+    "tipo": "Luxo",
+    "texto_card": "Degustações, almoço harmonizado e pousada entre as videiras.",
+    "resumo": "Duas noites numa pousada entre as videiras, com degustações guiadas e um almoço harmonizado.",
+    "galeria": [
+     "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/sug-vinho.svg"
+    ],
+    "duracao": "3 dias · 2 noites",
+    "ideal_para": "Casais",
+    "melhor_epoca": "Jan a mar (vindima)",
+    "saida": "",
+    "inclui": [
+     "Pousada boutique no Vale",
+     "Três degustações guiadas",
+     "Almoço harmonizado",
+     "Motorista nos passeios"
+    ],
+    "dias": [],
+    "preco": 3600,
+    "ordem": 2
+   },
+   {
+    "id": "3ed5ac24-7647-4701-a682-2f98e750cf7a",
+    "slug": "gramado-luxo-com-spa",
+    "titulo": "Gramado de luxo com spa",
+    "destino": "gramado",
+    "destino_nome": "Gramado",
+    "destinos_texto": "Gramado",
+    "tipo": "Luxo",
+    "texto_card": "Hotel cinco estrelas, dia de spa e restaurantes premiados.",
+    "resumo": "Hotel cinco estrelas, um dia inteiro de spa e reservas nos restaurantes mais disputados da cidade.",
+    "galeria": [
+     "https://redeturistica.com.br/wp-content/plugins/rede-marketplace/assets/teste/sug-chale.svg"
+    ],
+    "duracao": "4 dias · 3 noites",
+    "ideal_para": "Casais",
+    "melhor_epoca": "Mai a ago",
+    "saida": "",
+    "inclui": [
+     "Hotel cinco estrelas",
+     "Circuito de spa para dois",
+     "Reservas em restaurantes",
+     "Transfer privativo"
+    ],
+    "dias": [],
+    "preco": 5900,
+    "ordem": 3
+   }
+  ]
+ }
+]

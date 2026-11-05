@@ -317,10 +317,13 @@ function rtm_limpar_opcoes( $entrada ) {
 	$entrada = is_array( $entrada ) ? $entrada : array();
 	$url     = isset( $entrada['url_cotacao'] ) ? esc_url_raw( trim( (string) $entrada['url_cotacao'] ) ) : '';
 	$chave = isset( $entrada['google_chave'] ) && is_scalar( $entrada['google_chave'] ) ? preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $entrada['google_chave'] ) : '';
+	$api = isset( $entrada['ci_api'] ) && is_scalar( $entrada['ci_api'] ) ? esc_url_raw( trim( (string) $entrada['ci_api'] ) ) : '';
 	return array(
 		'url_cotacao'  => '' !== $url ? $url : home_url( '/cotacao-especialistas/' ),
 		'ensaio'       => ! empty( $entrada['ensaio'] ),
 		'google_chave' => $chave,
+		'ci_ligado'    => ! empty( $entrada['ci_ligado'] ),
+		'ci_api'       => preg_match( '#^https://#i', $api ) ? $api : '',
 	);
 }
 
@@ -347,6 +350,8 @@ function rtm_tela_configuracoes() {
 	echo '<table class="form-table" role="presentation">'
 		. '<tr><th scope="row"><label for="rtm_url_cotacao">Página de cotação</label></th><td><input type="url" class="regular-text" id="rtm_url_cotacao" name="rtm_opcoes[url_cotacao]" value="' . esc_attr( $o['url_cotacao'] ) . '"><p class="description">Endereço da página onde o viajante pede a cotação.</p></td></tr>'
 		. '<tr><th scope="row"><label for="rtm_google_chave">Chave do Google Maps</label></th><td><input type="text" class="regular-text" id="rtm_google_chave" name="rtm_opcoes[google_chave]" value="' . esc_attr( (string) $o['google_chave'] ) . '" autocomplete="off" spellcheck="false"><p class="description">Chave restrita ao site (redeturistica.com.br) com Maps JavaScript, Places (New) e Maps Embed. Com ela e o Place ID no agente, a página mostra nota, avaliações e mapa do Google.</p></td></tr>'
+		. '<tr><th scope="row">Cliente Ideal</th><td><label><input type="checkbox" name="rtm_opcoes[ci_ligado]" value="1"' . checked( ! empty( $o['ci_ligado'] ), true, false ) . '> Agentes e sugestões vêm do módulo Rede Turística do Cliente Ideal</label>'
+		. '<p><input type="url" class="regular-text" id="rtm_ci_api" name="rtm_opcoes[ci_api]" value="' . esc_attr( (string) $o['ci_api'] ) . '" placeholder="' . esc_attr( RTM_CI_API_PADRAO ) . '"></p><p class="description">Endereço da API pública. Vazio = Cliente Ideal DEV.</p></td></tr>'
 		. '<tr><th scope="row">Modo ensaio</th><td><label><input type="checkbox" name="rtm_opcoes[ensaio]" value="1"' . checked( ! empty( $o['ensaio'] ), true, false ) . '> Ensaio (nenhum lead é enviado de verdade ao CRM)</label></td></tr>'
 		. '</table>';
 	submit_button();

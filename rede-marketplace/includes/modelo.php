@@ -179,12 +179,22 @@ function rtm_agente( $post_id ) {
 			$tipos[] = $t->name;
 		}
 	}
-	$foto = get_the_post_thumbnail_url( $post_id, 'large' );
+	// Imagens vindas do Cliente Ideal (URL) têm prioridade; depois a mídia do WordPress; por fim a dos agentes de teste.
+	$foto = (string) get_post_meta( $post_id, 'rtm_foto_url', true );
+	if ( ! $foto ) {
+		$foto = get_the_post_thumbnail_url( $post_id, 'large' );
+	}
 	if ( ! $foto ) {
 		$foto = (string) $a['foto_url_teste'];
 	}
-	$logo = $a['agencia_logo'] ? wp_get_attachment_image_url( (int) $a['agencia_logo'], 'medium' ) : '';
-	$cert = $a['cadastur_certificado'] ? wp_get_attachment_image_url( (int) $a['cadastur_certificado'], 'large' ) : '';
+	$logo = (string) get_post_meta( $post_id, 'rtm_logo_url', true );
+	if ( ! $logo ) {
+		$logo = $a['agencia_logo'] ? wp_get_attachment_image_url( (int) $a['agencia_logo'], 'medium' ) : '';
+	}
+	$cert = (string) get_post_meta( $post_id, 'rtm_certificado_url', true );
+	if ( ! $cert ) {
+		$cert = $a['cadastur_certificado'] ? wp_get_attachment_image_url( (int) $a['cadastur_certificado'], 'large' ) : '';
+	}
 	$a['certificado']         = $cert ? $cert : '';
 
 	$a['id']                  = $post_id;
