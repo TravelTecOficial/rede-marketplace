@@ -43,6 +43,22 @@ $GLOBALS['rt_http_log'] = array();
 rtm_release();
 igual( 0, count( $GLOBALS['rt_http_log'] ), 'com cache: não consulta o GitHub' );
 
+// Leitura da lista de atualizações: release nova aparece mesmo sem o WordPress refazer a checagem
+$GLOBALS['rt_transients'][ RTM_CACHE ] = array( array( 'versao' => '99.0.0', 'zip' => 'https://github.com/x/rede-marketplace.zip', 'notas' => '', 'data' => '' ), HOUR_IN_SECONDS );
+$t = rtm_ler_atualizacao( (object) array( 'response' => array(), 'no_update' => array( RTM_BASENAME => 'velho' ) ) );
+igual( '99.0.0', $t->response[ RTM_BASENAME ]->new_version, 'leitura: versão nova na lista de Plugins' );
+ok( ! isset( $t->no_update[ RTM_BASENAME ] ), 'leitura: sai de no_update' );
+$GLOBALS['rt_transients'][ RTM_CACHE ] = array( array( 'versao' => RTM_VERSION, 'zip' => 'z', 'notas' => '', 'data' => '' ), HOUR_IN_SECONDS );
+$t = rtm_ler_atualizacao( (object) array( 'response' => array( RTM_BASENAME => 'velho' ) ) );
+ok( ! isset( $t->response[ RTM_BASENAME ] ), 'leitura: já atualizado sai da lista' );
+igual( false, rtm_ler_atualizacao( false ), 'leitura: transient vazio fica como está' );
+ok( in_array( 'rtm_ler_atualizacao', $GLOBALS['rt_ganchos']['site_transient_update_plugins'], true ), 'filtro de leitura registrado' );
+rtm_tela_plugins();
+ok( ! isset( $GLOBALS['rt_transients'][ RTM_CACHE ] ), 'tela Plugins: esquece o cache' );
+$GLOBALS['rt_transients'][ RTM_CACHE ] = array( array( 'versao' => '1' ), HOUR_IN_SECONDS );
+rtm_tela_plugins();
+ok( isset( $GLOBALS['rt_transients'][ RTM_CACHE ] ), 'tela Plugins: no máximo a cada 2 minutos' );
+
 // Quadro na tela de configurações
 update_option( 'rtm_atualizacao', array( 'quando' => 1762250000, 'fonte' => 'pagina', 'detalhe' => 'API: HTTP 403', 'versao' => '9.2.0' ) );
 ob_start(); rtm_quadro_atualizacao(); $q = ob_get_clean();

@@ -185,24 +185,51 @@ function rtm_forcar_consulta( $get, $pagina = '' ) {
 	return ! empty( $get['force-check'] ) || in_array( (string) $pagina, array( 'update-core.php', 'plugins.php' ), true );
 }
 
-/** É aqui que o WordPress descobre que existe versão nova. */
-add_filter( 'pre_set_site_transient_update_plugins', function ( $transiente ) {
+/** Põe (ou tira) este plugin na lista de atualizações do WordPress, conforme a última release. */
+function rtm_injetar_atualizacao( $transiente, $forcar = false ) {
 	if ( ! is_object( $transiente ) ) {
 		return $transiente;
 	}
-	$release = rtm_release( rtm_forcar_consulta( $_GET, isset( $GLOBALS['pagenow'] ) ? $GLOBALS['pagenow'] : '' ) ); // phpcs:ignore -- só lê a flag do próprio WordPress
+	$release = rtm_release( $forcar );
 	if ( empty( $release['versao'] ) ) {
 		return $transiente;
 	}
 	$ficha = rtm_ficha( $release );
 	if ( version_compare( $release['versao'], RTM_VERSION, '>' ) ) {
+		if ( ! isset( $transiente->response ) || ! is_array( $transiente->response ) ) {
+			$transiente->response = array();
+		}
 		$transiente->response[ RTM_BASENAME ] = $ficha;
 		unset( $transiente->no_update[ RTM_BASENAME ] );
 	} else {
+		unset( $transiente->response[ RTM_BASENAME ] );
 		$transiente->no_update[ RTM_BASENAME ] = $ficha;
 	}
 	return $transiente;
+}
+
+/** É aqui que o WordPress descobre que existe versão nova (quando ele mesmo refaz a checagem). */
+add_filter( 'pre_set_site_transient_update_plugins', function ( $transiente ) {
+	return rtm_injetar_atualizacao( $transiente, rtm_forcar_consulta( $_GET, isset( $GLOBALS['pagenow'] ) ? $GLOBALS['pagenow'] : '' ) ); // phpcs:ignore -- só lê a flag do próprio WordPress
 } );
+
+/**
+ * Também na leitura: a tela Plugins só refaz a checagem do WordPress de hora em hora, então uma release
+ * publicada há minutos só aparecia em Painel › Atualizações. Aqui ela vale em qualquer tela (cache de 1 hora).
+ */
+function rtm_ler_atualizacao( $transiente ) {
+	return rtm_injetar_atualizacao( $transiente, false );
+}
+add_filter( 'site_transient_update_plugins', 'rtm_ler_atualizacao' );
+
+/** Ao abrir a tela Plugins, pergunta de novo ao GitHub (no máximo a cada 2 minutos). */
+function rtm_tela_plugins() {
+	if ( ! get_site_transient( 'rtm_release_tela' ) ) {
+		set_site_transient( 'rtm_release_tela', 1, 2 * MINUTE_IN_SECONDS );
+		delete_site_transient( RTM_CACHE );
+	}
+}
+add_action( 'load-plugins.php', 'rtm_tela_plugins' );
 
 /** Janela "Ver detalhes da versão". */
 add_filter( 'plugins_api', function ( $resultado, $acao, $args ) {
