@@ -208,7 +208,8 @@ function rtm_agente( $post_id ) {
 	$a['tipos']               = $tipos;
 	$a['destinos_slugs']      = $slugs;
 	$a['cadastur_verificado'] = '' !== (string) get_post_meta( $post_id, 'rtm_cadastur_conferido_em', true );
-	$a['avaliacoes']          = '1' === (string) get_post_meta( $post_id, 'rtm_teste', true ) ? rtm_avaliacoes_teste( $post->post_title ) : array();
+	$av                       = get_post_meta( $post_id, 'rtm_avaliacoes', true ); // do Google, via Cliente Ideal (sincronizar.php)
+	$a['avaliacoes']          = is_array( $av ) && ! empty( $av['nota'] ) ? $av : array();
 	return $a;
 }
 

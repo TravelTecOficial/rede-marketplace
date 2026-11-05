@@ -47,7 +47,7 @@ ok( '' !== rtm_secao( 'onde', rtm_agente( 5 ) ), 'com Google, Onde atende aparec
 // Sem Google: como hoje
 igual( '', rtm_secao( 'onde', rtm_agente( 6 ) ), 'sem Google e sem endereço: sem Onde atende' );
 $t = rtm_secao( 'avaliacoes', rtm_agente( 7 ) );
-contem( 'Exemplo para o ensaio', $t, 'agente de teste sem Place ID: exemplos continuam' );
+nao_contem( 'Exemplo para o ensaio', $t, 'agente de teste: sem avaliações fictícias' );
 
 // Script só quando o Google está ligado
 $GLOBALS['rt_posts'][] = (object) array( 'ID' => 1, 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'x', 'post_name' => 'x', 'post_content' => '' );

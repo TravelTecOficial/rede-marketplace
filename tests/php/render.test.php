@@ -62,8 +62,12 @@ nao_contem( 'Ver avaliações', $topo, 'sem botão "Ver avaliações"' );
 igual( '', rtm_secao( 'avaliacoes', $a ), 'agente real sem avaliações: seção some' );
 nao_contem( 'rtm-nota', rtm_card( $a ), 'card sem nota sem avaliações' );
 
-// Agente de teste: avaliações de exemplo
-rtm_t_post( 7, 'Rafael Antunes', array( 'ativo' => '1', 'teste' => '1', 'agencia_nome' => 'Rota Sul', 'google_perfil' => 'https://g.page/rota' ) );
+// Agente com avaliações do Google (vindas do Cliente Ideal)
+rtm_t_post( 7, 'Rafael Antunes', array( 'ativo' => '1', 'teste' => '1', 'agencia_nome' => 'Rota Sul', 'google_perfil' => 'https://g.page/rota', 'avaliacoes' => array( 'fonte' => 'google', 'nota' => 4.8, 'total' => 54, 'link' => '', 'itens' => array(
+	array( 'autor' => 'Camila e André', 'quando' => 'há 3 semanas', 'nota' => 5, 'texto' => 'Lua de mel perfeita.' ),
+	array( 'autor' => 'Patrícia M.', 'quando' => 'há 2 meses', 'nota' => 5, 'texto' => 'Hotel boutique lindo.' ),
+	array( 'autor' => 'Lucas T.', 'quando' => 'há 5 meses', 'nota' => 4, 'texto' => 'Ótimas indicações.' ),
+) ) ) );
 $t  = rtm_agente( 7 );
 $tt = rtm_secao( 'topo', $t );
 contem( '<b>4,8</b> · 54 avaliações no Google', $tt, 'teste: nota no topo' );
@@ -71,7 +75,7 @@ contem( 'href="#avaliacoes">Ver avaliações</a>', $tt, 'teste: botão Ver avali
 contem( '<b>4,8</b> · 54 avaliações no Google', rtm_card( $t ), 'teste: nota no card' );
 $av = rtm_secao( 'avaliacoes', $t );
 contem( 'id="avaliacoes"', $av, 'avaliações: âncora' );
-contem( 'Exemplo para o ensaio', $av, 'avaliações de teste marcadas como exemplo' );
+nao_contem( 'Exemplo para o ensaio', $av, 'sem aviso de exemplo' );
 contem( 'Camila e André', $av, 'avaliações: autor' );
 contem( '>CA<', $av, 'avaliações: iniciais do autor' );
 contem( 'aria-label="4 de 5 estrelas">★★★★☆', $av, 'avaliações: estrelas por depoimento' );

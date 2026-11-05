@@ -435,4 +435,8 @@ dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bot
 .rtm-sd a.rtm-sd-todos{font-weight:800;color:var(--rtm-ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
 .rtm-sd .rtm-sd-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
 .rtm-sug span.rtm-sug-agente{font-size:12.5px;font-weight:700;color:var(--rtm-muted)}
+/* Avaliações reais do Google: foto e link do autor */
+.rtm-avaliacoes img.rtm-av-ini{object-fit:cover;border-radius:50%;background:#eee}
+.rtm-avaliacoes .rtm-av-cab b a{color:inherit;text-decoration:none}
+.rtm-avaliacoes .rtm-av-cab b a:hover{text-decoration:underline}
 

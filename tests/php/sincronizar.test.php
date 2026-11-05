@@ -35,6 +35,9 @@ ok( ! $a['cadastur_verificado'], 'Cadastur não verificado segue a API' );
 igual( array( 'Grupo', 'Natal Luz', 'Melhor idade' ), $GLOBALS['rt_obj_termos'][50]['rt_tipo_viagem'], 'tipos de viagem' );
 igual( 'draft', get_post_status( 51 ), 'agente fora da API foi para rascunho' );
 
+// Avaliações: sem Place ID vêm null -> nada; as fictícias acabaram
+igual( array(), $a['avaliacoes'], 'sem avaliações do Google: vazio (nada de fictícias)' );
+
 // Sugestões
 $sugs = rtm_sugestoes_do_agente( 50 );
 igual( 3, count( $sugs ), 'Camila com 3 sugestões' );
@@ -125,3 +128,29 @@ contem( 'Sincronizar agora', rtm_ci_html_status(), 'botão sincronizar' );
 contem( 'Sincronizado em', rtm_ci_html_status(), 'status mostra a última rodada' );
 ob_start(); rtm_ci_aviso_edicao( get_post( 50 ) ); contem( 'vem do <b>Cliente Ideal</b>', ob_get_clean(), 'aviso na edição' );
 ob_start(); rtm_ci_aviso_edicao( get_post( 51 ) ); igual( '', ob_get_clean(), 'sem aviso no agente local' );
+
+// Avaliações reais do Google vindas da API
+$api3 = $api;
+$api3[0]['avaliacoes'] = array( 'fonte' => 'google', 'nota' => 4.1, 'total' => 1226, 'link' => 'https://maps.google.com/?cid=1', 'itens' => array(
+	array( 'autor' => 'Ana <b>S</b>', 'autor_foto' => 'https://lh3.googleusercontent.com/a.png', 'autor_link' => 'https://www.google.com/maps/contrib/1', 'nota' => 5, 'texto' => 'Ótimo atendimento.', 'quando' => 'há 2 semanas' ),
+	array( 'autor' => '', 'nota' => 5, 'texto' => 'sem autor' ),
+) );
+$GLOBALS['rt_transients'] = array();
+resposta_falsa( 200, $api3 );
+rtm_ci_sincronizar();
+$a = rtm_agente( 50 );
+igual( 4.1, $a['avaliacoes']['nota'], 'nota do Google' );
+igual( 1226, $a['avaliacoes']['total'], 'total do Google' );
+igual( 1, count( $a['avaliacoes']['itens'] ), 'avaliação sem autor fica de fora' );
+igual( 'Ana S', $a['avaliacoes']['itens'][0]['autor'], 'autor sem HTML' );
+$GLOBALS['rt_opcoes']['rtm_opcoes']['google_chave'] = 'chave';
+$GLOBALS['rt_meta'][50]['rtm_google_place_id'] = 'ChIJx';
+$a = rtm_agente( 50 );
+ok( ! rtm_avaliacoes_no_navegador( $a ), 'com dados do Cliente Ideal não busca no navegador' );
+$h = rtm_secao( 'avaliacoes', $a );
+contem( 'href="https://maps.google.com/?cid=1"', $h, 'link para o Google Maps' );
+contem( '<a href="https://www.google.com/maps/contrib/1" target="_blank" rel="noopener nofollow">Ana S</a>', $h, 'autor com link' );
+contem( 'src="https://lh3.googleusercontent.com/a.png"', $h, 'foto do autor' );
+contem( '<i>Google</i>', $h, 'atribuição Google' );
+nao_contem( 'fictícias', $h, 'sem aviso de exemplo' );
+contem( '4,1', rtm_html_nota( $a ), 'nota no topo' );

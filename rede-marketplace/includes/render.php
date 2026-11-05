@@ -67,6 +67,16 @@ function rtm_google_ativo( array $agente ) {
 	return '' !== (string) rtm_opcoes()['google_chave'] && '' !== trim( (string) ( isset( $agente['google_place_id'] ) ? $agente['google_place_id'] : '' ) );
 }
 
+/** Avaliações do Google já vieram do Cliente Ideal? Então não busca de novo no navegador. */
+function rtm_tem_avaliacoes( array $agente ) {
+	return ! empty( $agente['avaliacoes']['nota'] );
+}
+
+/** Busca as avaliações no navegador (google.js) só quando o Cliente Ideal não mandou. */
+function rtm_avaliacoes_no_navegador( array $agente ) {
+	return rtm_google_ativo( $agente ) && ! rtm_tem_avaliacoes( $agente );
+}
+
 /** Estrelas cheias/vazias (arredondadas) para uma nota de 0 a 5. */
 function rtm_estrelas( $nota ) {
 	$cheias = max( 0, min( 5, (int) round( (float) $nota ) ) );
@@ -234,7 +244,7 @@ function rtm_secao( $secao, array $agente ) {
 			if ( '' !== trim( (string) $agente['cargo'] ) ) {
 				$h .= '<p class="rtm-cargo">' . esc_html( $agente['cargo'] ) . '</p>';
 			}
-			$google = rtm_google_ativo( $agente );
+			$google = rtm_avaliacoes_no_navegador( $agente );
 			$nota   = $google ? '<div class="rtm-nota" data-rtm-google-nota hidden></div>' : rtm_html_nota( $agente );
 			$h   .= $nota;
 			$chips = rtm_html_chips( $agente['tipos'] );
@@ -296,7 +306,7 @@ function rtm_secao( $secao, array $agente ) {
 			return $h . '</section>';
 
 		case 'avaliacoes':
-			if ( rtm_google_ativo( $agente ) ) {
+			if ( rtm_avaliacoes_no_navegador( $agente ) ) {
 				// Preenchido por assets/google.js (os termos do Google não deixam guardar nota e depoimentos no servidor).
 				return '<section class="rtm-bloco rtm-avaliacoes" id="avaliacoes" data-rtm-google="' . esc_attr( $agente['google_place_id'] ) . '" data-chave="' . esc_attr( rtm_opcoes()['google_chave'] ) . '" hidden>'
 					. '<div class="rtm-av-topo"><h2>Avaliações</h2><span class="rtm-google"><i>Google</i> avaliações do perfil da agência</span></div>'
@@ -323,12 +333,15 @@ function rtm_secao( $secao, array $agente ) {
 					continue;
 				}
 				$n     = isset( $it['nota'] ) ? (int) $it['nota'] : 5;
-				$h    .= '<div class="rtm-av"><div class="rtm-av-cab"><span class="rtm-av-ini" style="background:' . $cores[ $i % count( $cores ) ] . '" aria-hidden="true">' . esc_html( rtm_iniciais( $autor ) ) . '</span>'
-					. '<div><b>' . esc_html( $autor ) . '</b><small>' . esc_html( isset( $it['quando'] ) ? (string) $it['quando'] : '' ) . ' · <span aria-label="' . $n . ' de 5 estrelas">' . rtm_estrelas( $n ) . '</span></small></div></div>'
+				$foto  = ! empty( $it['autor_foto'] ) ? '<img class="rtm-av-ini" src="' . esc_url( $it['autor_foto'] ) . '" alt="" width="40" height="40" loading="lazy" referrerpolicy="no-referrer">'
+					: '<span class="rtm-av-ini" style="background:' . $cores[ $i % count( $cores ) ] . '" aria-hidden="true">' . esc_html( rtm_iniciais( $autor ) ) . '</span>';
+				$nome  = ! empty( $it['autor_link'] ) ? '<a href="' . esc_url( $it['autor_link'] ) . '" target="_blank" rel="noopener nofollow">' . esc_html( $autor ) . '</a>' : esc_html( $autor );
+				$h    .= '<div class="rtm-av"><div class="rtm-av-cab">' . $foto
+					. '<div><b>' . $nome . '</b><small>' . esc_html( isset( $it['quando'] ) ? (string) $it['quando'] : '' ) . ' · <span aria-label="' . $n . ' de 5 estrelas">' . rtm_estrelas( $n ) . '</span></small></div></div>'
 					. '<p>' . esc_html( $texto ) . '</p></div>';
 			}
 			$h  .= '</div>';
-			$url = esc_url( (string) $agente['google_perfil'] );
+			$url = esc_url( ! empty( $av['link'] ) ? (string) $av['link'] : (string) $agente['google_perfil'] );
 			if ( '' !== $url ) {
 				$h .= '<a class="rtm-av-link" href="' . $url . '" target="_blank" rel="noopener nofollow">Ver todas as avaliações no Google</a>';
 			}
@@ -413,7 +426,7 @@ function rtm_estilos() {
 	if ( is_singular( 'rt_agente' ) ) {
 		wp_enqueue_script( 'rtm-agente', RTM_URL . 'assets/agente.js', array(), RTM_VERSION, true );
 		$ag = rtm_agente( get_queried_object_id() );
-		if ( $ag && rtm_google_ativo( $ag ) ) {
+		if ( $ag && rtm_google_ativo( $ag ) ) { // o mapa também usa a chave
 			wp_enqueue_script( 'rtm-google', RTM_URL . 'assets/google.js', array(), RTM_VERSION, true );
 		}
 	}

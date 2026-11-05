@@ -58,6 +58,39 @@ function rtm_ci_lista( array $a, $k ) {
 	return $res;
 }
 
+/** Avaliações do Google vindas da API: {fonte, nota, total, link, itens[]} ou array() (sem Place ID ou falha do Google). */
+function rtm_ci_avaliacoes( $av ) {
+	if ( ! is_array( $av ) || empty( $av['nota'] ) || ! is_numeric( $av['nota'] ) ) {
+		return array();
+	}
+	$itens = array();
+	foreach ( isset( $av['itens'] ) && is_array( $av['itens'] ) ? $av['itens'] : array() as $it ) {
+		if ( ! is_array( $it ) ) {
+			continue;
+		}
+		$autor = rtm_ci_txt( $it, 'autor' );
+		$texto = rtm_ci_texto_longo( $it, 'texto' );
+		if ( '' === $autor || '' === $texto ) {
+			continue;
+		}
+		$itens[] = array(
+			'autor'      => $autor,
+			'autor_foto' => rtm_ci_img( isset( $it['autor_foto'] ) ? $it['autor_foto'] : '' ),
+			'autor_link' => rtm_ci_img( isset( $it['autor_link'] ) ? $it['autor_link'] : '' ),
+			'nota'       => max( 1, min( 5, (int) ( isset( $it['nota'] ) ? $it['nota'] : 5 ) ) ),
+			'texto'      => $texto,
+			'quando'     => rtm_ci_txt( $it, 'quando' ),
+		);
+	}
+	return array(
+		'fonte' => 'google',
+		'nota'  => round( max( 0, min( 5, (float) $av['nota'] ) ), 1 ),
+		'total' => isset( $av['total'] ) ? max( 0, (int) $av['total'] ) : 0,
+		'link'  => rtm_ci_img( isset( $av['link'] ) ? $av['link'] : '' ),
+		'itens' => array_slice( $itens, 0, 5 ),
+	);
+}
+
 /** Primeiro post do tipo que bate com o filtro (qualquer status, menos lixeira), ou 0. */
 function rtm_ci_achar( $tipo, array $filtro ) {
 	$p = get_posts( array_merge( array( 'post_type' => $tipo, 'post_status' => 'any', 'posts_per_page' => 1 ), $filtro ) );
@@ -129,6 +162,7 @@ function rtm_ci_salvar_agente( array $a ) {
 			'foto_url'              => rtm_ci_img( isset( $a['foto'] ) ? $a['foto'] : '' ),
 			'logo_url'              => rtm_ci_img( isset( $a['logo'] ) ? $a['logo'] : '' ),
 			'certificado_url'       => rtm_ci_img( isset( $a['certificado'] ) ? $a['certificado'] : '' ),
+			'avaliacoes'            => rtm_ci_avaliacoes( isset( $a['avaliacoes'] ) ? $a['avaliacoes'] : null ),
 			'ativo'                 => '1',
 			'ci_id'                 => $ci_id,
 			'ci_hash'               => $hash,
