@@ -5,8 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/** Cartão da sugestão (lateral do perfil e "Outras sugestões"). */
-function rtm_card_sugestao( array $s ) {
+/** Cartão da sugestão (lateral do perfil, "Outras sugestões" e página de Destino, esta com o nome do agente). */
+function rtm_card_sugestao( array $s, $com_agente = false ) {
 	$h = '<a class="rtm-sug" href="' . esc_url( $s['url'] ) . '">';
 	if ( '' !== $s['imagem'] ) {
 		$h .= '<span class="rtm-sug-img"><img src="' . esc_url( $s['imagem'] ) . '" alt="" loading="lazy" decoding="async">'
@@ -17,6 +17,9 @@ function rtm_card_sugestao( array $s ) {
 		$h .= '<span class="rtm-sug-tag rtm-sug-tag-solta">' . esc_html( $s['tipo'] ) . '</span>';
 	}
 	$h .= '<b class="rtm-sug-titulo">' . esc_html( $s['titulo'] ) . '</b>';
+	if ( $com_agente ) {
+		$h .= '<span class="rtm-sug-agente">' . esc_html( 'por ' . $s['agente']['nome'] ) . '</span>';
+	}
 	if ( '' !== trim( (string) $s['texto_card'] ) ) {
 		$h .= '<span class="rtm-sug-texto">' . esc_html( $s['texto_card'] ) . '</span>';
 	}
@@ -149,3 +152,57 @@ function rtm_pagina_sugestao_html( array $s ) {
 	$h .= '<div class="rtm-barra-espaco" aria-hidden="true"></div><div class="rtm-barra"><div class="rtm-barra-in">' . $botao . '</div></div>';
 	return $h;
 }
+
+/** Sugestões publicadas (de agentes ativos) para um destino, por ordem e título; no máximo $max. */
+function rtm_sugestoes_do_destino( $slug, $max = 6 ) {
+	$res = array();
+	foreach ( get_posts( array( 'post_type' => 'rt_sugestao', 'post_status' => 'publish', 'posts_per_page' => -1, 'meta_key' => 'rtm_destino', 'meta_value' => (string) $slug ) ) as $p ) {
+		$s = rtm_sugestao( $p->ID );
+		if ( $s ) {
+			$res[] = $s;
+		}
+	}
+	usort( $res, function ( $a, $b ) {
+		$o = (int) $a['ordem'] - (int) $b['ordem'];
+		return 0 !== $o ? $o : strcmp( $a['titulo'], $b['titulo'] );
+	} );
+	return array_slice( $res, 0, (int) $max );
+}
+
+/**
+ * [rt_sugestoes_destino destino="atual"]: "Sugestões dos especialistas para <destino>" na página de Destino
+ * (modelo #5968 da Rede, antes da cotação). No ensaio, só quem edita o site vê.
+ */
+function rtm_sugestoes_destino_html( $atts = array() ) {
+	$atts = shortcode_atts( array( 'destino' => 'atual' ), $atts, 'rt_sugestoes_destino' );
+	if ( ! rtm_mostra_agentes_publico() ) {
+		return '';
+	}
+	$fixo = rtm_cotacao_destino_fixo( $atts['destino'] );
+	if ( ! $fixo ) {
+		return '';
+	}
+	$lista = rtm_sugestoes_do_destino( $fixo[0] );
+	if ( ! $lista ) {
+		return '';
+	}
+	rtm_enfileirar_estilo();
+	$cards = '';
+	foreach ( $lista as $s ) {
+		$cards .= rtm_card_sugestao( $s, true );
+	}
+	return '<section class="rtm-sd"><div class="rtm-sd-in"><div class="rtm-sd-cab"><div><h2 class="rtm-sd-titulo">' . esc_html( 'Sugestões dos especialistas para ' . $fixo[1] ) . '</h2>'
+		. '<p class="rtm-sd-sub">Viagens que os nossos agentes costumam montar. Cada uma vira uma cotação feita para você.</p></div>'
+		. '<a class="rtm-sd-todos" href="' . esc_url( add_query_arg( array( 'destino' => $fixo[0] ), rtm_url_especialistas() ) ) . '">' . esc_html( 'Ver especialistas em ' . $fixo[1] ) . '</a></div>'
+		. '<div class="rtm-sd-grade rtm-sugs-lista">' . $cards . '</div></div></section>';
+}
+add_shortcode( 'rt_sugestoes_destino', 'rtm_sugestoes_destino_html' );
+
+/** Bloco do Elementor sem sugestões (destino sem sugestão, ou visitante no ensaio) não deixa faixa em branco. */
+function rtm_sugestoes_destino_esconder_vazio() {
+	if ( is_singular( 'destinos' ) ) {
+		echo '<style id="rtm-sugestoes-destino-vazio">.e-con.rtm-c-sugestoes-destino:not(:has(.rtm-sd)){display:none}</style>' . "\n";
+	}
+}
+add_action( 'wp_head', 'rtm_sugestoes_destino_esconder_vazio' );
+
