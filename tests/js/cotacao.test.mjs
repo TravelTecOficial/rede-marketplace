@@ -23,7 +23,7 @@ function html(destinos) {
 <label for="rtm-ida"><input type="date" id="rtm-ida"></label><label for="rtm-volta"><input type="date" id="rtm-volta"></label><label for="rtm-mes" hidden><input type="month" id="rtm-mes"></label>
 ${sel('rtm-adultos', ['1', '2', '3'], '2')}
 <div id="rtm-inclui"><button type="button" class="rtm-pilula" data-item="Aéreo" aria-pressed="true"></button><button type="button" class="rtm-pilula" data-item="Carro" aria-pressed="false"></button></div>
-<input id="rtm-nome"><input id="rtm-whats"><input id="rtm-email"><input type="checkbox" id="rtm-lgpd">
+<input id="rtm-nome"><label class="rtm-rot" for="rtm-whats">WhatsApp<input id="rtm-whats"></label><input id="rtm-email"><input type="checkbox" id="rtm-lgpd">
 <div id="rtm-aviso-ensaio" hidden>Modo ensaio</div></form>
 <div id="rtm-contagem">Nenhum especialista escolhido <em>· até 3</em></div><button type="button" id="rtm-enviar" disabled>Pedir</button></div>`;
 }
@@ -364,6 +364,8 @@ test('máscara do WhatsApp, mensagens de erro e nome inválido', () => {
   assert.ok(w.RTMCotacao.validar().includes('rtm-nome'));
   assert.equal($(w, 'rtm-nome-erro').hidden, false);
   assert.match($(w, 'rtm-nome-erro').textContent, /só letras/);
+  assert.equal($(w, 'rtm-whats-erro').parentNode, $(w, 'rtm-whats').closest('label'), 'aviso dentro do rótulo, logo abaixo do campo');
+  assert.equal($(w, 'rtm-whats-erro').previousElementSibling, $(w, 'rtm-whats'));
   $(w, 'rtm-nome').value = 'Ana  Souza';
   $(w, 'rtm-nome').dispatchEvent(new w.Event('input', { bubbles: true }));
   assert.equal($(w, 'rtm-nome-erro').hidden, true, 'aviso some ao corrigir');

@@ -227,7 +227,7 @@
     'rtm-volta': 'A volta não pode ser antes da ida.',
     'rtm-adultos': 'Informe quantos adultos vão.',
     'rtm-nome': 'Informe seu nome (só letras).',
-    'rtm-whats': 'Informe um WhatsApp válido com DDD, ex.: (11) 99999-9999.',
+    'rtm-whats': 'WhatsApp inválido: DDD + celular começando com 9, ex.: (11) 99999-9999.',
     'rtm-email': 'Informe um e-mail válido, ex.: nome@exemplo.com.',
     'rtm-lgpd': 'É preciso autorizar o envio dos dados.'
   };
@@ -241,8 +241,15 @@
       m = d.createElement('small');
       m.className = 'rtm-msg-erro';
       m.id = mid;
-      var ancora = el.closest('label') || el;
-      ancora.parentNode.insertBefore(m, ancora.nextSibling);
+      // Dentro do rótulo do campo (logo abaixo dele); sem rótulo próprio, depois do bloco e na largura toda.
+      var rot = el.closest('label.rtm-rot');
+      if (rot) {
+        rot.appendChild(m);
+      } else {
+        var ancora = el.closest('label') || el;
+        m.className += ' rtm-cheio';
+        ancora.parentNode.insertBefore(m, ancora.nextSibling);
+      }
       var desc = el.getAttribute('aria-describedby');
       el.setAttribute('aria-describedby', desc ? desc + ' ' + mid : mid);
     }
