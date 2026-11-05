@@ -1,7 +1,8 @@
 <?php
 /**
  * Agentes e sugestões vindos do Cliente Ideal (módulo Rede Turística).
- * A cada 10 minutos (e no botão "Sincronizar agora") lê a API pública do Cliente Ideal e copia para os tipos
+ * Quando o Cliente Ideal avisa (webhook POST /wp-json/rede-marketplace/v1/sincronizar), no botão "Sincronizar agora" e,
+ * como reserva, de hora em hora, lê a API pública do Cliente Ideal e copia para os tipos
  * rt_agente e rt_sugestao do WordPress. As telas do site continuam lendo do WordPress (rápido, com cache).
  * Agente ou sugestão que saiu da API vai para rascunho (nunca é apagado).
  */
@@ -274,19 +275,50 @@ function rtm_ci_sincronizar() {
 	return $status;
 }
 
-function rtm_ci_intervalo( $agendas ) {
-	$agendas['rtm_10min'] = array( 'interval' => 600, 'display' => 'A cada 10 minutos (Rede Marketplace)' );
-	return $agendas;
-}
-
-/** Liga ou desliga o agendamento conforme a opção. */
+/** Liga ou desliga a rodada de reserva (de hora em hora) conforme a opção; troca a agenda antiga de 10 min. */
 function rtm_ci_agendar() {
 	$agendado = wp_next_scheduled( 'rtm_ci_sincronizar_evento' );
+	if ( $agendado && 'hourly' !== wp_get_schedule( 'rtm_ci_sincronizar_evento' ) ) {
+		wp_clear_scheduled_hook( 'rtm_ci_sincronizar_evento' );
+		$agendado = false;
+	}
 	if ( rtm_ci_ligado() && ! $agendado ) {
-		wp_schedule_event( time() + 30, 'rtm_10min', 'rtm_ci_sincronizar_evento' );
+		wp_schedule_event( time() + 300, 'hourly', 'rtm_ci_sincronizar_evento' );
 	} elseif ( ! rtm_ci_ligado() && $agendado ) {
 		wp_clear_scheduled_hook( 'rtm_ci_sincronizar_evento' );
 	}
+}
+
+/**
+ * Webhook do Cliente Ideal: POST /wp-json/rede-marketplace/v1/sincronizar (corpo ignorado).
+ * Sem senha: só manda o site reler a API pública. Uma rodada a cada 20 s; aviso que chega no meio
+ * agenda mais uma rodada logo depois, para a última mudança nunca se perder.
+ */
+function rtm_ci_webhook() {
+	if ( ! rtm_ci_ligado() ) {
+		return new WP_REST_Response( array( 'ok' => false, 'msg' => 'desligado' ), 409 );
+	}
+	if ( get_transient( 'rtm_ci_trava' ) ) {
+		if ( ! wp_next_scheduled( 'rtm_ci_sincronizar_unica' ) ) {
+			wp_schedule_single_event( time() + 30, 'rtm_ci_sincronizar_unica' );
+		}
+		return new WP_REST_Response( array( 'ok' => true, 'msg' => 'agendado' ), 202 );
+	}
+	set_transient( 'rtm_ci_trava', 1, 20 );
+	$st = rtm_ci_sincronizar();
+	return new WP_REST_Response( array( 'ok' => ! empty( $st['ok'] ), 'agentes' => (int) $st['agentes'], 'sugestoes' => (int) $st['sugestoes'] ), ! empty( $st['ok'] ) ? 200 : 502 );
+}
+
+function rtm_ci_rotas() {
+	register_rest_route( 'rede-marketplace/v1', '/sincronizar', array(
+		'methods'             => 'POST',
+		'callback'            => 'rtm_ci_webhook',
+		'permission_callback' => '__return_true',
+	) );
+}
+
+function rtm_ci_url_webhook() {
+	return rest_url( 'rede-marketplace/v1/sincronizar' );
 }
 
 function rtm_ci_acao_sincronizar() {
@@ -313,7 +345,7 @@ function rtm_ci_html_status() {
 		$txt = 'Sincronizado em ' . wp_date( 'd/m/Y H:i', (int) $s['quando'] ) . ': ' . (int) $s['agentes'] . ' agentes e ' . (int) $s['sugestoes'] . ' sugestões.'
 			. ( $s['tirados'] ? ' ' . (int) $s['tirados'] . ' tirados do ar (rascunho).' : '' ) . ( $s['msg'] ? ' Aviso: ' . $s['msg'] . '.' : '' );
 	}
-	return '<h2>Cliente Ideal</h2><p>' . esc_html( $txt ) . ' Atualiza sozinho a cada 10 minutos.</p>'
+	return '<h2>Cliente Ideal</h2><p>' . esc_html( $txt ) . '</p><p>O Cliente Ideal avisa o site a cada mudança (webhook <code>' . esc_html( rtm_ci_url_webhook() ) . '</code>, POST). De hora em hora o site confere sozinho, como reserva.</p>'
 		. '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="rtm_ci_sincronizar">'
 		. wp_nonce_field( 'rtm_ci_sincronizar', '_wpnonce', true, false )
 		. '<button type="submit" class="button">Sincronizar agora</button></form>';
@@ -331,9 +363,10 @@ function rtm_ci_aviso_edicao( $post ) {
 	echo '<div class="notice notice-warning inline"><p>Este cadastro vem do <b>Cliente Ideal</b>. Mude lá: o que for alterado aqui é substituído na próxima sincronização.</p></div>';
 }
 
-add_filter( 'cron_schedules', 'rtm_ci_intervalo' );
 add_action( 'init', 'rtm_ci_agendar' );
 add_action( 'rtm_ci_sincronizar_evento', 'rtm_ci_sincronizar' );
+add_action( 'rtm_ci_sincronizar_unica', 'rtm_ci_sincronizar' );
+add_action( 'rest_api_init', 'rtm_ci_rotas' );
 add_action( 'admin_post_rtm_ci_sincronizar', 'rtm_ci_acao_sincronizar' );
 add_action( 'rtm_configuracoes_extra', 'rtm_ci_mostrar_status', 5 );
 add_action( 'edit_form_top', 'rtm_ci_aviso_edicao' );

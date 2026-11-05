@@ -78,6 +78,7 @@ igual( 'publish', get_post_status( 50 ), 'lista vazia: agente continua' );
 $GLOBALS['rt_opcoes']['rtm_opcoes']['ci_ligado'] = false;
 $n = count( $GLOBALS['rt_http_log'] );
 igual( null, rtm_ci_sincronizar(), 'desligado: não sincroniza' );
+igual( 409, rtm_ci_webhook()->status, 'desligado: webhook recusa' );
 igual( $n, count( $GLOBALS['rt_http_log'] ), 'desligado: sem chamada' );
 contem( 'cadastro do WordPress', rtm_ci_html_status(), 'status desligado' );
 
@@ -89,7 +90,28 @@ $GLOBALS['rt_opcoes']['rtm_opcoes']['ci_ligado'] = false;
 rtm_ci_agendar();
 ok( false === wp_next_scheduled( 'rtm_ci_sincronizar_evento' ), 'desagenda quando desligado' );
 $GLOBALS['rt_opcoes']['rtm_opcoes']['ci_ligado'] = true;
-igual( 600, rtm_ci_intervalo( array() )['rtm_10min']['interval'], 'intervalo de 10 minutos' );
+rtm_ci_agendar();
+igual( 'hourly', $GLOBALS['rt_agenda_rec']['rtm_ci_sincronizar_evento'], 'reserva de hora em hora' );
+// Agenda antiga de 10 min é trocada
+$GLOBALS['rt_agenda_rec']['rtm_ci_sincronizar_evento'] = 'rtm_10min';
+rtm_ci_agendar();
+igual( 'hourly', $GLOBALS['rt_agenda_rec']['rtm_ci_sincronizar_evento'], 'troca a agenda antiga' );
+
+// Webhook
+rtm_ci_rotas();
+ok( isset( $GLOBALS['rt_rotas']['rede-marketplace/v1/sincronizar'] ), 'rota do webhook' );
+igual( 'POST', $GLOBALS['rt_rotas']['rede-marketplace/v1/sincronizar']['methods'], 'só POST' );
+$GLOBALS['rt_transients'] = array();
+resposta_falsa( 200, $api );
+$r = rtm_ci_webhook();
+igual( 200, $r->status, 'webhook sincroniza na hora' );
+igual( 3, $r->data['agentes'], 'webhook: 3 agentes' );
+$n = count( $GLOBALS['rt_http_log'] );
+$r = rtm_ci_webhook();
+igual( 202, $r->status, 'segundo aviso em seguida: agenda' );
+igual( $n, count( $GLOBALS['rt_http_log'] ), 'segundo aviso não chama a API na hora' );
+ok( false !== wp_next_scheduled( 'rtm_ci_sincronizar_unica' ), 'rodada extra agendada' );
+contem( '/wp-json/rede-marketplace/v1/sincronizar', rtm_ci_html_status(), 'tela mostra o endereço do webhook' );
 
 // Opções
 $o = rtm_limpar_opcoes( array( 'ci_ligado' => '1', 'ci_api' => 'http://inseguro.test' ) );
@@ -100,6 +122,6 @@ ok( ! $o['ci_ligado'], 'checkbox desmarcado desliga' );
 
 // Status e aviso
 contem( 'Sincronizar agora', rtm_ci_html_status(), 'botão sincronizar' );
-contem( 'nenhum agente', rtm_ci_html_status(), 'status mostra a última rodada' );
+contem( 'Sincronizado em', rtm_ci_html_status(), 'status mostra a última rodada' );
 ob_start(); rtm_ci_aviso_edicao( get_post( 50 ) ); contem( 'vem do <b>Cliente Ideal</b>', ob_get_clean(), 'aviso na edição' );
 ob_start(); rtm_ci_aviso_edicao( get_post( 51 ) ); igual( '', ob_get_clean(), 'sem aviso no agente local' );

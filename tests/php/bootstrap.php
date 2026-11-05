@@ -242,8 +242,13 @@ function sanitize_textarea_field( $s ) { return trim( strip_tags( (string) $s ) 
 function untrailingslashit( $s ) { return rtrim( (string) $s, '/\\' ); }
 $GLOBALS['rt_agenda'] = array();
 function wp_next_scheduled( $g ) { return isset( $GLOBALS['rt_agenda'][ $g ] ) ? $GLOBALS['rt_agenda'][ $g ] : false; }
-function wp_schedule_event( $t, $rec, $g ) { $GLOBALS['rt_agenda'][ $g ] = $t; return true; }
-function wp_clear_scheduled_hook( $g ) { unset( $GLOBALS['rt_agenda'][ $g ] ); return 1; }
+function wp_schedule_event( $t, $rec, $g ) { $GLOBALS['rt_agenda'][ $g ] = $t; $GLOBALS['rt_agenda_rec'][ $g ] = $rec; return true; }
+function wp_schedule_single_event( $t, $g ) { $GLOBALS['rt_agenda'][ $g ] = $t; return true; }
+function wp_get_schedule( $g ) { return isset( $GLOBALS['rt_agenda_rec'][ $g ] ) ? $GLOBALS['rt_agenda_rec'][ $g ] : false; }
+class WP_REST_Response { public $data; public $status; public function __construct( $d = null, $s = 200 ) { $this->data = $d; $this->status = $s; } }
+function register_rest_route( $ns, $rota, $args ) { $GLOBALS['rt_rotas'][ $ns . $rota ] = $args; return true; }
+function rest_url( $p = '' ) { return 'https://exemplo.test/wp-json/' . ltrim( $p, '/' ); }
+function wp_clear_scheduled_hook( $g ) { unset( $GLOBALS['rt_agenda'][ $g ], $GLOBALS['rt_agenda_rec'][ $g ] ); return 1; }
 function wp_set_object_terms( $id, $termos, $tax ) { $GLOBALS['rt_obj_termos'][ $id ][ $tax ] = (array) $termos; return array(); }
 function wp_insert_post( $dados, $erro = false ) {
 	static $n = 1000;
