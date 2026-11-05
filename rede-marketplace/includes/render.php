@@ -215,7 +215,7 @@ function rtm_secao( $secao, array $agente ) {
 			// Não existe página de arquivo dos especialistas: "Especialistas" fica sem link.
 			return '<nav class="rtm-trilha" aria-label="Trilha de navegação">'
 				. '<a class="rtm-trilha-link" href="' . esc_url( home_url( '/' ) ) . '">Rede Turística</a>'
-				. ' <span class="rtm-trilha-sep" aria-hidden="true">›</span> <span>Especialistas</span>'
+				. ' <span class="rtm-trilha-sep" aria-hidden="true">›</span> <a class="rtm-trilha-link" href="' . esc_url( rtm_url_especialistas() ) . '">Especialistas</a>'
 				. ' <span class="rtm-trilha-sep" aria-hidden="true">›</span> <span aria-current="page">' . esc_html( $agente['nome'] ) . '</span>'
 				. '</nav>';
 

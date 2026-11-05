@@ -11,7 +11,11 @@ function rtm_ensaio() {
 
 /** Página atual é do marketplace (agente, sugestão ou página com [rt_cotacao])? */
 function rtm_pagina_marketplace() {
-	return is_singular( array( 'rt_agente', 'rt_sugestao' ) ) || rtm_pagina_tem_cotacao();
+	if ( is_singular( array( 'rt_agente', 'rt_sugestao' ) ) || rtm_pagina_tem_cotacao() ) {
+		return true;
+	}
+	$p = is_singular() ? get_post( get_queried_object_id() ) : null;
+	return $p && isset( $p->post_content ) && false !== strpos( (string) $p->post_content, '[rt_especialistas_lista' );
 }
 
 function rtm_robots( $robots ) {

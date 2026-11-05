@@ -36,7 +36,8 @@ function rtm_carrossel_html() {
 	$h .= '<div class="rtm-car-cab"><div><h2 class="rtm-car-titulo">Conheça nossos especialistas</h2><p class="rtm-car-sub">Agentes certificados que montam sua viagem</p></div>'
 		. '<div class="rtm-car-setas"><button type="button" class="rtm-car-ant" aria-label="Especialista anterior">‹</button><button type="button" class="rtm-car-prox" aria-label="Próximo especialista">›</button></div></div>';
 	$h .= '<div class="rtm-car-trilho" tabindex="0">' . $cards . '</div>';
-	$h .= '<div class="rtm-car-rodape"><a class="rtm-car-cta" href="' . esc_url( (string) rtm_opcoes()['url_cotacao'] ) . '">Pedir cotação com especialistas</a></div>';
+	$h .= '<div class="rtm-car-rodape"><a class="rtm-car-cta" href="' . esc_url( (string) rtm_opcoes()['url_cotacao'] ) . '">Pedir cotação com especialistas</a>'
+		. '<a class="rtm-car-todos" href="' . esc_url( rtm_url_especialistas() ) . '">Ver todos os especialistas</a></div>';
 	return $h . '</div></section>';
 }
 add_shortcode( 'rt_especialistas', 'rtm_carrossel_html' );

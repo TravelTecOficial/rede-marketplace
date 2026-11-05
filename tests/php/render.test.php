@@ -112,7 +112,7 @@ igual( '', rtm_secao( 'inexistente', $a ), 'seção desconhecida → vazio' );
 $tr = rtm_secao( 'trilha', $a );
 contem( '<nav class="rtm-trilha" aria-label="Trilha de navegação">', $tr, 'trilha: nav com rótulo' );
 contem( '<a class="rtm-trilha-link" href="https://exemplo.test/">Rede Turística</a>', $tr, 'trilha: Rede Turística leva à página inicial' );
-contem( '<span>Especialistas</span>', $tr, 'trilha: Especialistas sem link (não há página de arquivo)' );
+contem( 'href="https://exemplo.test/especialistas/">Especialistas</a>', $tr, 'trilha: Especialistas leva à lista /especialistas/' );
 contem( '<span aria-current="page">Mariana Kloss</span>', $tr, 'trilha: nome do agente por último' );
 ok( strpos( $tr, 'Rede Turística' ) < strpos( $tr, 'Especialistas' ) && strpos( $tr, 'Especialistas' ) < strpos( $tr, 'Mariana Kloss' ), 'trilha: ordem' );
 igual( 'trilha', rtm_secoes()[0], 'trilha é a primeira seção' );

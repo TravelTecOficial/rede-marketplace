@@ -90,7 +90,7 @@ function rtm_pagina_sugestao_html( array $s ) {
 	$botao = '<a class="rtm-btn" href="' . $cot . '">Quero uma cotação dessa sugestão</a>';
 
 	$h  = '<nav class="rtm-trilha" aria-label="Trilha de navegação"><a class="rtm-trilha-link" href="' . esc_url( home_url( '/' ) ) . '">Rede Turística</a>'
-		. ' <span class="rtm-trilha-sep" aria-hidden="true">›</span> <span>Especialistas</span>'
+		. ' <span class="rtm-trilha-sep" aria-hidden="true">›</span> <a class="rtm-trilha-link" href="' . esc_url( rtm_url_especialistas() ) . '">Especialistas</a>'
 		. ' <span class="rtm-trilha-sep" aria-hidden="true">›</span> <a class="rtm-trilha-link" href="' . esc_url( $a['url'] ) . '">' . esc_html( $a['nome'] ) . '</a>'
 		. ' <span class="rtm-trilha-sep" aria-hidden="true">›</span> <span aria-current="page">' . esc_html( $s['titulo'] ) . '</span></nav>';
 	$h .= rtm_html_galeria( $s );

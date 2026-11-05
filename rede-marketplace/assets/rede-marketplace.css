@@ -381,4 +381,43 @@ dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bot
 .elementor .e-con.rtm-c-carrossel{--padding-top:0px;--padding-right:0px;--padding-bottom:0px;--padding-left:0px;--gap:0px;padding:0}
 .elementor .e-con.rtm-c-carrossel > .elementor-widget{margin:0;width:100%}
 .rtm-cotacao .rtm-sugestao-aviso[hidden]{display:none}
+/* Carrossel: "Ver todos os especialistas" */
+.rtm-carrossel .rtm-car-rodape{flex-wrap:wrap;gap:12px 22px;align-items:center}
+.rtm-carrossel a.rtm-car-todos{font-weight:800;color:var(--rtm-ink);text-decoration:underline;text-underline-offset:3px}
+
+/* Página /especialistas/ */
+.rtm-lista{box-sizing:border-box;font-family:var(--rtm-font-body);color:var(--rtm-ink);padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.rtm-lista *{box-sizing:border-box}
+.rtm-lista .rtm-lista-in{max-width:1140px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.rtm-lista h1.rtm-lista-titulo{font-family:var(--rtm-font-display);font-size:clamp(30px,4.4vw,44px);line-height:1.05;margin:0;color:var(--rtm-ink);text-wrap:balance}
+.rtm-lista p.rtm-lista-sub{margin:0;color:var(--rtm-muted);font-size:16px;max-width:62ch}
+.rtm-lista .rtm-lista-filtros{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:16px;padding:16px 18px}
+.rtm-lista .rtm-lista-filtros label.rtm-rot{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;min-width:220px}
+.rtm-lista .rtm-lista-filtros select{font:inherit;font-weight:500;font-size:15px;padding:10px 12px;border:1px solid var(--rtm-line);border-radius:10px;background:var(--rtm-bg);color:var(--rtm-ink)}
+.rtm-lista .rtm-lista-filtros .rtm-grupo{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+.rtm-lista .rtm-pilulas{display:flex;flex-wrap:wrap;gap:8px}
+.rtm-lista .rtm-pilulas button.rtm-pilula{font:inherit;font-size:13.5px;font-weight:600;line-height:1.3;padding:8px 14px;border-radius:99px;border:1.5px solid var(--rtm-line);background:var(--rtm-surface);color:var(--rtm-ink);cursor:pointer;text-transform:none;letter-spacing:normal;box-shadow:none}
+.rtm-lista .rtm-pilulas button.rtm-pilula:hover,.rtm-lista .rtm-pilulas button.rtm-pilula:focus{border-color:var(--rtm-brand);background:var(--rtm-surface);color:var(--rtm-ink)}
+.rtm-lista .rtm-pilulas button.rtm-pilula[aria-pressed="true"],.rtm-lista .rtm-pilulas button.rtm-pilula[aria-pressed="true"]:hover{border-color:var(--rtm-brand);background:var(--rtm-brand-soft);color:var(--rtm-ink)}
+.rtm-lista p.rtm-lista-conta{margin:0;font-size:14px;font-weight:700;color:var(--rtm-muted)}
+.rtm-lista .rtm-lista-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.rtm-lista article.rtm-lista-card{background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.rtm-lista article.rtm-lista-card[hidden]{display:none}
+.rtm-lista .rtm-lista-foto{position:relative;aspect-ratio:4/3.6;background:var(--rtm-chip);display:grid;place-items:center}
+.rtm-lista .rtm-lista-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block}
+.rtm-lista .rtm-lista-foto .rtm-iniciais{font-size:48px}
+.rtm-lista .rtm-lista-corpo{display:flex;flex-direction:column;gap:8px;padding:14px 16px 16px;flex:1}
+.rtm-lista .rtm-lista-corpo .rtm-cadastur{align-self:flex-start;font-size:11.5px;padding:3px 9px 3px 5px}
+.rtm-lista h2.rtm-lista-nome{font-family:var(--rtm-font-display);font-size:22px;line-height:1.15;margin:0;color:var(--rtm-ink)}
+.rtm-lista p.rtm-lista-cargo{margin:0;font-size:13.5px;color:var(--rtm-muted)}
+.rtm-lista p.rtm-lista-atende{margin:0;font-size:13px;color:var(--rtm-muted)}
+.rtm-lista .rtm-lista-acoes{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.rtm-lista a.rtm-lista-ver,.rtm-lista a.rtm-lista-cot{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;padding:10px 14px;font-weight:800;font-size:14px;text-decoration:none}
+.rtm-lista a.rtm-lista-cot{background:var(--rtm-brand);color:var(--rtm-brand-ink)}
+.rtm-lista a.rtm-lista-ver{border:1.5px solid var(--rtm-line);color:var(--rtm-ink)}
+.rtm-lista a.rtm-lista-cot:hover,.rtm-lista a.rtm-lista-cot:focus{color:var(--rtm-brand-ink);filter:brightness(.95)}
+.rtm-lista a.rtm-lista-ver:hover,.rtm-lista a.rtm-lista-ver:focus{border-color:var(--rtm-ink);color:var(--rtm-ink)}
+.rtm-lista .rtm-lista-corpo .rtm-agencia{padding-top:10px;border-top:1px solid var(--rtm-line)}
+.rtm-lista p.rtm-lista-vazio{margin:0;padding:16px;border-radius:12px;background:var(--rtm-bg);font-size:14px}
+.rtm-lista p.rtm-lista-vazio a{color:var(--rtm-ink);font-weight:700}
 
