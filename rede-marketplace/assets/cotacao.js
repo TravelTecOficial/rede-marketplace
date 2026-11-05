@@ -178,30 +178,127 @@
 
   ligar('rtm-inclui', function (p) { pressionar(p, p.getAttribute('aria-pressed') !== 'true'); });
 
-  // Validação.
+  // Validação e formatação dos campos.
   function valor(id) { var el = $(id); return el ? String(el.value || '').trim() : ''; }
+
+  // WhatsApp: só dígitos, sem o +55 do país; DDD (11 a 99) + celular (9 + 8 dígitos) ou fixo (2 a 5 + 7 dígitos).
+  function digitosTel(v) {
+    var t = String(v || '').replace(/\D+/g, '');
+    if (t.length > 11 && t.indexOf('55') === 0) { t = t.slice(2); }
+    if (t.length > 10 && t.charAt(0) === '0') { t = t.slice(1); } // 0 + DDD
+    return t.slice(0, 11);
+  }
+  function telValido(t) { return /^[1-9][1-9](9\d{8}|[2-5]\d{7})$/.test(t); }
+  function formatarTel(t) {
+    if (!t) { return ''; }
+    if (t.length <= 2) { return '(' + t; }
+    var ddd = '(' + t.slice(0, 2) + ') ', resto = t.slice(2);
+    var corte = resto.length > 8 ? 5 : 4;
+    return ddd + (resto.length > corte ? resto.slice(0, corte) + '-' + resto.slice(corte) : resto);
+  }
+  function emailValido(v) { return /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(v); }
+  function limparNome(v) { return String(v || '').replace(/\s+/g, ' ').trim(); }
+  function nomeValido(v) {
+    var n = limparNome(v);
+    return n.length >= 3 && n.length <= 120 && /^[A-Za-z\u00C0-\u00FF' .-]+$/.test(n) && /[A-Za-z\u00C0-\u00FF]{2}/.test(n);
+  }
+
+  // Datas: AAAA-MM-DD (o valor do input date); hoje no fuso do navegador.
+  function hoje() {
+    var a = new Date();
+    var z = function (n) { return (n < 10 ? '0' : '') + n; };
+    return a.getFullYear() + '-' + z(a.getMonth() + 1) + '-' + z(a.getDate());
+  }
+  function dataBR(v) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : ''; }
+  function modoDatas() { return (pressionados('rtm-datas', 'data-v')[0]) || ''; }
+  function limitarDatas() {
+    var ida = $('rtm-ida'), volta = $('rtm-volta');
+    if (ida) { ida.min = hoje(); }
+    var mes = $('rtm-mes');
+    if (mes) { mes.min = hoje().slice(0, 7); }
+    if (volta) { volta.min = (ida && ida.value && ida.value >= hoje()) ? ida.value : hoje(); }
+    if (ida && volta && ida.value && volta.value && volta.value < ida.value) { volta.value = ''; }
+  }
+
+  var MSGS = {
+    'rtm-destino': 'Informe o destino.',
+    'rtm-lista': 'Escolha de 1 a 3 especialistas ou marque para a Rede escolher.',
+    'rtm-ida': 'A data de ida não pode ser no passado.',
+    'rtm-volta': 'A volta não pode ser antes da ida.',
+    'rtm-adultos': 'Informe quantos adultos vão.',
+    'rtm-nome': 'Informe seu nome (só letras).',
+    'rtm-whats': 'Informe um WhatsApp válido com DDD, ex.: (11) 99999-9999.',
+    'rtm-email': 'Informe um e-mail válido, ex.: nome@exemplo.com.',
+    'rtm-lgpd': 'É preciso autorizar o envio dos dados.'
+  };
+  function mensagem(id, mostrar) {
+    var el = $(id);
+    if (!el) { return; }
+    var mid = id + '-erro';
+    var m = $(mid);
+    if (!mostrar) { if (m) { m.hidden = true; } el.removeAttribute('aria-invalid'); return; }
+    if (!m) {
+      m = d.createElement('small');
+      m.className = 'rtm-msg-erro';
+      m.id = mid;
+      var ancora = el.closest('label') || el;
+      ancora.parentNode.insertBefore(m, ancora.nextSibling);
+      var desc = el.getAttribute('aria-describedby');
+      el.setAttribute('aria-describedby', desc ? desc + ' ' + mid : mid);
+    }
+    m.textContent = MSGS[id] || '';
+    m.hidden = false;
+    el.setAttribute('aria-invalid', 'true');
+  }
+
   function validar() {
     var erros = [];
     var algumAgente = selecionados().length > 0 || (rede && rede.checked);
     if (!destinoTexto()) { erros.push('rtm-destino'); }
     if (!algumAgente) { erros.push('rtm-lista'); }
+    if (modoDatas() === 'certas') {
+      var ida = valor('rtm-ida'), volta = valor('rtm-volta');
+      if (ida && ida < hoje()) { erros.push('rtm-ida'); }
+      if (volta && (volta < hoje() || (ida && volta < ida))) { erros.push('rtm-volta'); }
+    }
     if (!valor('rtm-adultos')) { erros.push('rtm-adultos'); }
-    if (!valor('rtm-nome')) { erros.push('rtm-nome'); }
-    var tel = valor('rtm-whats').replace(/\D+/g, '');
-    if (tel.length < 10 || tel.length > 11) { erros.push('rtm-whats'); }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor('rtm-email'))) { erros.push('rtm-email'); }
+    if (!nomeValido(valor('rtm-nome'))) { erros.push('rtm-nome'); }
+    if (!telValido(digitosTel(valor('rtm-whats')))) { erros.push('rtm-whats'); }
+    if (!emailValido(valor('rtm-email'))) { erros.push('rtm-email'); }
     var lgpd = $('rtm-lgpd');
     if (!lgpd || !lgpd.checked) { erros.push('rtm-lgpd'); }
 
-    ['rtm-destino', 'rtm-lista', 'rtm-adultos', 'rtm-nome', 'rtm-whats', 'rtm-email', 'rtm-lgpd'].forEach(function (id) {
-      var el = $(id);
-      if (!el) { return; }
-      if (erros.indexOf(id) !== -1) { el.setAttribute('aria-invalid', 'true'); } else { el.removeAttribute('aria-invalid'); }
-    });
+    Object.keys(MSGS).forEach(function (id) { mensagem(id, erros.indexOf(id) !== -1); });
     return erros;
   }
 
+  // Máscara do WhatsApp enquanto digita; nome e e-mail arrumados ao sair do campo.
+  var campoWhats = $('rtm-whats');
+  if (campoWhats) {
+    campoWhats.addEventListener('input', function () { campoWhats.value = formatarTel(digitosTel(campoWhats.value)); });
+  }
+  var campoNome = $('rtm-nome');
+  if (campoNome) { campoNome.addEventListener('blur', function () { campoNome.value = limparNome(campoNome.value); }); }
+  var campoEmail = $('rtm-email');
+  if (campoEmail) { campoEmail.addEventListener('blur', function () { campoEmail.value = String(campoEmail.value || '').trim().toLowerCase(); }); }
+  ['rtm-ida', 'rtm-volta'].forEach(function (id) {
+    var el = $(id);
+    if (el) { el.addEventListener('change', limitarDatas); }
+  });
+  limitarDatas();
+
+  // Depois da primeira tentativa de envio, os avisos somem assim que o campo é corrigido.
+  var tentou = false;
+  var formVal = $('rtm-cotacao');
+  if (formVal) {
+    var revalidar = function () { if (tentou) { validar(); } };
+    formVal.addEventListener('input', revalidar);
+    formVal.addEventListener('change', revalidar);
+    lista.addEventListener('click', revalidar);
+  }
+
   function aoEnviar() {
+    tentou = true;
     var erros = validar();
     if (erros.length) {
       if (aviso) { aviso.hidden = true; }
@@ -270,12 +367,15 @@
     return pilulas(id).filter(function (p) { return p.getAttribute('aria-pressed') === 'true'; }).map(function (p) { return p.getAttribute(attr) || p.textContent.trim(); });
   }
   function datasTexto() {
-    var v = (pressionados('rtm-datas', 'data-v')[0]) || '';
+    var v = modoDatas();
     if (v === 'certas') {
-      var ida = valor('rtm-ida'), volta = valor('rtm-volta');
+      var ida = dataBR(valor('rtm-ida')), volta = dataBR(valor('rtm-volta'));
       return ida || volta ? ('Ida ' + (ida || '?') + ' · volta ' + (volta || '?')) : 'Datas a definir';
     }
-    if (v === 'mes') { return valor('rtm-mes') ? 'Mês: ' + valor('rtm-mes') : 'Só sabe o mês'; }
+    if (v === 'mes') {
+      var m = /^(\d{4})-(\d{2})$/.exec(valor('rtm-mes'));
+      return m ? 'Mês: ' + m[2] + '/' + m[1] : 'Só sabe o mês';
+    }
     return 'Ainda não sabe as datas';
   }
   function pessoasTexto() {
@@ -302,14 +402,16 @@
       tipo: tipo,
       saida: valor('rtm-origem'),
       datas: datasTexto(),
+      ida: modoDatas() === 'certas' ? valor('rtm-ida') : '',
+      volta: modoDatas() === 'certas' ? valor('rtm-volta') : '',
       pessoas: pessoasTexto(),
       inclui: pressionados('rtm-inclui', 'data-item').join(', '),
       orcamento: valor('rtm-orcamento'),
       mensagem: valor('rtm-obs'),
       horario: valor('rtm-horario'),
-      nome: valor('rtm-nome'),
-      telefone: valor('rtm-whats'),
-      email: valor('rtm-email'),
+      nome: limparNome(valor('rtm-nome')),
+      telefone: digitosTel(valor('rtm-whats')),
+      email: valor('rtm-email').toLowerCase(),
       lgpd: !!(lgpd && lgpd.checked),
       sugestao: sugAtual,
       origem_url: String(window.location.href).split('#')[0],

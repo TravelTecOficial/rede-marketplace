@@ -238,6 +238,9 @@ dialog.rtm-cad-dialogo::backdrop{background:rgba(20,16,12,.6)}
 .rtm-cotacao input[type=text],.rtm-cotacao input[type=email],.rtm-cotacao input[type=tel],.rtm-cotacao input[type=month],.rtm-cotacao input[type=date],.rtm-cotacao label.rtm-rot select,.rtm-cotacao label.rtm-rot textarea{display:block;width:100%;margin:0;font:inherit;font-weight:400;color:var(--rtm-ink);background:var(--rtm-bg);border:1px solid var(--rtm-line);border-radius:10px;padding:11px 12px;box-shadow:none}
 .rtm-cotacao label.rtm-rot textarea{min-height:84px;resize:vertical}
 .rtm-cotacao input[type=text]:focus-visible,.rtm-cotacao input[type=email]:focus-visible,.rtm-cotacao input[type=tel]:focus-visible,.rtm-cotacao input[type=month]:focus-visible,.rtm-cotacao input[type=date]:focus-visible,.rtm-cotacao label.rtm-rot select:focus-visible,.rtm-cotacao label.rtm-rot textarea:focus-visible{outline:2px solid var(--rtm-brand);outline-offset:1px}
+.rtm-cotacao input[aria-invalid=true],.rtm-cotacao label.rtm-rot select[aria-invalid=true]{border-color:#c0392b}
+.rtm-cotacao .rtm-msg-erro{display:block;margin-top:-2px;font-size:12px;font-weight:600;color:#a12a1c}
+.rtm-cotacao .rtm-msg-erro[hidden]{display:none}
 .rtm-cotacao label.rtm-rot[hidden],.rtm-cotacao div.rtm-vazio[hidden],.rtm-cotacao div.rtm-aviso-ensaio[hidden]{display:none}
 
 .rtm-cotacao .rtm-pilulas{display:flex;flex-wrap:wrap;gap:8px}

@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.18.1 (05/11/2026): formulário de cotação valida as datas (volta não pode ser antes da ida, nem datas no passado), máscara de WhatsApp com DDD, e-mail e nome conferidos, com aviso em cada campo. O servidor confere tudo de novo antes de enviar ao Cliente Ideal.
 0.18.0 (05/11/2026): envio do pedido de cotação para o Cliente Ideal (lead no CRM de cada agência escolhida). O site repassa com a chave secreta (Configurações › Chave do envio). No ensaio só quem edita o site envia.
 0.17.0 (05/11/2026): destinos do agente = categorias do blog (vindas do Cliente Ideal); destino sem página de Destino aparece com o nome da categoria nos chips, filtros e cotação.
 0.16.0 (05/11/2026): avaliações reais do Google vindas do Cliente Ideal (nota, total, até 5 depoimentos com autor, foto e link). Fim das avaliações fictícias.
