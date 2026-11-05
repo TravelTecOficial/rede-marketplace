@@ -92,6 +92,10 @@ function wp_remote_request( $url, $args ) {
 	return array_shift( $GLOBALS['rt_http'] );
 }
 function wp_remote_get( $url, $args = array() ) { return wp_remote_request( $url, $args ); }
+function wp_remote_post( $url, $args = array() ) { return wp_remote_request( $url, $args ); }
+$GLOBALS['rt_logado'] = false;
+function is_user_logged_in() { return (bool) $GLOBALS['rt_logado']; }
+class RT_Req_Falsa { public $p; public function __construct( $p ) { $this->p = $p; } public function get_json_params() { return $this->p; } }
 function wp_remote_head( $url, $args = array() ) { return wp_remote_request( $url, $args ); }
 function wp_remote_retrieve_response_code( $r ) { return is_array( $r ) ? $r['response']['code'] : ''; }
 function wp_remote_retrieve_body( $r ) { return is_array( $r ) ? $r['body'] : ''; }

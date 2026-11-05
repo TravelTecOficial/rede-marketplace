@@ -439,4 +439,11 @@ dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bot
 .rtm-avaliacoes img.rtm-av-ini{object-fit:cover;border-radius:50%;background:#eee}
 .rtm-avaliacoes .rtm-av-cab b a{color:inherit;text-decoration:none}
 .rtm-avaliacoes .rtm-av-cab b a:hover{text-decoration:underline}
+/* Envio do pedido */
+.rtm-cotacao label.rtm-isca{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.rtm-cotacao .rtm-aviso-ensaio.rtm-erro{background:#fdecea;border-color:#f1b0a8;color:#8a1c12}
+.rtm-cotacao .rtm-obrigado{margin:24px auto;max-width:640px;padding:28px 24px;border-radius:16px;background:#eef6ee;border:1px solid #b9d9b9;text-align:center;font-family:var(--rtm-font-body);color:var(--rtm-ink)}
+.rtm-cotacao .rtm-obrigado h2{font-family:var(--rtm-font-display);font-size:26px;margin:0 0 8px;color:var(--rtm-ink)}
+.rtm-cotacao .rtm-obrigado p{margin:0;font-size:16px}
+.rtm-cotacao.rtm-enviado form,.rtm-cotacao.rtm-enviado .rtm-cbarra,.rtm-cotacao.rtm-enviado .rtm-sugestao-aviso{display:none}
 

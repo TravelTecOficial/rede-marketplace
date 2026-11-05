@@ -94,7 +94,8 @@ function rtm_cotacao_destino_fixo( $atributo ) {
 }
 
 /**
- * Shortcode [rt_cotacao]: HTML completo da página de cotação. Nada é enviado pela rede a partir daqui.
+ * Shortcode [rt_cotacao]: HTML completo da página de cotação. O envio (cotacao.js -> envio.php) só liga com a chave
+ * do Cliente Ideal guardada e, no ensaio, para quem edita o site.
  * No modelo da página de Destino ([rt_cotacao destino="atual"]) o destino vem da página, o título vira h2
  * (a página já tem h1) e a barra de envio só acompanha enquanto o formulário está na tela.
  */
@@ -124,7 +125,8 @@ function rtm_cotacao_html( $atts = array() ) {
 	$h .= '<div class="rtm-sugestao-aviso" id="rtm-sugestao-aviso" role="status" hidden><span id="rtm-sugestao-texto"></span>'
 		. '<button type="button" class="rtm-sugestao-tirar" id="rtm-sugestao-tirar">Tirar</button></div>';
 	$h .= '<script type="application/json" id="rtm-sugestoes-dados">' . wp_json_encode( (object) rtm_sugestoes_cotacao(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE ) . '</script>';
-	$h .= '<form id="rtm-cotacao" novalidate>';
+	$h .= '<form id="rtm-cotacao" novalidate' . rtm_envio_atributos() . '>';
+	$h .= '<label class="rtm-isca" aria-hidden="true">Não preencha<input type="text" id="rtm-site" name="site" tabindex="-1" autocomplete="off"></label>';
 
 	// Etapa 1: a viagem.
 	$h .= '<section class="rtm-etapa" data-etapa="1">' . rtm_cot_etapa_titulo( 1, 'Sua viagem', 'O tipo de viagem mostra os especialistas certos para você.' );

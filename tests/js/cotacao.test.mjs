@@ -297,3 +297,52 @@ test('?agente= que não existe: cotação normal com todos', () => {
   assert.equal(w.document.getElementById('rtm-rede').closest('label').hidden, false);
 });
 
+
+test('com data-envio: manda o pedido ao site e mostra o obrigado', async () => {
+  const w = montar('?destino=gramado&utm_source=google&gclid=abc');
+  const form = $(w, 'rtm-cotacao');
+  form.setAttribute('data-envio', 'https://exemplo.test/wp-json/rede-marketplace/v1/cotacao');
+  form.setAttribute('data-nonce', 'n1');
+  let chamada = null;
+  w.fetch = (url, op) => { chamada = { url, op }; return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, agentes: ['mariana-kloss', 'rafael-antunes'] }) }); };
+  clicar(cardDe(w, 'mariana-kloss'));
+  clicar(cardDe(w, 'rafael-antunes'));
+  $(w, 'rtm-nome').value = 'Ana Souza';
+  $(w, 'rtm-whats').value = '(11) 99999-9999';
+  $(w, 'rtm-email').value = 'ana@exemplo.com';
+  $(w, 'rtm-lgpd').checked = true;
+  $(w, 'rtm-destino').value = 'Gramado';
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(chamada.url, 'https://exemplo.test/wp-json/rede-marketplace/v1/cotacao');
+  assert.equal(chamada.op.method, 'POST');
+  assert.equal(chamada.op.headers['X-WP-Nonce'], 'n1');
+  const corpo = JSON.parse(chamada.op.body);
+  assert.deepEqual(corpo.agentes, ['mariana-kloss', 'rafael-antunes']);
+  assert.equal(corpo.nome, 'Ana Souza');
+  assert.equal(corpo.destino_slug, 'gramado');
+  assert.equal(corpo.lgpd, true);
+  assert.deepEqual(corpo.utm, { utm_source: 'google', gclid: 'abc' });
+  assert.match(corpo.pessoas, /2 adulto/);
+  assert.equal(corpo.inclui, 'Aéreo');
+  const ob = w.document.querySelector('.rtm-obrigado');
+  assert.ok(ob, 'obrigado na tela');
+  assert.match(ob.textContent, /Pedido enviado!/);
+  assert.match(ob.textContent, /mariana-kloss e rafael-antunes vão falar com você/);
+  assert.ok(w.document.querySelector('.rtm-cotacao').classList.contains('rtm-enviado'));
+});
+
+test('com data-envio: erro do servidor mostra a mensagem e libera o botão', async () => {
+  const w = montar('?destino=gramado');
+  $(w, 'rtm-cotacao').setAttribute('data-envio', 'https://exemplo.test/wp-json/rede-marketplace/v1/cotacao');
+  w.fetch = () => Promise.resolve({ ok: false, json: () => Promise.resolve({ ok: false, msg: 'Muitos pedidos seguidos.' }) });
+  clicar(cardDe(w, 'mariana-kloss'));
+  $(w, 'rtm-nome').value = 'Ana'; $(w, 'rtm-whats').value = '11999999999'; $(w, 'rtm-email').value = 'a@b.co'; $(w, 'rtm-lgpd').checked = true;
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal($(w, 'rtm-aviso-ensaio').hidden, false);
+  assert.match($(w, 'rtm-aviso-ensaio').textContent, /Muitos pedidos seguidos/);
+  assert.ok($(w, 'rtm-aviso-ensaio').classList.contains('rtm-erro'));
+  assert.equal($(w, 'rtm-enviar').disabled, false);
+  assert.equal(w.document.querySelector('.rtm-obrigado'), null);
+});

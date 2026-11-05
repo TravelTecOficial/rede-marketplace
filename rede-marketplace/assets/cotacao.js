@@ -1,5 +1,6 @@
-/* Comportamento da página de cotação: filtro, seleção de até 3 especialistas e validação.
- * Ensaio: nada é enviado pela rede (sem fetch, XMLHttpRequest, submit ou sendBeacon). */
+/* Comportamento da página de cotação: filtro, seleção de até 3 especialistas, validação e envio.
+ * O envio só acontece quando o formulário tem data-envio (chave do Cliente Ideal guardada; no ensaio, só para quem
+ * edita o site): POST para o próprio site, que repassa ao Cliente Ideal. Sem data-envio, nada vai pela rede. */
 (function () {
   'use strict';
 
@@ -211,11 +212,110 @@
       }
       return;
     }
-    if (aviso) {
-      aviso.textContent = 'Ensaio: nada foi enviado. No próximo passo o pedido segue para os especialistas escolhidos.';
-      aviso.hidden = false;
-      if (aviso.scrollIntoView) { aviso.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    var formEl = $('rtm-cotacao');
+    var url = formEl ? formEl.getAttribute('data-envio') : '';
+    if (!url || !window.fetch) {
+      mostrarAviso('Ensaio: nada foi enviado. No próximo passo o pedido segue para os especialistas escolhidos.', false);
+      return;
     }
+    if (enviando) { return; }
+    enviando = true;
+    if (enviar) { enviar.disabled = true; enviar.textContent = 'Enviando…'; }
+    var cab = { 'Content-Type': 'application/json' };
+    var nonce = formEl.getAttribute('data-nonce');
+    if (nonce) { cab['X-WP-Nonce'] = nonce; }
+    window.fetch(url, { method: 'POST', headers: cab, credentials: 'same-origin', body: JSON.stringify(pedido()) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j || {} }; }); })
+      .then(function (res) {
+        if (res.ok && res.j.ok) { obrigado(res.j.agentes || []); return; }
+        falhou(res.j.msg || 'Não conseguimos enviar agora. Tente de novo em alguns minutos.');
+      })
+      .catch(function () { falhou('Sem conexão. Confira a internet e tente de novo.'); });
+  }
+
+  var enviando = false;
+  function mostrarAviso(txt, erro) {
+    if (!aviso) { return; }
+    aviso.textContent = txt;
+    aviso.classList.toggle('rtm-erro', !!erro);
+    aviso.hidden = false;
+    if (aviso.scrollIntoView) { aviso.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }
+  function falhou(msg) {
+    enviando = false;
+    if (enviar) { enviar.textContent = 'Pedir cotações'; }
+    atualizarContagem();
+    mostrarAviso(msg, true);
+  }
+  function obrigado(nomes) {
+    var raiz = d.querySelector('.rtm-cotacao');
+    if (!raiz) { return; }
+    var box = d.createElement('div');
+    box.className = 'rtm-obrigado';
+    box.setAttribute('role', 'status');
+    var h2 = d.createElement('h2');
+    h2.textContent = 'Pedido enviado!';
+    var p = d.createElement('p');
+    var quem = nomes.length ? nomes.join(', ').replace(/, ([^,]*)$/, ' e $1') : 'Os especialistas';
+    p.textContent = quem + (nomes.length === 1 ? ' vai' : ' vão') + ' falar com você pelo WhatsApp ou e-mail para montar a sua cotação.';
+    box.appendChild(h2);
+    box.appendChild(p);
+    raiz.appendChild(box);
+    raiz.classList.add('rtm-enviado');
+    if (box.scrollIntoView) { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }
+
+  // Dados do pedido para o servidor (que repassa ao Cliente Ideal).
+  function pressionados(id, attr) {
+    return pilulas(id).filter(function (p) { return p.getAttribute('aria-pressed') === 'true'; }).map(function (p) { return p.getAttribute(attr) || p.textContent.trim(); });
+  }
+  function datasTexto() {
+    var v = (pressionados('rtm-datas', 'data-v')[0]) || '';
+    if (v === 'certas') {
+      var ida = valor('rtm-ida'), volta = valor('rtm-volta');
+      return ida || volta ? ('Ida ' + (ida || '?') + ' · volta ' + (volta || '?')) : 'Datas a definir';
+    }
+    if (v === 'mes') { return valor('rtm-mes') ? 'Mês: ' + valor('rtm-mes') : 'Só sabe o mês'; }
+    return 'Ainda não sabe as datas';
+  }
+  function pessoasTexto() {
+    var partes = [valor('rtm-adultos') + ' adulto(s)'];
+    if (valor('rtm-criancas') && valor('rtm-criancas') !== '0') { partes.push(valor('rtm-criancas') + ' criança(s)'); }
+    if (valor('rtm-bebes') && valor('rtm-bebes') !== '0') { partes.push(valor('rtm-bebes') + ' bebê(s)'); }
+    return partes.join(', ');
+  }
+  function utm() {
+    var res = {};
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid'].forEach(function (k) {
+      var v = params ? params.get(k) : '';
+      if (v) { res[k] = v; }
+    });
+    return res;
+  }
+  function pedido() {
+    var lgpd = $('rtm-lgpd');
+    return {
+      agentes: selecionados().map(function (c) { return c.getAttribute('data-slug'); }),
+      rede: !!(rede && rede.checked),
+      destino: destinoTexto(),
+      destino_slug: destinoAtual(),
+      tipo: tipo,
+      saida: valor('rtm-origem'),
+      datas: datasTexto(),
+      pessoas: pessoasTexto(),
+      inclui: pressionados('rtm-inclui', 'data-item').join(', '),
+      orcamento: valor('rtm-orcamento'),
+      mensagem: valor('rtm-obs'),
+      horario: valor('rtm-horario'),
+      nome: valor('rtm-nome'),
+      telefone: valor('rtm-whats'),
+      email: valor('rtm-email'),
+      lgpd: !!(lgpd && lgpd.checked),
+      sugestao: sugAtual,
+      origem_url: String(window.location.href).split('#')[0],
+      utm: utm(),
+      site: valor('rtm-site')
+    };
   }
 
   if (enviar) { enviar.addEventListener('click', aoEnviar); }
@@ -282,5 +382,5 @@
     }
   }
 
-  window.RTMCotacao = { estado: estado, validar: validar };
+  window.RTMCotacao = { estado: estado, validar: validar, pedido: pedido };
 })();

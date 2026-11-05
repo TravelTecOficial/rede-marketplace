@@ -318,12 +318,21 @@ function rtm_limpar_opcoes( $entrada ) {
 	$url     = isset( $entrada['url_cotacao'] ) ? esc_url_raw( trim( (string) $entrada['url_cotacao'] ) ) : '';
 	$chave = isset( $entrada['google_chave'] ) && is_scalar( $entrada['google_chave'] ) ? preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $entrada['google_chave'] ) : '';
 	$api = isset( $entrada['ci_api'] ) && is_scalar( $entrada['ci_api'] ) ? esc_url_raw( trim( (string) $entrada['ci_api'] ) ) : '';
+	$cot = isset( $entrada['ci_cotacao'] ) && is_scalar( $entrada['ci_cotacao'] ) ? esc_url_raw( trim( (string) $entrada['ci_cotacao'] ) ) : '';
+	// Chave do envio: campo em branco mantém a guardada; "apagar" marcado limpa.
+	$antes = rtm_opcoes();
+	$ch    = isset( $entrada['ci_chave'] ) && is_scalar( $entrada['ci_chave'] ) ? preg_replace( '/[^A-Za-z0-9_\-.]/', '', (string) $entrada['ci_chave'] ) : '';
+	if ( '' === $ch ) {
+		$ch = empty( $entrada['ci_chave_apagar'] ) ? (string) $antes['ci_chave'] : '';
+	}
 	return array(
 		'url_cotacao'  => '' !== $url ? $url : home_url( '/cotacao-especialistas/' ),
 		'ensaio'       => ! empty( $entrada['ensaio'] ),
 		'google_chave' => $chave,
 		'ci_ligado'    => ! empty( $entrada['ci_ligado'] ),
 		'ci_api'       => preg_match( '#^https://#i', $api ) ? $api : '',
+		'ci_cotacao'   => preg_match( '#^https://#i', $cot ) ? $cot : '',
+		'ci_chave'     => $ch,
 	);
 }
 
@@ -352,7 +361,11 @@ function rtm_tela_configuracoes() {
 		. '<tr><th scope="row"><label for="rtm_google_chave">Chave do Google Maps</label></th><td><input type="text" class="regular-text" id="rtm_google_chave" name="rtm_opcoes[google_chave]" value="' . esc_attr( (string) $o['google_chave'] ) . '" autocomplete="off" spellcheck="false"><p class="description">Chave restrita ao site (redeturistica.com.br) com Maps JavaScript, Places (New) e Maps Embed. Com ela e o Place ID no agente, a página mostra nota, avaliações e mapa do Google.</p></td></tr>'
 		. '<tr><th scope="row">Cliente Ideal</th><td><label><input type="checkbox" name="rtm_opcoes[ci_ligado]" value="1"' . checked( ! empty( $o['ci_ligado'] ), true, false ) . '> Agentes e sugestões vêm do módulo Rede Turística do Cliente Ideal</label>'
 		. '<p><input type="url" class="regular-text" id="rtm_ci_api" name="rtm_opcoes[ci_api]" value="' . esc_attr( (string) $o['ci_api'] ) . '" placeholder="' . esc_attr( RTM_CI_API_PADRAO ) . '"></p><p class="description">Endereço da API pública. Vazio = Cliente Ideal DEV.</p></td></tr>'
-		. '<tr><th scope="row">Modo ensaio</th><td><label><input type="checkbox" name="rtm_opcoes[ensaio]" value="1"' . checked( ! empty( $o['ensaio'] ), true, false ) . '> Ensaio (nenhum lead é enviado de verdade ao CRM)</label></td></tr>'
+		. '<tr><th scope="row"><label for="rtm_ci_chave">Chave do envio</label></th><td><input type="password" class="regular-text" id="rtm_ci_chave" name="rtm_opcoes[ci_chave]" value="" autocomplete="new-password" spellcheck="false" placeholder="' . esc_attr( '' !== (string) $o['ci_chave'] ? 'Guardada (deixe em branco para manter)' : 'Cole a chave do Cliente Ideal' ) . '">'
+		. ( '' !== (string) $o['ci_chave'] ? ' <label><input type="checkbox" name="rtm_opcoes[ci_chave_apagar]" value="1"> apagar</label>' : '' )
+		. '<p class="description">Chave secreta que o Cliente Ideal fornece para receber os pedidos de cotação. Fica só no servidor.</p>'
+		. '<p><input type="url" class="regular-text" name="rtm_opcoes[ci_cotacao]" value="' . esc_attr( (string) $o['ci_cotacao'] ) . '" placeholder="' . esc_attr( RTM_CI_COTACAO_PADRAO ) . '"></p><p class="description">Endereço do envio. Vazio = Cliente Ideal DEV.</p></td></tr>'
+		. '<tr><th scope="row">Modo ensaio</th><td><label><input type="checkbox" name="rtm_opcoes[ensaio]" value="1"' . checked( ! empty( $o['ensaio'] ), true, false ) . '> Ensaio (fora do Google; agentes e envio do pedido só para quem edita o site)</label></td></tr>'
 		. '</table>';
 	submit_button();
 	echo '</form>';
