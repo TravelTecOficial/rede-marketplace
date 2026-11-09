@@ -12,10 +12,10 @@ rtm_t_post( 10, 'Gramado', array(), 'publish', 'destinos' );
 rtm_t_post( 12, 'Paris', array(), 'publish', 'destinos' );
 rtm_t_post( 13, 'Canela', array(), 'draft', 'destinos' );
 $g = array( array( 'id' => 10, 'slug' => 'gramado' ) );
-rtm_t_post( 5, 'Mariana Kloss', array( 'ativo' => '1', 'whatsapp' => '11999990000', 'email' => 'm@segredo.com', 'company_id' => 'company-x', 'destinos' => $g ) );
-rtm_t_post( 6, 'Rafael Antunes', array( 'ativo' => '1', 'destinos' => $g ) );
+rtm_t_post( 5, 'Mariana Kloss', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'whatsapp' => '11999990000', 'email' => 'm@segredo.com', 'company_id' => 'company-x', 'destinos' => $g ) );
+rtm_t_post( 6, 'Rafael Antunes', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'destinos' => $g ) );
 rtm_t_post( 7, 'Inativa', array( 'ativo' => '0', 'destinos' => array( array( 'id' => 12, 'slug' => 'paris' ) ) ) );
-rtm_t_post( 8, 'Agente de Canela', array( 'ativo' => '1', 'destinos' => array( array( 'id' => 13, 'slug' => 'canela' ) ) ) );
+rtm_t_post( 8, 'Agente de Canela', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'destinos' => array( array( 'id' => 13, 'slug' => 'canela' ) ) ) );
 
 ok( isset( $GLOBALS['rt_shortcodes']['rt_cotacao'] ), 'shortcode rt_cotacao registrado' );
 $GLOBALS['rt_estilos'] = array();
@@ -100,8 +100,15 @@ ok( file_exists( '/p/assets/cotacao.js' ), 'cotacao.js existe' );
 // Sem agentes: página não quebra
 $GLOBALS['rt_posts'] = array();
 $vazio = rtm_cotacao_html();
-contem( 'id="rtm-lista"', $vazio, 'sem agentes: lista vazia presente' );
-igual( 0, substr_count( $vazio, 'class="rtm-card"' ), 'sem agentes: nenhum card' );
+contem( 'Estamos reunindo os primeiros especialistas', $vazio, 'sem agentes: estado vazio amigável' );
+contem( '/seja-um-agente/', $vazio, 'sem agentes: link para Seja um agente' );
+nao_contem( '<form', $vazio, 'sem agentes: sem formulário' );
+// Agente sem Cadastur conferido não conta
+rtm_t_post( 5, 'Mariana Kloss', array( 'ativo' => '1' ) );
+contem( 'Estamos reunindo', rtm_cotacao_html(), 'sem Cadastur conferido: não aparece' );
+rtm_t_post( 5, 'Mariana Kloss', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02' ) );
+rtm_t_post( 6, 'Rafael Antunes', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'cadastur_validade' => '2020-01-01' ) );
+nao_contem( 'Rafael Antunes', rtm_cotacao_html(), 'Cadastur vencido: não aparece' );
 
 // CSS do formulário com escopo
 $css = file_get_contents( '/p/assets/rede-marketplace.css' );
@@ -125,7 +132,7 @@ nao_contem( 'data-destino=', rtm_cotacao_html(), 'página de cotação comum: se
 contem( '<h1 class="rtm-titulo">', rtm_cotacao_html(), 'página de cotação comum: h1' );
 
 // Sugestões: dados para a cotação marcar a sugestão vinda da URL (?sugestao=)
-rtm_t_post( 5, 'Mariana Kloss', array( 'ativo' => '1' ) );
+rtm_t_post( 5, 'Mariana Kloss', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02' ) );
 rtm_t_post( 7, 'Inativa', array( 'ativo' => '0' ) );
 rtm_t_post( 60, 'Gramado em família, 4 dias', array( 'agente' => 5, 'destino' => 'gramado' ), 'publish', 'rt_sugestao' );
 rtm_t_post( 61, 'De inativa', array( 'agente' => 7 ), 'publish', 'rt_sugestao' );

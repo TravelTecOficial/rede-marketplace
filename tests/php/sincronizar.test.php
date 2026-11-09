@@ -31,7 +31,7 @@ igual( $api[0]['certificado'], $a['certificado'], 'certificado do Cliente Ideal'
 igual( 'Bem Viajar', $a['agencia_nome'], 'agência' );
 ok( false !== strpos( $a['apresentacao'], "\n\n" ), 'apresentação mantém parágrafos' );
 igual( array( array( 'id' => 10, 'slug' => 'gramado', 'nome' => 'Gramado' ) ), $a['destinos'], 'destino ligado ao post local' );
-ok( ! $a['cadastur_verificado'], 'Cadastur não verificado segue a API' );
+ok( $a['cadastur_verificado'], 'Cadastur verificado segue a API' );
 igual( array( 'Grupo', 'Natal Luz', 'Melhor idade' ), $GLOBALS['rt_obj_termos'][50]['rt_tipo_viagem'], 'tipos de viagem' );
 igual( 'draft', get_post_status( 51 ), 'agente fora da API foi para rascunho' );
 
@@ -63,6 +63,18 @@ array_pop( $api2[0]['sugestoes'] );
 resposta_falsa( 200, $api2 );
 rtm_ci_sincronizar();
 igual( 'draft', get_post_status( $sid ), 'sugestão que saiu da API foi para rascunho' );
+
+// Sem Cadastur conferido: sai do ar (Cadastur é obrigatório)
+$api3 = $api;
+$api3[0]['cadastur_verificado'] = false;
+resposta_falsa( 200, $api3 );
+$st = rtm_ci_sincronizar();
+igual( 'draft', get_post_status( 50 ), 'agente sem Cadastur conferido vai para rascunho' );
+igual( 2, $st['agentes'], 'só os com Cadastur ficam' );
+contem( 'sem Cadastur', $st['msg'], 'aviso do agente barrado' );
+resposta_falsa( 200, $api );
+rtm_ci_sincronizar();
+igual( 'publish', get_post_status( 50 ), 'conferido de novo: volta ao ar' );
 
 // Falha da API: nada muda
 resposta_falsa( 500, 'erro' );
@@ -115,6 +127,28 @@ igual( 202, $r->status, 'segundo aviso em seguida: agenda' );
 igual( $n, count( $GLOBALS['rt_http_log'] ), 'segundo aviso não chama a API na hora' );
 ok( false !== wp_next_scheduled( 'rtm_ci_sincronizar_unica' ), 'rodada extra agendada' );
 contem( '/wp-json/rede-marketplace/v1/sincronizar', rtm_ci_html_status(), 'tela mostra o endereço do webhook' );
+
+// Segredo do webhook
+ok( 'rtm_ci_webhook_permitido' === $GLOBALS['rt_rotas']['rede-marketplace/v1/sincronizar']['permission_callback'], 'rota protegida por segredo' );
+class Rtm_Req_Falso {
+	public $h = array(); public $p = array();
+	public function get_header( $k ) { return isset( $this->h[ $k ] ) ? $this->h[ $k ] : null; }
+	public function get_param( $k ) { return isset( $this->p[ $k ] ) ? $this->p[ $k ] : null; }
+}
+$seg = rtm_ci_segredo();
+ok( strlen( $seg ) >= 32, 'segredo criado sozinho' );
+igual( $seg, rtm_ci_segredo(), 'segredo estável' );
+$rq = new Rtm_Req_Falso();
+ok( is_wp_error( rtm_ci_webhook_permitido( $rq ) ), 'sem segredo: barrado' );
+$rq->h['x-rede-segredo'] = 'errado';
+ok( is_wp_error( rtm_ci_webhook_permitido( $rq ) ), 'segredo errado: barrado' );
+$rq->h['x-rede-segredo'] = $seg;
+igual( true, rtm_ci_webhook_permitido( $rq ), 'segredo no cabeçalho: liberado' );
+$rq = new Rtm_Req_Falso();
+$rq->p['segredo'] = $seg;
+igual( true, rtm_ci_webhook_permitido( $rq ), 'segredo na URL: liberado' );
+contem( 'segredo=' . $seg, rtm_ci_html_status(), 'tela mostra o endereço com o segredo' );
+igual( $seg, rtm_limpar_opcoes( array( 'ci_segredo' => 'x' ) )['ci_segredo'], 'salvar as opções não troca o segredo' );
 
 // Opções
 $o = rtm_limpar_opcoes( array( 'ci_ligado' => '1', 'ci_api' => 'http://inseguro.test' ) );

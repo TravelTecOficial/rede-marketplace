@@ -142,6 +142,15 @@ function rtm_especialidades_normalizar( $bruto, $max = 4 ) {
 	return array_slice( $lista, 0, (int) $max );
 }
 
+/** Cadastur conferido e, se há validade, ainda não vencido. Sem isso o agente não vai ao ar. */
+function rtm_cadastur_em_dia( $post_id ) {
+	if ( '' === (string) get_post_meta( $post_id, 'rtm_cadastur_conferido_em', true ) ) {
+		return false;
+	}
+	$val = (string) get_post_meta( $post_id, 'rtm_cadastur_validade', true );
+	return '' === $val || $val >= wp_date( 'Y-m-d' );
+}
+
 /** Dados públicos do agente, ou null se não existir, não for rt_agente, não estiver publicado ou ativo. */
 function rtm_agente( $post_id ) {
 	$post_id = (int) $post_id;
@@ -151,6 +160,9 @@ function rtm_agente( $post_id ) {
 	}
 	if ( '1' !== (string) get_post_meta( $post_id, 'rtm_ativo', true ) ) {
 		return null;
+	}
+	if ( ! rtm_cadastur_em_dia( $post_id ) ) {
+		return null; // Cadastur é obrigatório: sem conferência (ou vencido), o agente não aparece
 	}
 	$a = array();
 	foreach ( rtm_campos() as $chave => $def ) {

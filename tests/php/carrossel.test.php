@@ -7,8 +7,8 @@ function rtm_t_p( $id, $titulo, $meta = array() ) {
 	$GLOBALS['rt_meta'][ $id ] = array();
 	foreach ( $meta as $k => $v ) { $GLOBALS['rt_meta'][ $id ][ 'rtm_' . $k ] = $v; }
 }
-rtm_t_p( 5, 'Mariana Kloss', array( 'ativo' => '1', 'cargo' => 'Especialista em Gramado e Serra Gaúcha', 'cadastur_conferido_em' => '2026-11-02', 'foto_url_teste' => 'https://exemplo.test/m.svg', 'teste' => '1', 'avaliacoes' => array( 'nota' => 4.9, 'total' => 87, 'itens' => array() ) ) );
-rtm_t_p( 6, 'Rafael Antunes', array( 'ativo' => '1', 'cargo' => 'Lua de mel' ) );
+rtm_t_p( 5, 'Mariana Kloss', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'cargo' => 'Especialista em Gramado e Serra Gaúcha', 'cadastur_conferido_em' => '2026-11-02', 'foto_url_teste' => 'https://exemplo.test/m.svg', 'teste' => '1', 'avaliacoes' => array( 'nota' => 4.9, 'total' => 87, 'itens' => array() ) ) );
+rtm_t_p( 6, 'Rafael Antunes', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'cargo' => 'Lua de mel' ) );
 rtm_t_p( 7, 'Inativa Silva', array( 'ativo' => '0' ) );
 $GLOBALS['rt_opcoes']['rtm_opcoes'] = array( 'ensaio' => false, 'url_cotacao' => 'https://exemplo.test/cotacao-de-viagens/' );
 

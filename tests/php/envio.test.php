@@ -6,13 +6,13 @@ function rtm_t_ag( $id, $nome, $ci, $destinos ) {
 	$GLOBALS['rt_posts'][] = (object) array( 'ID' => $id, 'post_type' => 'rt_agente', 'post_status' => 'publish', 'post_title' => $nome, 'post_name' => sanitize_title( $nome ), 'post_content' => '' );
 	$d = array();
 	foreach ( $destinos as $s ) { $d[] = array( 'id' => 0, 'slug' => $s, 'nome' => ucfirst( $s ) ); }
-	$GLOBALS['rt_meta'][ $id ] = array( 'rtm_ativo' => '1', 'rtm_ci_id' => $ci, 'rtm_destinos' => $d );
+	$GLOBALS['rt_meta'][ $id ] = array( 'rtm_ativo' => '1', 'rtm_cadastur_conferido_em' => '2026-11-02', 'rtm_ci_id' => $ci, 'rtm_destinos' => $d );
 }
 rtm_t_ag( 5, 'Mariana Kloss', 'ci-mariana', array( 'gramado' ) );
 rtm_t_ag( 6, 'Rafael Antunes', 'ci-rafael', array( 'gramado' ) );
 rtm_t_ag( 7, 'Camila Duarte', 'ci-camila', array( 'bahia' ) );
 $GLOBALS['rt_posts'][] = (object) array( 'ID' => 8, 'post_type' => 'rt_agente', 'post_status' => 'publish', 'post_title' => 'Local Sem CI', 'post_name' => 'local-sem-ci', 'post_content' => '' );
-$GLOBALS['rt_meta'][8] = array( 'rtm_ativo' => '1' );
+$GLOBALS['rt_meta'][8] = array( 'rtm_ativo' => '1', 'rtm_cadastur_conferido_em' => '2026-11-02' );
 
 $GLOBALS['rt_opcoes']['rtm_opcoes'] = array( 'ensaio' => true, 'ci_chave' => '' );
 $GLOBALS['rt_pode'] = true;

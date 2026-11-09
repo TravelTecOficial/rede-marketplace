@@ -64,7 +64,8 @@
     var n = selecionados().length;
     if (contagem) {
       if (rede && rede.checked) {
-        contagem.textContent = 'A Rede Turística escolhe por você · até 3';
+        var max = Math.min(MAX, cards.length);
+        contagem.textContent = 'A Rede Turística escolhe por você · ' + (max === 1 ? '1 especialista' : 'até ' + max);
       } else if (n === 0) {
         contagem.textContent = 'Nenhum especialista escolhido ';
         var em = d.createElement('em');

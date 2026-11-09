@@ -9,8 +9,8 @@ function rtm_t_p( $id, $titulo, $tipo, $meta = array() ) {
 }
 rtm_t_p( 10, 'Gramado', 'destinos' );
 rtm_t_p( 11, 'Bariloche', 'destinos' );
-rtm_t_p( 5, 'Mariana Kloss', 'rt_agente', array( 'ativo' => '1' ) );
-rtm_t_p( 6, 'Rafael Antunes', 'rt_agente', array( 'ativo' => '1' ) );
+rtm_t_p( 5, 'Mariana Kloss', 'rt_agente', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02' ) );
+rtm_t_p( 6, 'Rafael Antunes', 'rt_agente', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02' ) );
 rtm_t_p( 7, 'Inativa', 'rt_agente', array( 'ativo' => '0' ) );
 for ( $i = 0; $i < 7; $i++ ) {
 	rtm_t_p( 20 + $i, 'Sugestão ' . $i, 'rt_sugestao', array( 'agente' => $i % 2 ? 6 : 5, 'destino' => 'gramado', 'ordem' => $i ) );

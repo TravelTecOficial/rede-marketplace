@@ -12,7 +12,7 @@
   "certificado": "https://mrkvvgofjyvlutqpvedt.supabase.co/storage/v1/object/public/rede-turistica/19d88a7b-785c-4570-9763-14074031b3cb/certificado-1793873729061.png",
   "cadastur": "45.678.901/0001-23",
   "cadastur_validade": "2027-03-25",
-  "cadastur_verificado": false,
+  "cadastur_verificado": true,
   "anos_experiencia": 10,
   "viajantes_atendidos": 2300,
   "idiomas": [
