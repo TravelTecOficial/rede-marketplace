@@ -19,7 +19,7 @@ rtm_t_post( 11, 'Canela', array(), 'publish', 'destinos' );
 
 // Agente completo, sem foto
 rtm_t_post( 5, 'Mariana Kloss', array(
-	'whatsapp' => '11999990000', 'email' => 'mariana@segredo.com', 'company_id' => 'company-x', 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02',
+	'whatsapp' => '11999990000', 'email' => 'mariana@segredo.com', 'company_id' => 'company-x', 'ativo' => '1', 'cadastur' => '21.123.456/0001-00',
 	'cargo' => 'Especialista em Gramado e Serra Gaúcha', 'texto_card' => 'Há 12 anos levo famílias para a Serra Gaúcha.',
 	'apresentacao' => "Nasci em Nova Petrópolis.\n\nGosto de entender o ritmo de cada família.",
 	'cadastur' => '21.123.456/0001-00', 'anos_experiencia' => '12', 'viajantes_atendidos' => '1400',
@@ -57,13 +57,13 @@ contem( 'desde 2009', $topo, 'topo: agência desde' );
 contem( '>SV<', $topo, 'topo: logo vazio vira iniciais da agência' );
 contem( '>MK<', $topo, 'topo: sem foto vira iniciais (Review Focus 3)' );
 nao_contem( 'class="rtm-foto"', preg_replace( '/<(?!img)[^>]*>/', '', $topo ), 'topo: sem foto, nenhuma imagem de foto' );
-contem( 'Cadastur verificado', $topo, 'Cadastur obrigatório: selo sempre no topo' );
+contem( 'Cadastur', $topo, 'Cadastur obrigatório: selo sempre no topo' );
 nao_contem( 'Ver avaliações', $topo, 'sem botão "Ver avaliações"' );
 igual( '', rtm_secao( 'avaliacoes', $a ), 'agente real sem avaliações: seção some' );
 nao_contem( 'rtm-nota', rtm_card( $a ), 'card sem nota sem avaliações' );
 
 // Agente com avaliações do Google (vindas do Cliente Ideal)
-rtm_t_post( 7, 'Rafael Antunes', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'teste' => '1', 'agencia_nome' => 'Rota Sul', 'google_perfil' => 'https://g.page/rota', 'avaliacoes' => array( 'fonte' => 'google', 'nota' => 4.8, 'total' => 54, 'link' => '', 'itens' => array(
+rtm_t_post( 7, 'Rafael Antunes', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'teste' => '1', 'agencia_nome' => 'Rota Sul', 'google_perfil' => 'https://g.page/rota', 'avaliacoes' => array( 'fonte' => 'google', 'nota' => 4.8, 'total' => 54, 'link' => '', 'itens' => array(
 	array( 'autor' => 'Camila e André', 'quando' => 'há 3 semanas', 'nota' => 5, 'texto' => 'Lua de mel perfeita.' ),
 	array( 'autor' => 'Patrícia M.', 'quando' => 'há 2 meses', 'nota' => 5, 'texto' => 'Hotel boutique lindo.' ),
 	array( 'autor' => 'Lucas T.', 'quando' => 'há 5 meses', 'nota' => 4, 'texto' => 'Ótimas indicações.' ),
@@ -124,7 +124,7 @@ igual( 'trilha', rtm_secoes()[0], 'trilha é a primeira seção' );
 // Destino recriado no Cliente Ideal (id novo, mesmo slug): o nome vem pelo slug
 rtm_t_post( 12, 'Nova Petrópolis', array(), 'publish', 'destinos' );
 rtm_t_post( 13, 'Bento', array(), 'trash', 'destinos' );
-rtm_t_post( 60, 'Luiza Prado', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'destinos' => array(
+rtm_t_post( 60, 'Luiza Prado', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'destinos' => array(
 	array( 'id' => 444, 'slug' => 'nova-petropolis' ), array( 'id' => 13, 'slug' => 'bento' ), array( 'id' => 445, 'slug' => 'sumiu' ),
 ) ) );
 $el = rtm_secao( 'especialidades', rtm_agente( 60 ) );
@@ -132,12 +132,12 @@ contem( '>Nova Petrópolis<', $el, 'destino com id antigo: nome achado pelo slug
 nao_contem( 'Bento', $el, 'destino na lixeira não aparece' );
 nao_contem( 'sumiu', $el, 'destino que não existe mais não aparece' );
 
-// Cadastur verificado
+// Cadastur
 update_post_meta( 5, 'rtm_cadastur_conferido_em', '2026-11-02' );
 $a2 = rtm_agente( 5 );
-contem( 'Cadastur verificado', rtm_secao( 'topo', $a2 ), 'com data: selo no topo' );
+contem( 'Cadastur', rtm_secao( 'topo', $a2 ), 'com data: selo no topo' );
 contem( '21.123.456/0001-00', rtm_secao( 'topo', $a2 ), 'selo com o número' );
-contem( 'Cadastur verificado', rtm_card( $a2 ), 'com data: selo no card' );
+contem( 'Cadastur', rtm_card( $a2 ), 'com data: selo no card' );
 $tc = rtm_secao( 'topo', $a2 );
 contem( '<button type="button" class="rtm-cadastur rtm-cad-abrir" aria-haspopup="dialog" aria-controls="rtm-cad">', $tc, 'topo: selo é botão que abre a janela' );
 contem( '<dialog id="rtm-cad"', $tc, 'topo: janela do Cadastur' );
@@ -174,7 +174,7 @@ igual( array( 'id', 'slug', 'destinos', 'tipos' ), $m[1], 'card: só os 4 atribu
 contem( 'Há 12 anos levo famílias', $card, 'card: texto do cartão' );
 contem( 'Ver perfil', $card, 'card: link do perfil' );
 contem( '>MK<', $card, 'card: sem foto vira iniciais' );
-contem( 'Cadastur verificado', $card, 'card: selo Cadastur (obrigatório)' );
+contem( 'Cadastur', $card, 'card: selo Cadastur (obrigatório)' );
 
 // Foto e logo presentes; URL perigosa
 $GLOBALS['rt_anexos'] = array( 77 => 'https://exemplo.test/logo.png', 88 => 'https://exemplo.test/foto.jpg' );
@@ -186,13 +186,13 @@ contem( 'src="https://exemplo.test/logo.png"', rtm_secao( 'topo', $a3 ), 'topo: 
 contem( 'src="https://exemplo.test/foto.jpg"', rtm_card( $a3 ), 'card: foto' );
 nao_contem( '>MK<', rtm_secao( 'topo', $a3 ), 'com foto: sem iniciais' );
 
-rtm_t_post( 9, 'Teste Url', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'foto_url_teste' => 'javascript:alert(1)' ) );
+rtm_t_post( 9, 'Teste Url', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'foto_url_teste' => 'javascript:alert(1)' ) );
 $a9 = rtm_agente( 9 );
 nao_contem( 'javascript:', rtm_secao( 'topo', $a9 ) . rtm_card( $a9 ), 'URL de foto com javascript: não sai' );
 contem( '>TU<', rtm_secao( 'topo', $a9 ), 'URL de foto inválida: iniciais' );
 
 // Agente vazio (Review Focus 3)
-rtm_t_post( 6, 'Ana', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02' ) );
+rtm_t_post( 6, 'Ana', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00' ) );
 $v = rtm_agente( 6 );
 igual( '', rtm_secao( 'sobre', $v ), 'sem apresentação: sobre vazio' );
 igual( '', rtm_secao( 'especialidades', $v ), 'sem especialidades e destinos: vazio' );
@@ -207,7 +207,7 @@ contem( 'data-destinos=""', rtm_card( $v ), 'card vazio: data-destinos vazio' );
 
 // Escape (Review Focus 4)
 rtm_t_post( 8, '<script>x</script>', array(
-	'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'texto_card' => '<script>y</script>curto', 'cargo' => '<img src=x onerror=alert(1)>',
+	'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'texto_card' => '<script>y</script>curto', 'cargo' => '<img src=x onerror=alert(1)>',
 	'apresentacao' => '<p>Olá</p><script>z</script>', 'agencia_nome' => '<b>Ag</b>',
 ) );
 $e  = rtm_agente( 8 );

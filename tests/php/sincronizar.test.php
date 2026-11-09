@@ -31,7 +31,7 @@ igual( $api[0]['certificado'], $a['certificado'], 'certificado do Cliente Ideal'
 igual( 'Bem Viajar', $a['agencia_nome'], 'agência' );
 ok( false !== strpos( $a['apresentacao'], "\n\n" ), 'apresentação mantém parágrafos' );
 igual( array( array( 'id' => 10, 'slug' => 'gramado', 'nome' => 'Gramado' ) ), $a['destinos'], 'destino ligado ao post local' );
-ok( $a['cadastur_verificado'], 'Cadastur verificado segue a API' );
+ok( $a['cadastur_verificado'], 'Cadastur segue a API' );
 igual( array( 'Grupo', 'Natal Luz', 'Melhor idade' ), $GLOBALS['rt_obj_termos'][50]['rt_tipo_viagem'], 'tipos de viagem' );
 igual( 'draft', get_post_status( 51 ), 'agente fora da API foi para rascunho' );
 
@@ -66,15 +66,15 @@ igual( 'draft', get_post_status( $sid ), 'sugestão que saiu da API foi para ras
 
 // Sem Cadastur conferido: sai do ar (Cadastur é obrigatório)
 $api3 = $api;
-$api3[0]['cadastur_verificado'] = false;
+$api3[0]['cadastur'] = '';
 resposta_falsa( 200, $api3 );
 $st = rtm_ci_sincronizar();
-igual( 'draft', get_post_status( 50 ), 'agente sem Cadastur conferido vai para rascunho' );
+igual( 'draft', get_post_status( 50 ), 'agente sem Cadastur vai para rascunho' );
 igual( 2, $st['agentes'], 'só os com Cadastur ficam' );
 contem( 'sem Cadastur', $st['msg'], 'aviso do agente barrado' );
 resposta_falsa( 200, $api );
 rtm_ci_sincronizar();
-igual( 'publish', get_post_status( 50 ), 'conferido de novo: volta ao ar' );
+igual( 'publish', get_post_status( 50 ), 'com Cadastur de novo: volta ao ar' );
 
 // Falha da API: nada muda
 resposta_falsa( 500, 'erro' );

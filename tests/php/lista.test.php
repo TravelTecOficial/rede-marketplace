@@ -10,8 +10,8 @@ function rtm_t_p( $id, $titulo, $tipo, $meta = array(), $conteudo = '' ) {
 rtm_t_p( 10, 'Gramado', 'destinos' );
 rtm_t_p( 11, 'Canela', 'destinos' );
 $g = array( array( 'id' => 10, 'slug' => 'gramado' ) );
-rtm_t_p( 5, 'Mariana Kloss', 'rt_agente', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'cargo' => 'Especialista em Gramado', 'destinos' => $g, 'destino_principal' => 'gramado', 'cadastur_conferido_em' => '2026-11-02' ) );
-rtm_t_p( 6, 'Camila Duarte', 'rt_agente', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'destinos' => array( array( 'id' => 10, 'slug' => 'gramado' ), array( 'id' => 11, 'slug' => 'canela' ) ), 'destino_principal' => 'gramado' ) );
+rtm_t_p( 5, 'Mariana Kloss', 'rt_agente', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'cargo' => 'Especialista em Gramado', 'destinos' => $g, 'destino_principal' => 'gramado', 'cadastur' => '21.123.456/0001-00' ) );
+rtm_t_p( 6, 'Camila Duarte', 'rt_agente', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'destinos' => array( array( 'id' => 10, 'slug' => 'gramado' ), array( 'id' => 11, 'slug' => 'canela' ) ), 'destino_principal' => 'gramado' ) );
 rtm_t_p( 7, 'Inativo', 'rt_agente', array( 'ativo' => '0' ) );
 $GLOBALS['rt_termos'][5]['rt_tipo_viagem'] = array( (object) array( 'name' => 'Família' ) );
 $GLOBALS['rt_termos'][6]['rt_tipo_viagem'] = array( (object) array( 'name' => 'Grupo' ), (object) array( 'name' => 'Natal Luz' ) );

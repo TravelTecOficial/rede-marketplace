@@ -46,18 +46,15 @@ foreach ( array( 'cargo', 'destinos', 'agencia_logo', 'google_perfil', 'foto_url
 // Agente
 $GLOBALS['rt_anexos'] = array( 77 => 'https://exemplo.test/logo.png', 88 => 'https://exemplo.test/foto.jpg' );
 rtm_t_post( 5, 'Mariana Kloss', array(
-	'whatsapp' => '11999990000', 'email' => 'a@b.com', 'company_id' => 'company-x', 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02',
+	'whatsapp' => '11999990000', 'email' => 'a@b.com', 'company_id' => 'company-x', 'ativo' => '1', 'cadastur' => '21.123.456/0001-00',
 	'cadastur' => '21.123.456/0001-00', 'agencia_nome' => 'Viagens Serra', 'agencia_logo' => 77,
 	'destinos' => array( array( 'id' => 10, 'slug' => 'gramado' ), array( 'id' => 11, 'slug' => 'canela' ) ),
 ) );
 $GLOBALS['rt_meta'][5]['_thumbnail_id'] = 88;
 $GLOBALS['rt_termos'][5]['rt_tipo_viagem'] = array( (object) array( 'name' => 'Família' ), (object) array( 'name' => 'Luxo' ) );
-$GLOBALS['rt_meta'][5]['rtm_cadastur_conferido_em'] = '';
-igual( null, rtm_agente( 5 ), 'sem Cadastur conferido: agente não aparece' );
-update_post_meta( 5, 'rtm_cadastur_conferido_em', '2026-11-02' );
-update_post_meta( 5, 'rtm_cadastur_validade', '2020-01-01' );
-igual( null, rtm_agente( 5 ), 'Cadastur vencido: agente não aparece' );
-update_post_meta( 5, 'rtm_cadastur_validade', '' );
+$GLOBALS['rt_meta'][5]['rtm_cadastur'] = '';
+igual( null, rtm_agente( 5 ), 'sem Cadastur: agente não aparece' );
+update_post_meta( 5, 'rtm_cadastur', '21.123.456/0001-00' );
 $a = rtm_agente( 5 );
 foreach ( array( 'whatsapp', 'email', 'company_id', 'ativo', 'cadastur_conferido_em' ) as $k ) { ok( ! array_key_exists( $k, $a ), "privado $k fora da saída" ); }
 nao_contem( '11999990000', wp_json_encode( $a ), 'whatsapp não vaza no JSON' );
@@ -74,9 +71,9 @@ igual( 'https://exemplo.test/logo.png', $a['logo'], 'logo da agência' );
 igual( array( 'Família', 'Luxo' ), $a['tipos'], 'tipos' );
 ok( isset( $a['url'] ) && '' !== $a['url'], 'url' );
 
-igual( true, rtm_agente( 5 )['cadastur_verificado'], 'com data: Cadastur verificado' );
+igual( true, rtm_agente( 5 )['cadastur_verificado'], 'com data: Cadastur' );
 
-rtm_t_post( 6, 'Ana', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'foto_url_teste' => 'https://exemplo.test/teste.jpg' ) );
+rtm_t_post( 6, 'Ana', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'foto_url_teste' => 'https://exemplo.test/teste.jpg' ) );
 $b = rtm_agente( 6 );
 igual( 'AN', $b['iniciais'], 'iniciais de nome único' );
 igual( 'https://exemplo.test/teste.jpg', $b['foto'], 'foto_url_teste como fallback' );
@@ -84,7 +81,7 @@ igual( '', $b['logo'], 'sem logo: vazio' );
 igual( array(), $b['destinos_slugs'], 'sem destinos: vazio' );
 
 // Especialidades: {titulo, descricao}; texto simples antigo é convertido na leitura
-rtm_t_post( 20, 'Leg', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02', 'especialidades' => array( 'Luxo', array( 'titulo' => 'Família', 'descricao' => 'Parques' ), array( 'descricao' => 'sem título' ), '', 7, 'A', 'B', 'C' ) ) );
+rtm_t_post( 20, 'Leg', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'especialidades' => array( 'Luxo', array( 'titulo' => 'Família', 'descricao' => 'Parques' ), array( 'descricao' => 'sem título' ), '', 7, 'A', 'B', 'C' ) ) );
 igual( array(
 	array( 'titulo' => 'Luxo', 'descricao' => '' ), array( 'titulo' => 'Família', 'descricao' => 'Parques' ),
 	array( 'titulo' => 'A', 'descricao' => '' ), array( 'titulo' => 'B', 'descricao' => '' ),
@@ -93,8 +90,8 @@ igual( array(), rtm_agente( 6 )['especialidades'], 'rtm_agente: sem especialidad
 
 // Inativo / não publicado / outro tipo / inexistente
 rtm_t_post( 7, 'Zé Inativo', array( 'ativo' => '0' ) );
-rtm_t_post( 8, 'Rascunho', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02' ), 'draft' );
-rtm_t_post( 9, 'Página', array( 'ativo' => '1', 'cadastur_conferido_em' => '2026-11-02' ), 'publish', 'page' );
+rtm_t_post( 8, 'Rascunho', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00' ), 'draft' );
+rtm_t_post( 9, 'Página', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00' ), 'publish', 'page' );
 igual( null, rtm_agente( 7 ), 'ativo=0 -> null' );
 igual( null, rtm_agente( 8 ), 'rascunho -> null' );
 igual( null, rtm_agente( 9 ), 'outro post type -> null' );

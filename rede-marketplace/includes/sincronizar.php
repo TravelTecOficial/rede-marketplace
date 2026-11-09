@@ -117,8 +117,8 @@ function rtm_ci_salvar_agente( array $a ) {
 	if ( '' === $ci_id || '' === $slug || '' === $nome ) {
 		return array( 0, array() );
 	}
-	if ( empty( $a['cadastur_verificado'] ) || '' === rtm_ci_txt( $a, 'cadastur' ) ) {
-		return array( -1, array() ); // sem Cadastur conferido não entra (e, se já estava no ar, sai)
+	if ( '' === rtm_ci_txt( $a, 'cadastur' ) ) {
+		return array( -1, array() ); // sem Cadastur não entra (e, se já estava no ar, sai)
 	}
 	$id = rtm_ci_achar( 'rt_agente', array( 'meta_key' => 'rtm_ci_id', 'meta_value' => $ci_id ) );
 	if ( ! $id ) {
@@ -312,7 +312,7 @@ function rtm_ci_sincronizar() {
 	if ( $agentes || $barrados ) {
 		$status['tirados'] = rtm_ci_despublicar_resto( 'rt_agente', $agentes ) + rtm_ci_despublicar_resto( 'rt_sugestao', $sugs );
 		if ( $barrados ) {
-			$status['msg'] = $barrados . ( 1 === $barrados ? ' agente sem Cadastur conferido não entrou' : ' agentes sem Cadastur conferido não entraram' );
+			$status['msg'] = $barrados . ( 1 === $barrados ? ' agente sem Cadastur não entrou' : ' agentes sem Cadastur não entraram' );
 		}
 	} else {
 		$status['msg'] = 'a API não devolveu nenhum agente; nada foi tirado do ar';

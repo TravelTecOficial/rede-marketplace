@@ -218,7 +218,7 @@ function rtm_caixa( $post ) {
 		. '<span class="rtm-logo-previa">' . ( $cert_url ? '<img src="' . esc_url( $cert_url ) . '" alt="" style="max-width:120px;max-height:80px;">' : '' ) . '</span><br>'
 		. '<button type="button" class="button rtm-logo-escolher">Escolher imagem</button> '
 		. '<button type="button" class="button-link rtm-logo-remover"' . ( $cert_id ? '' : ' hidden' ) . '>Remover</button>'
-		. '<br><span class="description">Print ou PDF convertido em imagem do certificado emitido no site do Cadastur. Aparece ao clicar no selo "Cadastur verificado".</span></div>';
+		. '<br><span class="description">Print ou PDF convertido em imagem do certificado emitido no site do Cadastur. Aparece ao clicar no selo "Cadastur".</span></div>';
 	foreach ( array( 'anos_experiencia', 'viajantes_atendidos', 'idiomas', 'foto_url_teste' ) as $c ) {
 		rtm_campo( $c, $v[ $c ] );
 	}
@@ -424,7 +424,7 @@ function rtm_colunas( $colunas ) {
 	$novas['rtm_agencia']  = 'Agência';
 	$novas['rtm_destinos'] = 'Destinos';
 	$novas['rtm_ativo']    = 'Ativo';
-	$novas['rtm_cadastur'] = 'Cadastur conferido';
+	$novas['rtm_cadastur'] = 'Cadastur';
 	$novas['rtm_teste']    = 'Teste';
 	return $novas;
 }
@@ -456,7 +456,7 @@ function rtm_coluna( $coluna, $post_id ) {
 			echo '1' === (string) get_post_meta( $post_id, 'rtm_ativo', true ) ? 'Sim' : 'Não';
 			break;
 		case 'rtm_cadastur':
-			$d = (string) get_post_meta( $post_id, 'rtm_cadastur_conferido_em', true );
+			$d = (string) get_post_meta( $post_id, 'rtm_cadastur', true );
 			echo '' !== $d ? esc_html( $d ) : '—';
 			break;
 		case 'rtm_teste':
