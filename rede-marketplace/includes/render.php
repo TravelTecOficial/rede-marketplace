@@ -50,12 +50,12 @@ function rtm_html_agencia( array $agente, $com_desde ) {
 	return '<div class="rtm-agencia">' . $logo . '<span><strong>' . esc_html( $agente['agencia_nome'] ) . '</strong>' . implode( ' · ', $info ) . '</span></div>';
 }
 
-/** Selo "Cadastur verificado" — só quando a data de conferência existe. */
+/** Selo "Cadastur" — só quando há número de Cadastur. */
 function rtm_html_cadastur( array $agente, $com_numero ) {
 	if ( empty( $agente['cadastur_verificado'] ) ) {
 		return '';
 	}
-	$txt = 'Cadastur verificado';
+	$txt = 'Cadastur';
 	if ( $com_numero && '' !== trim( (string) $agente['cadastur'] ) ) {
 		$txt .= ' · ' . $agente['cadastur'];
 	}
@@ -131,7 +131,7 @@ function rtm_html_redes( array $agente ) {
 }
 
 /**
- * Selo "Cadastur verificado" da página do agente: botão que abre uma janela com os dados do cadastro, o
+ * Selo "Cadastur" da página do agente: botão que abre uma janela com os dados do cadastro, o
  * certificado (imagem enviada pela agência, se houver) e o link para conferir no site oficial.
  */
 function rtm_html_cadastur_janela( array $agente ) {
@@ -140,11 +140,11 @@ function rtm_html_cadastur_janela( array $agente ) {
 	}
 	$numero = trim( (string) $agente['cadastur'] );
 	$h      = '<button type="button" class="rtm-cadastur rtm-cad-abrir" aria-haspopup="dialog" aria-controls="rtm-cad"><i aria-hidden="true">✓</i>'
-		. esc_html( 'Cadastur verificado' . ( '' !== $numero ? ' · ' . $numero : '' ) ) . '<span class="rtm-cad-ver">ver certificado</span></button>';
+		. esc_html( 'Cadastur' . ( '' !== $numero ? ' · ' . $numero : '' ) ) . '<span class="rtm-cad-ver">ver certificado</span></button>';
 	$h     .= '<dialog id="rtm-cad" class="rtm-cad-dialogo" aria-labelledby="rtm-cad-titulo"><div class="rtm-cad-caixa">'
 		. '<button type="button" class="rtm-cad-fechar" aria-label="Fechar">×</button>'
-		. '<h2 id="rtm-cad-titulo">Cadastur verificado</h2>'
-		. '<p class="rtm-cad-intro">Cadastro no Ministério do Turismo conferido pela Rede Turística.</p>';
+		. '<h2 id="rtm-cad-titulo">Cadastur</h2>'
+		. '<p class="rtm-cad-intro">Cadastro no Ministério do Turismo informado pelo agente.</p>';
 	$cert = esc_url( (string) $agente['certificado'] );
 	if ( '' !== $cert ) {
 		$h .= '<img class="rtm-cad-img" src="' . $cert . '" alt="' . esc_attr( 'Certificado Cadastur de ' . (string) $agente['agencia_nome'] ) . '" loading="lazy" decoding="async">';

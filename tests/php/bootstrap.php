@@ -79,6 +79,7 @@ function wp_trim_words( $t, $n = 55, $mais = '…' ) {
 
 function get_option( $k, $padrao = false ) { return array_key_exists( $k, $GLOBALS['rt_opcoes'] ) ? $GLOBALS['rt_opcoes'][ $k ] : $padrao; }
 function update_option( $k, $v, $autoload = null ) { $GLOBALS['rt_opcoes'][ $k ] = $v; return true; }
+function wp_generate_password( $n = 12, $esp = true ) { return substr( str_repeat( 'abcdef0123456789', 4 ), 0, $n ); }
 function get_transient( $k ) { return isset( $GLOBALS['rt_transients'][ $k ] ) ? $GLOBALS['rt_transients'][ $k ][0] : false; }
 function set_transient( $k, $v, $ttl = 0 ) { $GLOBALS['rt_transients'][ $k ] = array( $v, $ttl ); return true; }
 function delete_transient( $k ) { unset( $GLOBALS['rt_transients'][ $k ] ); return true; }

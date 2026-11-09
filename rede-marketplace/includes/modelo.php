@@ -142,6 +142,11 @@ function rtm_especialidades_normalizar( $bruto, $max = 4 ) {
 	return array_slice( $lista, 0, (int) $max );
 }
 
+/** Cadastur informado (número). Sem isso o agente não vai ao ar. A Rede não faz conferência no site. */
+function rtm_cadastur_em_dia( $post_id ) {
+	return '' !== trim( (string) get_post_meta( $post_id, 'rtm_cadastur', true ) );
+}
+
 /** Dados públicos do agente, ou null se não existir, não for rt_agente, não estiver publicado ou ativo. */
 function rtm_agente( $post_id ) {
 	$post_id = (int) $post_id;
@@ -151,6 +156,9 @@ function rtm_agente( $post_id ) {
 	}
 	if ( '1' !== (string) get_post_meta( $post_id, 'rtm_ativo', true ) ) {
 		return null;
+	}
+	if ( ! rtm_cadastur_em_dia( $post_id ) ) {
+		return null; // Cadastur é obrigatório: sem número, o agente não aparece
 	}
 	$a = array();
 	foreach ( rtm_campos() as $chave => $def ) {
@@ -207,7 +215,7 @@ function rtm_agente( $post_id ) {
 	$a['agencia_iniciais']    = rtm_iniciais( (string) $a['agencia_nome'] );
 	$a['tipos']               = $tipos;
 	$a['destinos_slugs']      = $slugs;
-	$a['cadastur_verificado'] = '' !== (string) get_post_meta( $post_id, 'rtm_cadastur_conferido_em', true );
+	$a['cadastur_verificado'] = '' !== trim( (string) $a['cadastur'] ); // selo: Cadastur informado
 	$av                       = get_post_meta( $post_id, 'rtm_avaliacoes', true ); // do Google, via Cliente Ideal (sincronizar.php)
 	$a['avaliacoes']          = is_array( $av ) && ! empty( $av['nota'] ) ? $av : array();
 	return $a;

@@ -47,6 +47,11 @@ function rtm_lista_html() {
 	}
 	wp_enqueue_script( 'rtm-lista', RTM_URL . 'assets/lista.js', array(), RTM_VERSION, true );
 	$agentes  = rtm_agentes_ativos();
+	if ( ! $agentes ) {
+		return '<section class="rtm-lista"><div class="rtm-lista-in"><h1 class="rtm-lista-titulo">Nossos especialistas</h1>'
+			. '<p class="rtm-lista-sub">Estamos reunindo os primeiros agentes certificados da Rede Turística. Volte em breve.</p>'
+			. '<p><a class="rtm-lista-cot" href="' . esc_url( rtm_url_seja_agente() ) . '">É agente de viagens? Faça parte da Rede</a></p></div></section>';
+	}
 	$destinos = rtm_destinos_cotacao( $agentes );
 	$tipos    = array();
 	foreach ( $agentes as $a ) {
@@ -76,6 +81,7 @@ function rtm_lista_html() {
 		$h .= rtm_card_lista( $a );
 	}
 	$h .= '</div><p class="rtm-lista-vazio" id="rtm-lista-vazio" hidden>Nenhum especialista com esse filtro ainda. <a href="' . esc_url( (string) rtm_opcoes()['url_cotacao'] ) . '">Peça a cotação e a Rede Turística indica o melhor para você.</a></p>';
+	$h .= '<p class="rtm-lista-seja"><a href="' . esc_url( rtm_url_seja_agente() ) . '">É agente de viagens? Faça parte da Rede</a></p>';
 	return $h . '</div></section>';
 }
 add_shortcode( 'rt_especialistas_lista', 'rtm_lista_html' );

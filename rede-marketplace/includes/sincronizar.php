@@ -117,6 +117,9 @@ function rtm_ci_salvar_agente( array $a ) {
 	if ( '' === $ci_id || '' === $slug || '' === $nome ) {
 		return array( 0, array() );
 	}
+	if ( '' === rtm_ci_txt( $a, 'cadastur' ) ) {
+		return array( -1, array() ); // sem Cadastur não entra (e, se já estava no ar, sai)
+	}
 	$id = rtm_ci_achar( 'rt_agente', array( 'meta_key' => 'rtm_ci_id', 'meta_value' => $ci_id ) );
 	if ( ! $id ) {
 		$id = rtm_ci_achar( 'rt_agente', array( 'name' => $slug ) ); // agente que já existia aqui (os de teste): assume
@@ -291,18 +294,26 @@ function rtm_ci_sincronizar() {
 	}
 	$agentes = array();
 	$sugs    = array();
+	$barrados = 0;
 	foreach ( $lista as $a ) {
 		if ( ! is_array( $a ) ) {
 			continue;
 		}
 		list( $id, $ids_sug ) = rtm_ci_salvar_agente( $a );
+		if ( -1 === $id ) {
+			$barrados++;
+			continue;
+		}
 		if ( $id ) {
 			$agentes[] = $id;
 			$sugs      = array_merge( $sugs, $ids_sug );
 		}
 	}
-	if ( $agentes ) {
+	if ( $agentes || $barrados ) {
 		$status['tirados'] = rtm_ci_despublicar_resto( 'rt_agente', $agentes ) + rtm_ci_despublicar_resto( 'rt_sugestao', $sugs );
+		if ( $barrados ) {
+			$status['msg'] = $barrados . ( 1 === $barrados ? ' agente sem Cadastur não entrou' : ' agentes sem Cadastur não entraram' );
+		}
 	} else {
 		$status['msg'] = 'a API não devolveu nenhum agente; nada foi tirado do ar';
 	}
@@ -329,7 +340,7 @@ function rtm_ci_agendar() {
 
 /**
  * Webhook do Cliente Ideal: POST /wp-json/rede-marketplace/v1/sincronizar (corpo ignorado).
- * Sem senha: só manda o site reler a API pública. Uma rodada a cada 20 s; aviso que chega no meio
+ * Protegido por segredo (cabeçalho X-Rede-Segredo ou ?segredo= na URL); só manda o site reler a API pública. Uma rodada a cada 20 s; aviso que chega no meio
  * agenda mais uma rodada logo depois, para a última mudança nunca se perder.
  */
 function rtm_ci_webhook() {
@@ -347,16 +358,46 @@ function rtm_ci_webhook() {
 	return new WP_REST_Response( array( 'ok' => ! empty( $st['ok'] ), 'agentes' => (int) $st['agentes'], 'sugestoes' => (int) $st['sugestoes'] ), ! empty( $st['ok'] ) ? 200 : 502 );
 }
 
+/** Segredo do webhook: criado sozinho na primeira vez e guardado nas opções. */
+function rtm_ci_segredo() {
+	$o = rtm_opcoes();
+	if ( '' === (string) $o['ci_segredo'] ) {
+		$o['ci_segredo'] = wp_generate_password( 32, false );
+		update_option( 'rtm_opcoes', $o );
+	}
+	return (string) $o['ci_segredo'];
+}
+
+/** Só quem manda o segredo certo (cabeçalho X-Rede-Segredo ou parâmetro segredo) aciona o webhook. */
+function rtm_ci_webhook_permitido( $req ) {
+	$enviado = '';
+	if ( is_object( $req ) && method_exists( $req, 'get_header' ) ) {
+		$enviado = (string) $req->get_header( 'x-rede-segredo' );
+	}
+	if ( '' === $enviado && is_object( $req ) && method_exists( $req, 'get_param' ) ) {
+		$enviado = (string) $req->get_param( 'segredo' );
+	}
+	if ( '' !== $enviado && hash_equals( rtm_ci_segredo(), $enviado ) ) {
+		return true;
+	}
+	return new WP_Error( 'rtm_segredo', 'Segredo inválido.', array( 'status' => 401 ) );
+}
+
 function rtm_ci_rotas() {
 	register_rest_route( 'rede-marketplace/v1', '/sincronizar', array(
 		'methods'             => 'POST',
 		'callback'            => 'rtm_ci_webhook',
-		'permission_callback' => '__return_true',
+		'permission_callback' => 'rtm_ci_webhook_permitido',
 	) );
 }
 
 function rtm_ci_url_webhook() {
 	return rest_url( 'rede-marketplace/v1/sincronizar' );
+}
+
+/** Endereço completo do webhook, já com o segredo (é o que se cola no Cliente Ideal). */
+function rtm_ci_url_webhook_com_segredo() {
+	return add_query_arg( array( 'segredo' => rtm_ci_segredo() ), rtm_ci_url_webhook() );
 }
 
 function rtm_ci_acao_sincronizar() {
@@ -383,7 +424,7 @@ function rtm_ci_html_status() {
 		$txt = 'Sincronizado em ' . wp_date( 'd/m/Y H:i', (int) $s['quando'] ) . ': ' . (int) $s['agentes'] . ' agentes e ' . (int) $s['sugestoes'] . ' sugestões.'
 			. ( $s['tirados'] ? ' ' . (int) $s['tirados'] . ' tirados do ar (rascunho).' : '' ) . ( $s['msg'] ? ' Aviso: ' . $s['msg'] . '.' : '' );
 	}
-	return '<h2>Cliente Ideal</h2><p>' . esc_html( $txt ) . '</p><p>O Cliente Ideal avisa o site a cada mudança (webhook <code>' . esc_html( rtm_ci_url_webhook() ) . '</code>, POST). De hora em hora o site confere sozinho, como reserva.</p>'
+	return '<h2>Cliente Ideal</h2><p>' . esc_html( $txt ) . '</p><p>O Cliente Ideal avisa o site a cada mudança. Endereço do aviso (POST, com segredo; não divulgue): <code>' . esc_html( rtm_ci_url_webhook_com_segredo() ) . '</code>. De hora em hora o site confere sozinho, como reserva.</p>'
 		. '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="rtm_ci_sincronizar">'
 		. wp_nonce_field( 'rtm_ci_sincronizar', '_wpnonce', true, false )
 		. '<button type="submit" class="button">Sincronizar agora</button></form>';

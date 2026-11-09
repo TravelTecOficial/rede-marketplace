@@ -7,9 +7,9 @@ function rtm_t_p( $id, $titulo, $tipo, $meta = array() ) {
 	$GLOBALS['rt_meta'][ $id ] = array();
 	foreach ( $meta as $k => $v ) { $GLOBALS['rt_meta'][ $id ][ 'rtm_' . $k ] = $v; }
 }
-rtm_t_p( 5, 'Serra Real', 'rt_agente', array( 'ativo' => '1', 'google_place_id' => 'ChIJ_abc-123', 'endereco' => 'Av. Borges, 1' ) );
-rtm_t_p( 6, 'Sem Perfil', 'rt_agente', array( 'ativo' => '1' ) );
-rtm_t_p( 7, 'Mariana Kloss', 'rt_agente', array( 'ativo' => '1', 'teste' => '1' ) );
+rtm_t_p( 5, 'Serra Real', 'rt_agente', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'google_place_id' => 'ChIJ_abc-123', 'endereco' => 'Av. Borges, 1' ) );
+rtm_t_p( 6, 'Sem Perfil', 'rt_agente', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00' ) );
+rtm_t_p( 7, 'Mariana Kloss', 'rt_agente', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'teste' => '1' ) );
 
 // Opções: chave limpa
 $o = rtm_limpar_opcoes( array( 'url_cotacao' => 'https://exemplo.test/c/', 'google_chave' => " AIza_Sy-123<script> " ) );

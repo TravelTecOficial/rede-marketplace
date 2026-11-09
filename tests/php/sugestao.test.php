@@ -8,8 +8,8 @@ function rtm_t_p( $id, $titulo, $tipo, $meta = array(), $status = 'publish' ) {
 	foreach ( $meta as $k => $v ) { $GLOBALS['rt_meta'][ $id ][ 'rtm_' . $k ] = $v; }
 }
 $GLOBALS['rt_opcoes']['rtm_opcoes'] = array( 'ensaio' => true );
-rtm_t_p( 5, 'Mariana Kloss', 'rt_agente', array( 'ativo' => '1' ) );
-rtm_t_p( 6, 'Rafael Antunes', 'rt_agente', array( 'ativo' => '1' ) );
+rtm_t_p( 5, 'Mariana Kloss', 'rt_agente', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00' ) );
+rtm_t_p( 6, 'Rafael Antunes', 'rt_agente', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00' ) );
 rtm_t_p( 7, 'Inativo Silva', 'rt_agente', array( 'ativo' => '0' ) );
 rtm_t_p( 20, 'Gramado em família', 'rt_sugestao', array( 'agente' => 5, 'preco' => 2890, 'ordem' => 2, 'destino' => 'gramado', 'galeria' => array( 31, 32 ) ) );
 rtm_t_p( 21, 'Natal Luz', 'rt_sugestao', array( 'agente' => 5, 'ordem' => 1 ) );

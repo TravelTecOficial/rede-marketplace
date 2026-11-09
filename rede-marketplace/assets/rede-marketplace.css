@@ -450,3 +450,11 @@ dialog.rtm-galeria-dialogo span.rtm-galeria-conta{position:absolute;left:50%;bot
 .rtm-cotacao .rtm-obrigado p{margin:0;font-size:16px}
 .rtm-cotacao.rtm-enviado form,.rtm-cotacao.rtm-enviado .rtm-cbarra,.rtm-cotacao.rtm-enviado .rtm-sugestao-aviso{display:none}
 
+
+/* Página "Seja um agente" e rodapé da lista */
+.rtm-seja-req{display:flex;flex-direction:column;gap:8px;background:var(--rtm-surface);border:1px solid var(--rtm-line);border-radius:14px;padding:16px 18px;margin:0 0 20px;max-width:720px}
+.rtm-seja .rtm-seja-req p{margin:0}
+.rtm-seja-passos{max-width:720px;margin:0 0 24px;padding-left:22px}
+.rtm-seja-passos li{margin:0 0 10px}
+.rtm-seja-cta{display:inline-flex}
+.rtm-lista-seja{margin:24px 0 0;text-align:center}

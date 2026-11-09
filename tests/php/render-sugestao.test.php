@@ -8,8 +8,8 @@ function rtm_t_p( $id, $titulo, $tipo, $meta = array(), $status = 'publish' ) {
 	foreach ( $meta as $k => $v ) { $GLOBALS['rt_meta'][ $id ][ 'rtm_' . $k ] = $v; }
 }
 rtm_t_p( 10, 'Gramado', 'destinos' );
-rtm_t_p( 5, 'Mariana Kloss', 'rt_agente', array( 'ativo' => '1', 'destinos' => array( array( 'id' => 10, 'slug' => 'gramado' ) ), 'destino_principal' => 'gramado', 'especialidades' => array( array( 'titulo' => 'Família', 'descricao' => '' ) ) ) );
-rtm_t_p( 6, 'Rafael Antunes', 'rt_agente', array( 'ativo' => '1' ) );
+rtm_t_p( 5, 'Mariana Kloss', 'rt_agente', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00', 'destinos' => array( array( 'id' => 10, 'slug' => 'gramado' ) ), 'destino_principal' => 'gramado', 'especialidades' => array( array( 'titulo' => 'Família', 'descricao' => '' ) ) ) );
+rtm_t_p( 6, 'Rafael Antunes', 'rt_agente', array( 'ativo' => '1', 'cadastur' => '21.123.456/0001-00' ) );
 rtm_t_p( 20, 'Gramado em família, 4 dias', 'rt_sugestao', array( 'agente' => 5, 'tipo' => 'Família', 'texto_card' => 'Parques e café colonial.', 'preco' => 2890, 'ordem' => 1, 'img_teste' => 'https://exemplo.test/a.svg', 'destino' => 'gramado' ) );
 rtm_t_p( 21, 'Natal Luz', 'rt_sugestao', array( 'agente' => 5, 'tipo' => 'Natal Luz', 'texto_card' => 'Desfile.', 'ordem' => 2 ) );
 

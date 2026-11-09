@@ -106,6 +106,11 @@ function rtm_cotacao_html( $atts = array() ) {
 	wp_enqueue_script( 'rtm-cotacao', RTM_URL . 'assets/cotacao.js', array(), RTM_VERSION, true );
 
 	$agentes  = rtm_agentes_ativos();
+	if ( ! $agentes ) { // nenhum agente aprovado ainda: nada de formulário que não tem para quem enviar
+		return '<div class="rtm-cotacao"><div class="rtm-intro"><small>Pedido de cotação</small><h2 class="rtm-titulo">Estamos reunindo os primeiros especialistas</h2>'
+			. '<p class="rtm-lead">Em breve você poderá pedir cotações a agentes de viagem certificados. Volte logo!</p>'
+			. '<p><a class="rtm-lista-cot" href="' . esc_url( rtm_url_seja_agente() ) . '">É agente de viagens? Faça parte da Rede</a></p></div></div>';
+	}
 	$destinos = rtm_destinos_cotacao( $agentes );
 	$fixo     = rtm_cotacao_destino_fixo( $atts['destino'] );
 	if ( $fixo && ! isset( $destinos[ $fixo[0] ] ) ) {
