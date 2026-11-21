@@ -155,7 +155,7 @@ function rtm_envio_corpo( array $p ) {
 		return new WP_Error( 'agentes', 'Escolha de 1 a 3 especialistas.' );
 	}
 	$utm = array();
-	foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid' ) as $k ) {
+	foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid', 'fbclid', 'fbc', 'fbp', 'client_id' ) as $k ) {
 		$v = isset( $p['utm'][ $k ] ) && is_scalar( $p['utm'][ $k ] ) ? mb_substr( sanitize_text_field( (string) $p['utm'][ $k ] ), 0, 200 ) : '';
 		if ( '' !== $v ) {
 			$utm[ $k ] = $v;
@@ -188,6 +188,7 @@ function rtm_envio_corpo( array $p ) {
 		'origem_url' => $origem,
 		'sugestao'   => sanitize_title( rtm_envio_txt( $p, 'sugestao', 200 ) ),
 		'utm'        => (object) $utm,
+		'event_id'   => preg_replace( '/[^A-Za-z0-9_.-]/', '', rtm_envio_txt( $p, 'event_id', 80 ) ),
 	);
 	return array( $corpo, $agentes );
 }

@@ -401,3 +401,37 @@ test('volta antes da ida e ida no passado são recusadas; volta mínima segue a 
   assert.ok(!w.RTMCotacao.validar().includes('rtm-volta'), 'sem datas certas não valida ida/volta');
   assert.equal(w.RTMCotacao.pedido().ida, '');
 });
+
+test('sucesso do envio: generate_lead no dataLayer (sem dado pessoal) e origem guardada no pedido', async () => {
+  const w = montar('?destino=gramado');
+  w.RTOrigem = { dados: () => ({ utm_source: 'meta', utm_campaign: 'safari', fbclid: 'F1', fbc: 'fb.1.1.F1', fbp: 'fb.1.2.3', client_id: '11.22', gbraid: 'G9', referrer: 'x' }) };
+  const form = $(w, 'rtm-cotacao');
+  form.setAttribute('data-envio', 'https://exemplo.test/wp-json/rede-marketplace/v1/cotacao');
+  let corpo = null;
+  w.fetch = (url, op) => { corpo = JSON.parse(op.body); return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, agentes: ['mariana-kloss'] }) }); };
+  clicar(cardDe(w, 'mariana-kloss'));
+  $(w, 'rtm-nome').value = 'Ana Souza'; $(w, 'rtm-whats').value = '(11) 99999-9999'; $(w, 'rtm-email').value = 'ana@exemplo.com'; $(w, 'rtm-lgpd').checked = true;
+  $(w, 'rtm-destino').value = 'Gramado';
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.deepEqual(corpo.utm, { utm_source: 'meta', utm_campaign: 'safari', fbclid: 'F1', gbraid: 'G9', fbc: 'fb.1.1.F1', fbp: 'fb.1.2.3', client_id: '11.22' });
+  assert.match(corpo.event_id, /^rtm_/);
+  const ev = (w.dataLayer || []).find((e) => e.event === 'generate_lead');
+  assert.ok(ev, 'generate_lead no dataLayer');
+  assert.equal(ev.form_id, 'rtm-cotacao');
+  assert.equal(ev.event_id, corpo.event_id);
+  assert.equal(ev.destino, 'Gramado');
+  assert.equal(ev.utm_source, 'meta');
+  assert.ok(!JSON.stringify(ev).includes('ana@exemplo.com') && !JSON.stringify(ev).includes('99999'), 'sem e-mail/telefone');
+});
+
+test('erro do envio: não dispara generate_lead', async () => {
+  const w = montar('?destino=gramado');
+  $(w, 'rtm-cotacao').setAttribute('data-envio', 'https://exemplo.test/x');
+  w.fetch = () => Promise.resolve({ ok: false, json: () => Promise.resolve({ ok: false, msg: 'erro' }) });
+  clicar(cardDe(w, 'mariana-kloss'));
+  $(w, 'rtm-nome').value = 'Ana'; $(w, 'rtm-whats').value = '11999999999'; $(w, 'rtm-email').value = 'a@b.co'; $(w, 'rtm-lgpd').checked = true;
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal((w.dataLayer || []).filter((e) => e.event === 'generate_lead').length, 0);
+});

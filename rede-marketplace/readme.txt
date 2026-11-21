@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.18.3 (21/11/2026): rastreamento da cotação — evento generate_lead no dataLayer só quando o envio dá certo (sem nome, e-mail ou telefone), com event_id; origem da visita guardada pelo site (UTMs, gclid/gbraid/wbraid, fbclid, fbc, fbp, client_id) vai junto ao Cliente Ideal mesmo que a pessoa tenha navegado antes de pedir.
 0.18.2 (05/11/2026): aviso de erro de cada campo da cotação aparece logo abaixo do campo; versão nova volta a aparecer na tela Plugins logo após a release (antes só em Painel › Atualizações).
 0.18.1 (05/11/2026): formulário de cotação valida as datas (volta não pode ser antes da ida, nem datas no passado), máscara de WhatsApp com DDD, e-mail e nome conferidos, com aviso em cada campo. O servidor confere tudo de novo antes de enviar ao Cliente Ideal.
 0.18.0 (05/11/2026): envio do pedido de cotação para o Cliente Ideal (lead no CRM de cada agência escolhida). O site repassa com a chave secreta (Configurações › Chave do envio). No ensaio só quem edita o site envia.

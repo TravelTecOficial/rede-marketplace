@@ -328,10 +328,11 @@
     var cab = { 'Content-Type': 'application/json' };
     var nonce = formEl.getAttribute('data-nonce');
     if (nonce) { cab['X-WP-Nonce'] = nonce; }
-    window.fetch(url, { method: 'POST', headers: cab, credentials: 'same-origin', body: JSON.stringify(pedido()) })
+    var dados = pedido();
+    window.fetch(url, { method: 'POST', headers: cab, credentials: 'same-origin', body: JSON.stringify(dados) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j || {} }; }); })
       .then(function (res) {
-        if (res.ok && res.j.ok) { obrigado(res.j.agentes || []); return; }
+        if (res.ok && res.j.ok) { avisarConversao(dados); obrigado(res.j.agentes || []); return; }
         falhou(res.j.msg || 'Não conseguimos enviar agora. Tente de novo em alguns minutos.');
       })
       .catch(function () { falhou('Sem conexão. Confira a internet e tente de novo.'); });
@@ -391,13 +392,28 @@
     if (valor('rtm-bebes') && valor('rtm-bebes') !== '0') { partes.push(valor('rtm-bebes') + ' bebê(s)'); }
     return partes.join(', ');
   }
+  // Origem da visita: a URL atual vale primeiro; sem campanha nela, usa a origem guardada pelo
+  // script do site (RTOrigem, localStorage de 90 dias), mais os ids de clique/cookies para as conversões.
+  var CHAVES_URL = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid', 'fbclid'];
   function utm() {
     var res = {};
-    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid'].forEach(function (k) {
-      var v = params ? params.get(k) : '';
-      if (v) { res[k] = v; }
+    var guardada = {};
+    try { guardada = (window.RTOrigem && window.RTOrigem.dados && window.RTOrigem.dados()) || {}; } catch (e) { guardada = {}; }
+    var daUrl = CHAVES_URL.some(function (k) { return params && params.get(k); });
+    CHAVES_URL.forEach(function (k) {
+      var v = daUrl ? (params ? params.get(k) : '') : guardada[k];
+      if (v) { res[k] = String(v); }
     });
+    ['fbc', 'fbp', 'client_id'].forEach(function (k) { if (guardada[k]) { res[k] = String(guardada[k]); } });
     return res;
+  }
+  var eventId = 'rtm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+  function avisarConversao(p) {
+    // Sem nome, e-mail nem telefone: o dataLayer alimenta GA4/Meta/Google Ads pelo GTM.
+    var ev = { event: 'generate_lead', form_id: 'rtm-cotacao', source: 'site-cotacao-marketplace', event_id: p.event_id,
+      destino: p.destino, tipo: p.tipo, orcamento: p.orcamento, agentes_qtd: p.agentes.length, page_url: p.origem_url };
+    Object.keys(p.utm).forEach(function (k) { ev[k] = p.utm[k]; });
+    (window.dataLayer = window.dataLayer || []).push(ev);
   }
   function pedido() {
     var lgpd = $('rtm-lgpd');
@@ -423,6 +439,7 @@
       sugestao: sugAtual,
       origem_url: String(window.location.href).split('#')[0],
       utm: utm(),
+      event_id: eventId,
       site: valor('rtm-site')
     };
   }

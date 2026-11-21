@@ -43,13 +43,14 @@ igual( 'POST', $GLOBALS['rt_rotas']['rede-marketplace/v1/cotacao']['methods'], '
 $base = array( 'agentes' => array( 'mariana-kloss', 'rafael-antunes' ), 'nome' => 'Ana Souza', 'telefone' => '(11) 99999-9999', 'email' => 'ana@exemplo.com', 'lgpd' => true,
 	'destino' => 'Gramado', 'destino_slug' => 'gramado', 'tipo' => 'Família', 'saida' => 'Campinas/SP', 'datas' => 'Ida 2026-12-10 · volta 2026-12-15', 'pessoas' => '2 adulto(s)',
 	'inclui' => 'Aéreo, Hospedagem', 'orcamento' => 'Até R$ 5 mil', 'mensagem' => "Aniversário\nda filha", 'horario' => 'Noite', 'sugestao' => 'natal-luz',
-	'origem_url' => 'https://exemplo.test/cotacao-de-viagens/?utm_source=google', 'utm' => array( 'utm_source' => 'google', 'gclid' => 'abc', 'x' => 'y' ), 'site' => '' );
+	'origem_url' => 'https://exemplo.test/cotacao-de-viagens/?utm_source=google', 'utm' => array( 'utm_source' => 'google', 'gclid' => 'abc', 'fbp' => 'fb.1.2.3', 'x' => 'y' ), 'event_id' => 'rtm_1_ab$c', 'site' => '' );
 
 list( $corpo, $ags ) = rtm_envio_corpo( $base );
 igual( array( 'ci-mariana', 'ci-rafael' ), $corpo['agentes'], 'ids do Cliente Ideal dos escolhidos' );
 igual( '11999999999', $corpo['telefone'], 'telefone só números' );
 igual( 'https://exemplo.test/cotacao-de-viagens/?utm_source=google', $corpo['origem_url'], 'origem do site' );
-igual( array( 'utm_source' => 'google', 'gclid' => 'abc' ), (array) $corpo['utm'], 'só UTMs conhecidas' );
+igual( 'rtm_1_abc', $corpo['event_id'], 'event_id limpo' );
+igual( array( 'utm_source' => 'google', 'gclid' => 'abc', 'fbp' => 'fb.1.2.3' ), (array) $corpo['utm'], 'só UTMs conhecidas' );
 contem( 'Tipo de viagem: Família', $corpo['mensagem'], 'mensagem com tipo' );
 contem( 'Observações: Aniversário', $corpo['mensagem'], 'mensagem com observações' );
 igual( 'natal-luz', $corpo['sugestao'], 'sugestão' );
