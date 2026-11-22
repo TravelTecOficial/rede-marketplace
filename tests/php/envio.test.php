@@ -29,6 +29,8 @@ ok( rtm_envio_ativo(), 'ensaio: quem edita envia' );
 $at = rtm_envio_atributos();
 contem( 'data-envio="https://exemplo.test/wp-json/rede-marketplace/v1/cotacao"', $at, 'formulário com data-envio' );
 nao_contem( 'segredo123', $at, 'chave nunca vai ao navegador' );
+contem( 'data-webhook="https://exec.traveltec.com.br/webhook/recebe-forms"', $at, 'webhook do n8n no formulário' );
+contem( 'data-company="company-7e54dc53-d6f8-4956-a281-956dcccad67c"', $at, 'company_id da Rede Turística' );
 nao_contem( 'data-nonce', $at, 'sem login: sem nonce (página em cache)' );
 $GLOBALS['rt_logado'] = true;
 contem( 'data-nonce="ok_wp_rest"', rtm_envio_atributos(), 'logado: nonce do REST' );
@@ -133,6 +135,34 @@ igual( 400, $r->status, 'pedido inválido: 400' );
 resposta_falsa( 201, array() );
 igual( 200, rtm_envio_receber( new RT_Req_Falsa( $base ) )->status, '5º pedido passa' );
 igual( 429, rtm_envio_receber( new RT_Req_Falsa( $base ) )->status, '6º pedido seguido: 429' );
+
+// Atendimento manual: sem especialista, sem chave, sem chamar o Cliente Ideal dos especialistas; lead ao webhook
+$GLOBALS['rt_transients'] = array();
+$GLOBALS['rt_http_log']   = array();
+$GLOBALS['rt_opcoes']['rtm_opcoes']['manual']   = true;
+$GLOBALS['rt_opcoes']['rtm_opcoes']['ci_chave'] = '';
+ok( rtm_envio_ativo(), 'manual: envia sem a chave' );
+contem( 'data-manual="1"', rtm_envio_atributos(), 'manual: formulário com data-manual' );
+$x = $base; $x['agentes'] = array(); $x['lead'] = array( 'mensagem' => "[Cotação] Destino: Gramado\nLGPD: aceito", 'utm_source' => 'teste', 'utm_campaign' => 'dev', 'fbp' => 'fb.1.9', 'company_id' => 'outra', 'x' => 'y' );
+resposta_falsa( 200, array() );
+$r = rtm_envio_receber( new RT_Req_Falsa( $x ) );
+igual( 200, $r->status, 'manual: sem especialista é aceito' );
+ok( $r->data['ok'] && $r->data['manual'] && $r->data['lead_enviado'], 'manual: ok e lead enviado pelo servidor' );
+igual( 1, count( $GLOBALS['rt_http_log'] ), 'manual: uma chamada só' );
+igual( RTM_WEBHOOK_FORMS_PADRAO, $GLOBALS['rt_http_log'][0][0], 'manual: vai ao recebe-forms, não ao rede-cotacao' );
+$c = $GLOBALS['rt_http_log'][0][1]['body'];
+igual( RTM_COMPANY_REDE_PADRAO, $c['company_id'], 'manual: company_id da Rede (não o do navegador)' );
+igual( array( 'site-cotacao', 'Cotação', 'rtm-cotacao', '11999999999', 'teste', 'dev', 'fb.1.9', 'rtm_1_abc' ), array( $c['source'], $c['tipo_formulario'], $c['form_id'], $c['telefone'], $c['utm_source'], $c['utm_campaign'], $c['fbp'], $c['event_id'] ), 'manual: campos do recebe-forms' );
+contem( '[Cotação] Destino: Gramado', $c['mensagem'], 'manual: texto da cotação' );
+ok( ! isset( $c['x'] ), 'manual: campo desconhecido fica de fora' );
+$x = $base; $x['agentes'] = array( 'sumiu' );
+$r = rtm_envio_receber( new RT_Req_Falsa( $x ) ); // sem resposta na fila: webhook falha
+igual( 200, $r->status, 'manual: especialista indisponível não barra' );
+igual( false, $r->data['lead_enviado'], 'manual: webhook falhou, o navegador tenta' );
+$GLOBALS['rt_opcoes']['rtm_opcoes']['manual']   = false;
+$GLOBALS['rt_opcoes']['rtm_opcoes']['ci_chave'] = 'segredo123';
+igual( true, rtm_limpar_opcoes( array( 'manual' => '1' ) )['manual'], 'opção manual gravada' );
+igual( false, rtm_limpar_opcoes( array() )['manual'], 'opção manual desmarcada' );
 
 // Configurações: chave nunca aparece; em branco mantém
 $o = rtm_limpar_opcoes( array( 'ci_chave' => '' ) );

@@ -107,6 +107,10 @@ function add_filter( $g, $cb, $p = 10, $n = 1 ) { add_action( $g, $cb, $p, $n );
 function do_action( $g, ...$args ) {
 	foreach ( isset( $GLOBALS['rt_ganchos'][ $g ] ) ? $GLOBALS['rt_ganchos'][ $g ] : array() as $cb ) { call_user_func_array( $cb, $args ); }
 }
+function apply_filters( $g, $v, ...$args ) {
+	foreach ( isset( $GLOBALS['rt_ganchos'][ $g ] ) ? $GLOBALS['rt_ganchos'][ $g ] : array() as $cb ) { $v = call_user_func_array( $cb, array_merge( array( $v ), $args ) ); }
+	return $v;
+}
 function register_activation_hook( $f, $cb ) { $GLOBALS['rt_ativacao'][] = $cb; }
 function flush_rewrite_rules( $duro = true ) { $GLOBALS['rt_flush'] = ( isset( $GLOBALS['rt_flush'] ) ? $GLOBALS['rt_flush'] : 0 ) + 1; }
 function plugin_dir_path( $f ) { return '/p/'; }

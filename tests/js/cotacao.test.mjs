@@ -435,3 +435,108 @@ test('erro do envio: não dispara generate_lead', async () => {
   await new Promise((r) => setTimeout(r, 20));
   assert.equal((w.dataLayer || []).filter((e) => e.event === 'generate_lead').length, 0);
 });
+
+test('sucesso: também manda o lead ao webhook do n8n (recebe-forms) com o texto da cotação', async () => {
+  const w = montar('?destino=gramado&utm_source=teste&utm_campaign=dev');
+  w.document.cookie = '_fbp=fb.1.123.456';
+  const form = $(w, 'rtm-cotacao');
+  form.setAttribute('data-envio', 'https://exemplo.test/wp-json/rede-marketplace/v1/cotacao');
+  form.setAttribute('data-webhook', 'https://exec.traveltec.com.br/webhook/recebe-forms');
+  form.setAttribute('data-company', 'company-x');
+  const chamadas = [];
+  w.fetch = (url, op) => { chamadas.push({ url, op }); return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, agentes: ['Mariana'] }) }); };
+  clicar(pilula(w, 'rtm-tipos', 'data-tipo', 'Casal / Lua de mel'));
+  clicar(cardDe(w, 'rafael-antunes'));
+  const z = (n) => String(n).padStart(2, '0');
+  const a = new w.Date(); a.setDate(a.getDate() + 30);
+  const ida = a.getFullYear() + '-' + z(a.getMonth() + 1) + '-' + z(a.getDate());
+  $(w, 'rtm-ida').value = ida;
+  $(w, 'rtm-nome').value = 'TESTE DEV - ignorar'; $(w, 'rtm-whats').value = '(11) 99999-9999'; $(w, 'rtm-email').value = 'a@b.co'; $(w, 'rtm-lgpd').checked = true;
+  $(w, 'rtm-destino').value = 'Gramado';
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(chamadas.length, 2);
+  const wh = chamadas[1];
+  assert.equal(wh.url, 'https://exec.traveltec.com.br/webhook/recebe-forms');
+  assert.equal(wh.op.mode, 'no-cors');
+  assert.equal(wh.op.keepalive, true);
+  const c = Object.fromEntries(new w.URLSearchParams(wh.op.body.toString()));
+  assert.equal(c.nome, 'TESTE DEV - ignorar');
+  assert.equal(c.telefone, '11999999999');
+  assert.equal(c.company_id, 'company-x');
+  assert.equal(c.source, 'site-cotacao');
+  assert.equal(c.tipo_formulario, 'Cotação');
+  assert.equal(c.form_id, 'rtm-cotacao');
+  assert.equal(c.utm_source, 'teste');
+  assert.equal(c.utm_campaign, 'dev');
+  assert.equal(c.fbp, 'fb.1.123.456');
+  assert.equal(c.event_id, JSON.parse(chamadas[0].op.body).event_id);
+  assert.equal(c.event_id, w.dataLayer.find((e) => e.event === 'generate_lead').event_id);
+  const br = ida.slice(8, 10) + '/' + ida.slice(5, 7) + '/' + ida.slice(0, 4);
+  assert.equal(c.mensagem, '[Cotação] Perfil: Casal / Lua de mel\nDestino: Gramado\nIda: ' + br + '\nAdultos: 2\nAgentes da rede: rafael-antunes\nLGPD: aceito');
+  assert.ok(w.document.querySelector('.rtm-obrigado'), 'obrigado na tela');
+});
+
+test('falha do webhook não segura o obrigado', async () => {
+  const w = montar('?destino=gramado');
+  const form = $(w, 'rtm-cotacao');
+  form.setAttribute('data-envio', 'https://exemplo.test/x');
+  form.setAttribute('data-webhook', 'https://exec.traveltec.com.br/webhook/recebe-forms');
+  form.setAttribute('data-company', 'company-x');
+  let n = 0;
+  w.fetch = () => { n++; if (n === 2) { throw new Error('bloqueado'); } return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, agentes: [] }) }); };
+  clicar(cardDe(w, 'mariana-kloss'));
+  $(w, 'rtm-nome').value = 'Ana'; $(w, 'rtm-whats').value = '11999999999'; $(w, 'rtm-email').value = 'a@b.co'; $(w, 'rtm-lgpd').checked = true;
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(n, 2);
+  assert.ok(w.document.querySelector('.rtm-obrigado'), 'obrigado mesmo com o webhook falhando');
+});
+
+test('sem data-webhook: só o envio ao site', async () => {
+  const w = montar('?destino=gramado');
+  $(w, 'rtm-cotacao').setAttribute('data-envio', 'https://exemplo.test/x');
+  let n = 0;
+  w.fetch = () => { n++; return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, agentes: [] }) }); };
+  clicar(cardDe(w, 'mariana-kloss'));
+  $(w, 'rtm-nome').value = 'Ana'; $(w, 'rtm-whats').value = '11999999999'; $(w, 'rtm-email').value = 'a@b.co'; $(w, 'rtm-lgpd').checked = true;
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(n, 1);
+});
+
+test('atendimento manual: envia sem especialista e o servidor manda o lead', async () => {
+  const w = montar('?destino=gramado');
+  const form = $(w, 'rtm-cotacao');
+  form.setAttribute('data-envio', 'https://exemplo.test/x');
+  form.setAttribute('data-manual', '1');
+  form.setAttribute('data-webhook', 'https://exec.traveltec.com.br/webhook/recebe-forms');
+  form.setAttribute('data-company', 'company-x');
+  const chamadas = [];
+  w.fetch = (url, op) => { chamadas.push({ url, op }); return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, manual: true, lead_enviado: true, agentes: [] }) }); };
+  $(w, 'rtm-nome').value = 'Ana'; $(w, 'rtm-whats').value = '11999999999'; $(w, 'rtm-email').value = 'a@b.co'; $(w, 'rtm-lgpd').checked = true;
+  $(w, 'rtm-destino').value = 'Gramado';
+  assert.ok(!w.RTMCotacao.validar().includes('rtm-lista'), 'especialista opcional');
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(chamadas.length, 1, 'navegador não repete o webhook');
+  const corpo = JSON.parse(chamadas[0].op.body);
+  assert.match(corpo.lead.mensagem, /^\[Cotação\] /);
+  assert.match(w.document.querySelector('.rtm-obrigado').textContent, /equipe da Rede Turística/);
+});
+
+test('atendimento manual: se o servidor não conseguiu, o navegador manda ao webhook', async () => {
+  const w = montar('?destino=gramado');
+  const form = $(w, 'rtm-cotacao');
+  form.setAttribute('data-envio', 'https://exemplo.test/x');
+  form.setAttribute('data-manual', '1');
+  form.setAttribute('data-webhook', 'https://exec.traveltec.com.br/webhook/recebe-forms');
+  form.setAttribute('data-company', 'company-x');
+  const urls = [];
+  w.fetch = (url) => { urls.push(url); return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, manual: true, lead_enviado: false, agentes: [] }) }); };
+  $(w, 'rtm-nome').value = 'Ana'; $(w, 'rtm-whats').value = '11999999999'; $(w, 'rtm-email').value = 'a@b.co'; $(w, 'rtm-lgpd').checked = true;
+  $(w, 'rtm-destino').value = 'Gramado';
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.deepEqual(urls, ['https://exemplo.test/x', 'https://exec.traveltec.com.br/webhook/recebe-forms']);
+});
