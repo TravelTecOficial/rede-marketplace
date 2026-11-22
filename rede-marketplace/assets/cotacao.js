@@ -332,7 +332,7 @@
     window.fetch(url, { method: 'POST', headers: cab, credentials: 'same-origin', body: JSON.stringify(dados) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j || {} }; }); })
       .then(function (res) {
-        if (res.ok && res.j.ok) { avisarConversao(dados); obrigado(res.j.agentes || []); return; }
+        if (res.ok && res.j.ok) { avisarConversao(dados); avisarWebhook(formEl, dados); obrigado(res.j.agentes || []); return; }
         falhou(res.j.msg || 'Não conseguimos enviar agora. Tente de novo em alguns minutos.');
       })
       .catch(function () { falhou('Sem conexão. Confira a internet e tente de novo.'); });
@@ -394,7 +394,7 @@
   }
   // Origem da visita: a URL atual vale primeiro; sem campanha nela, usa a origem guardada pelo
   // script do site (RTOrigem, localStorage de 90 dias), mais os ids de clique/cookies para as conversões.
-  var CHAVES_URL = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid', 'fbclid'];
+  var CHAVES_URL = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id', 'gclid', 'gbraid', 'wbraid', 'fbclid'];
   function utm() {
     var res = {};
     var guardada = {};
@@ -415,6 +415,66 @@
     Object.keys(p.utm).forEach(function (k) { ev[k] = p.utm[k]; });
     (window.dataLayer = window.dataLayer || []).push(ev);
   }
+  // Lead da Rede Turística no Cliente Ideal: depois do envio aceito, POST ao recebe-forms do n8n (o mesmo formato
+  // do captacao.js do Voucher Tec). Só com data-webhook e data-company no formulário. Falha aqui nunca segura o obrigado.
+  function nomesAgentes() {
+    if (rede && rede.checked) { return 'A Rede Turística escolhe'; }
+    return selecionados().map(function (c) {
+      var n = c.querySelector('.rtm-card-nome') || c.querySelector('h3');
+      return n ? n.textContent.replace(/\s+/g, ' ').trim() : (c.getAttribute('data-slug') || '');
+    }).filter(Boolean).join(', ');
+  }
+  function mesBR(v) { var m = /^(\d{4})-(\d{2})$/.exec(v || ''); return m ? m[2] + '/' + m[1] : ''; }
+  function textoWebhook(p) {
+    var linhas = [];
+    var add = function (rotulo, v) { if (v) { linhas.push(rotulo + ': ' + v); } };
+    add('Perfil', p.tipo);
+    add('Destino', p.destino);
+    add('Origem', p.saida);
+    var datas = [];
+    if (p.ida) { datas.push('Ida: ' + dataBR(p.ida)); }
+    if (p.volta) { datas.push('Volta: ' + dataBR(p.volta)); }
+    if (modoDatas() === 'mes' && mesBR(valor('rtm-mes'))) { datas.push('Mês: ' + mesBR(valor('rtm-mes'))); }
+    if (datas.length) { linhas.push(datas.join(' | ')); }
+    var qtd = [];
+    var n = function (rotulo, id) { var v = valor(id); if (v && v !== '0') { qtd.push(rotulo + ': ' + v); } };
+    n('Adultos', 'rtm-adultos'); n('Crianças', 'rtm-criancas'); n('Bebês', 'rtm-bebes');
+    if (qtd.length) { linhas.push(qtd.join(' | ')); }
+    add('Orçamento', p.orcamento);
+    add('Melhor horário', p.horario);
+    add('Agentes da rede', nomesAgentes());
+    add('Obs', p.mensagem);
+    if (p.lgpd) { linhas.push('LGPD: aceito'); }
+    return '[Cotação] ' + linhas.join('\n');
+  }
+  function cookie(nome) {
+    var m = d.cookie.match(new RegExp('(?:^|; )' + nome + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+  function corpoWebhook(p, company) {
+    var c = {
+      nome: p.nome, email: p.email, telefone: p.telefone, mensagem: textoWebhook(p), company_id: company,
+      source: 'site-cotacao', tipo_formulario: 'Cotação', form_id: 'rtm-cotacao', page_url: String(window.location.href)
+    };
+    CHAVES_URL.forEach(function (k) { if (p.utm[k]) { c[k] = p.utm[k]; } });
+    var fbp = cookie('_fbp') || p.utm.fbp;
+    if (fbp) { c.fbp = fbp; }
+    c.event_id = p.event_id;
+    return c;
+  }
+  function avisarWebhook(formEl, p) {
+    try {
+      var url = formEl.getAttribute('data-webhook');
+      var company = formEl.getAttribute('data-company');
+      if (!url || !company || !window.fetch) { return; }
+      var c = corpoWebhook(p, company);
+      var corpo = new URLSearchParams();
+      Object.keys(c).forEach(function (k) { if (c[k] !== '' && c[k] != null) { corpo.append(k, c[k]); } });
+      var r = window.fetch(url, { method: 'POST', body: corpo, keepalive: true, mode: 'no-cors' });
+      if (r && r.catch) { r.catch(function () {}); }
+    } catch (e) { /* o pedido já foi aceito: segue para o obrigado */ }
+  }
+
   function pedido() {
     var lgpd = $('rtm-lgpd');
     return {
@@ -508,5 +568,5 @@
     }
   }
 
-  window.RTMCotacao = { estado: estado, validar: validar, pedido: pedido };
+  window.RTMCotacao = { estado: estado, validar: validar, pedido: pedido, webhook: function (company) { return corpoWebhook(pedido(), company || ''); } };
 })();

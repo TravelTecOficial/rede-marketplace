@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Lead da própria Rede Turística no Cliente Ideal (webhook recebe-forms do n8n), além do pedido aos especialistas.
+define( 'RTM_WEBHOOK_FORMS_PADRAO', 'https://exec.traveltec.com.br/webhook/recebe-forms' );
+define( 'RTM_COMPANY_REDE_PADRAO', 'company-7e54dc53-d6f8-4956-a281-956dcccad67c' );
 define( 'RTM_CI_COTACAO_PADRAO', 'https://mrkvvgofjyvlutqpvedt.supabase.co/functions/v1/rede-cotacao' );
 
 function rtm_envio_url_ci() {
@@ -255,6 +258,12 @@ function rtm_envio_atributos() {
 		return '';
 	}
 	$h = ' data-envio="' . esc_url( rtm_envio_rota() ) . '"';
+	// Webhook e empresa: filtros para trocar (string vazia desliga o envio ao n8n).
+	$webhook = (string) apply_filters( 'rtm_webhook_forms', RTM_WEBHOOK_FORMS_PADRAO );
+	$company = (string) apply_filters( 'rtm_company_rede', RTM_COMPANY_REDE_PADRAO );
+	if ( '' !== $webhook && '' !== $company ) {
+		$h .= ' data-webhook="' . esc_url( $webhook ) . '" data-company="' . esc_attr( $company ) . '"';
+	}
 	if ( is_user_logged_in() ) { // página de quem está logado não vai para o cache
 		$h .= ' data-nonce="' . esc_attr( wp_create_nonce( 'wp_rest' ) ) . '"';
 	}

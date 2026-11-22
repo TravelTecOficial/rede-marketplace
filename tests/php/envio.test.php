@@ -29,6 +29,8 @@ ok( rtm_envio_ativo(), 'ensaio: quem edita envia' );
 $at = rtm_envio_atributos();
 contem( 'data-envio="https://exemplo.test/wp-json/rede-marketplace/v1/cotacao"', $at, 'formulário com data-envio' );
 nao_contem( 'segredo123', $at, 'chave nunca vai ao navegador' );
+contem( 'data-webhook="https://exec.traveltec.com.br/webhook/recebe-forms"', $at, 'webhook do n8n no formulário' );
+contem( 'data-company="company-7e54dc53-d6f8-4956-a281-956dcccad67c"', $at, 'company_id da Rede Turística' );
 nao_contem( 'data-nonce', $at, 'sem login: sem nonce (página em cache)' );
 $GLOBALS['rt_logado'] = true;
 contem( 'data-nonce="ok_wp_rest"', rtm_envio_atributos(), 'logado: nonce do REST' );
