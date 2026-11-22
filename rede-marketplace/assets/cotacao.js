@@ -44,6 +44,8 @@
   }
   // Slug do destino digitado, se ele tem especialista; '' se em branco ou sem especialista.
   function destinoAtual() { var o = acharDestino(destinoTexto()); return o ? o.slug : ''; }
+  // Atendimento manual (data-manual): especialista é opcional; a Rede distribui o pedido.
+  function manual() { var f = $('rtm-cotacao'); return !!(f && f.getAttribute('data-manual')); }
   function marcado(c) { return c.getAttribute('aria-pressed') === 'true'; }
   function marcar(c, v) { c.setAttribute('aria-pressed', v ? 'true' : 'false'); }
   function selecionados() { return cards.filter(function (c) { return marcado(c) && !c.hidden; }); }
@@ -74,7 +76,7 @@
         contagem.textContent = n + (n === 1 ? ' especialista · 1 cotação' : ' especialistas · ' + n + ' cotações');
       }
     }
-    if (enviar) { enviar.disabled = !(n > 0 || (rede && rede.checked)); }
+    if (enviar) { enviar.disabled = !(n > 0 || (rede && rede.checked) || manual()); }
   }
 
   function atualizarTitulo() {
@@ -260,7 +262,7 @@
 
   function validar() {
     var erros = [];
-    var algumAgente = selecionados().length > 0 || (rede && rede.checked);
+    var algumAgente = selecionados().length > 0 || (rede && rede.checked) || manual();
     if (!destinoTexto()) { erros.push('rtm-destino'); }
     if (!algumAgente) { erros.push('rtm-lista'); }
     if (modoDatas() === 'certas') {
@@ -329,10 +331,16 @@
     var nonce = formEl.getAttribute('data-nonce');
     if (nonce) { cab['X-WP-Nonce'] = nonce; }
     var dados = pedido();
+    if (manual()) { try { dados.lead = corpoWebhook(dados, ''); } catch (e) {} }
     window.fetch(url, { method: 'POST', headers: cab, credentials: 'same-origin', body: JSON.stringify(dados) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j || {} }; }); })
       .then(function (res) {
-        if (res.ok && res.j.ok) { avisarConversao(dados); avisarWebhook(formEl, dados); obrigado(res.j.agentes || []); return; }
+        if (res.ok && res.j.ok) {
+          avisarConversao(dados);
+          if (!res.j.lead_enviado) { avisarWebhook(formEl, dados); } // no manual, o servidor já mandou
+          obrigado(res.j.agentes || [], !!res.j.manual);
+          return;
+        }
         falhou(res.j.msg || 'Não conseguimos enviar agora. Tente de novo em alguns minutos.');
       })
       .catch(function () { falhou('Sem conexão. Confira a internet e tente de novo.'); });
@@ -352,7 +360,7 @@
     atualizarContagem();
     mostrarAviso(msg, true);
   }
-  function obrigado(nomes) {
+  function obrigado(nomes, semEspecialista) {
     var raiz = d.querySelector('.rtm-cotacao');
     if (!raiz) { return; }
     var box = d.createElement('div');
@@ -362,7 +370,9 @@
     h2.textContent = 'Pedido enviado!';
     var p = d.createElement('p');
     var quem = nomes.length ? nomes.join(', ').replace(/, ([^,]*)$/, ' e $1') : 'Os especialistas';
-    p.textContent = quem + (nomes.length === 1 ? ' vai' : ' vão') + ' falar com você pelo WhatsApp ou e-mail para montar a sua cotação.';
+    p.textContent = (!nomes.length && semEspecialista)
+      ? 'A equipe da Rede Turística vai falar com você pelo WhatsApp ou e-mail para montar a sua cotação.'
+      : quem + (nomes.length === 1 ? ' vai' : ' vão') + ' falar com você pelo WhatsApp ou e-mail para montar a sua cotação.';
     box.appendChild(h2);
     box.appendChild(p);
     raiz.appendChild(box);

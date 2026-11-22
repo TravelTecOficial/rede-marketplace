@@ -504,3 +504,39 @@ test('sem data-webhook: só o envio ao site', async () => {
   await new Promise((r) => setTimeout(r, 20));
   assert.equal(n, 1);
 });
+
+test('atendimento manual: envia sem especialista e o servidor manda o lead', async () => {
+  const w = montar('?destino=gramado');
+  const form = $(w, 'rtm-cotacao');
+  form.setAttribute('data-envio', 'https://exemplo.test/x');
+  form.setAttribute('data-manual', '1');
+  form.setAttribute('data-webhook', 'https://exec.traveltec.com.br/webhook/recebe-forms');
+  form.setAttribute('data-company', 'company-x');
+  const chamadas = [];
+  w.fetch = (url, op) => { chamadas.push({ url, op }); return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, manual: true, lead_enviado: true, agentes: [] }) }); };
+  $(w, 'rtm-nome').value = 'Ana'; $(w, 'rtm-whats').value = '11999999999'; $(w, 'rtm-email').value = 'a@b.co'; $(w, 'rtm-lgpd').checked = true;
+  $(w, 'rtm-destino').value = 'Gramado';
+  assert.ok(!w.RTMCotacao.validar().includes('rtm-lista'), 'especialista opcional');
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(chamadas.length, 1, 'navegador não repete o webhook');
+  const corpo = JSON.parse(chamadas[0].op.body);
+  assert.match(corpo.lead.mensagem, /^\[Cotação\] /);
+  assert.match(w.document.querySelector('.rtm-obrigado').textContent, /equipe da Rede Turística/);
+});
+
+test('atendimento manual: se o servidor não conseguiu, o navegador manda ao webhook', async () => {
+  const w = montar('?destino=gramado');
+  const form = $(w, 'rtm-cotacao');
+  form.setAttribute('data-envio', 'https://exemplo.test/x');
+  form.setAttribute('data-manual', '1');
+  form.setAttribute('data-webhook', 'https://exec.traveltec.com.br/webhook/recebe-forms');
+  form.setAttribute('data-company', 'company-x');
+  const urls = [];
+  w.fetch = (url) => { urls.push(url); return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, manual: true, lead_enviado: false, agentes: [] }) }); };
+  $(w, 'rtm-nome').value = 'Ana'; $(w, 'rtm-whats').value = '11999999999'; $(w, 'rtm-email').value = 'a@b.co'; $(w, 'rtm-lgpd').checked = true;
+  $(w, 'rtm-destino').value = 'Gramado';
+  clicar($(w, 'rtm-enviar'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.deepEqual(urls, ['https://exemplo.test/x', 'https://exec.traveltec.com.br/webhook/recebe-forms']);
+});

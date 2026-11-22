@@ -3,6 +3,7 @@ Requer: WordPress 6+, PHP 7.4+.
 
 Instalação: Plugins > Adicionar novo > Enviar plugin > rede-marketplace.zip > Ativar.
 
+0.18.5 (22/11/2026): atendimento manual (Configurações › Rede Marketplace › Atendimento manual). Ligado, o viajante pode pedir sem escolher especialista; o pedido não vai ao Cliente Ideal dos especialistas (nem é barrado por especialista indisponível) e segue só como lead da Rede Turística ao webhook recebe-forms, enviado pelo servidor (o navegador tenta se o servidor falhar). Não precisa da chave do envio.
 0.18.4 (22/11/2026): cotação também vira lead da Rede Turística no Cliente Ideal — depois do envio aceito, o navegador manda ao webhook recebe-forms do n8n (source site-cotacao, company_id da Rede, texto [Cotação] com perfil, destino, datas, pessoas, orçamento, horário, agentes e LGPD, UTMs, fbp e o mesmo event_id do generate_lead). Falha no webhook não segura a tela de obrigado. Trocar ou desligar: filtros rtm_webhook_forms e rtm_company_rede.
 0.18.3 (21/11/2026): rastreamento da cotação — evento generate_lead no dataLayer só quando o envio dá certo (sem nome, e-mail ou telefone), com event_id; origem da visita guardada pelo site (UTMs, gclid/gbraid/wbraid, fbclid, fbc, fbp, client_id) vai junto ao Cliente Ideal mesmo que a pessoa tenha navegado antes de pedir.
 0.18.2 (05/11/2026): aviso de erro de cada campo da cotação aparece logo abaixo do campo; versão nova volta a aparecer na tela Plugins logo após a release (antes só em Painel › Atualizações).

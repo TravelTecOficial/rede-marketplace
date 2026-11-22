@@ -24,7 +24,48 @@ function rtm_envio_url_ci() {
 /** Este visitante pode enviar de verdade? (chave guardada; fora do ensaio, ou quem edita o site) */
 function rtm_envio_ativo() {
 	$o = rtm_opcoes();
-	return '' !== (string) $o['ci_chave'] && ( ! rtm_ensaio() || current_user_can( 'edit_posts' ) );
+	return ( '' !== (string) $o['ci_chave'] || rtm_envio_manual() ) && ( ! rtm_ensaio() || current_user_can( 'edit_posts' ) );
+}
+
+/** Atendimento manual (Configurações › Rede Marketplace): sem exigir especialista; o pedido vira só lead da Rede. */
+function rtm_envio_manual() {
+	return ! empty( rtm_opcoes()['manual'] );
+}
+
+/**
+ * Lead da Rede no webhook recebe-forms, pelo servidor (modo manual). Campos do navegador só da lista abaixo; nome,
+ * e-mail, telefone, empresa e origem são os conferidos aqui. true = webhook respondeu 2xx.
+ */
+function rtm_envio_webhook_servidor( array $p, array $corpo ) {
+	$webhook = (string) apply_filters( 'rtm_webhook_forms', RTM_WEBHOOK_FORMS_PADRAO );
+	$company = (string) apply_filters( 'rtm_company_rede', RTM_COMPANY_REDE_PADRAO );
+	if ( '' === $webhook || '' === $company ) {
+		return false;
+	}
+	$lead = isset( $p['lead'] ) && is_array( $p['lead'] ) ? $p['lead'] : array();
+	$c    = array(
+		'nome'            => $corpo['nome'],
+		'email'           => $corpo['email'],
+		'telefone'        => $corpo['telefone'],
+		'mensagem'        => isset( $lead['mensagem'] ) && is_scalar( $lead['mensagem'] ) ? mb_substr( sanitize_textarea_field( (string) $lead['mensagem'] ), 0, 3000 ) : '[Cotação] ' . $corpo['mensagem'],
+		'company_id'      => $company,
+		'source'          => 'site-cotacao',
+		'tipo_formulario' => 'Cotação',
+		'form_id'         => 'rtm-cotacao',
+		'page_url'        => $corpo['origem_url'],
+	);
+	foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id', 'gclid', 'gbraid', 'wbraid', 'fbclid', 'fbp' ) as $k ) {
+		$v = isset( $lead[ $k ] ) && is_scalar( $lead[ $k ] ) ? mb_substr( sanitize_text_field( (string) $lead[ $k ] ), 0, 300 ) : '';
+		if ( '' !== $v ) {
+			$c[ $k ] = $v;
+		}
+	}
+	if ( '' !== $corpo['event_id'] ) {
+		$c['event_id'] = $corpo['event_id'];
+	}
+	$resp   = wp_remote_post( $webhook, array( 'timeout' => 10, 'body' => $c ) );
+	$codigo = is_wp_error( $resp ) ? 0 : (int) wp_remote_retrieve_response_code( $resp );
+	return $codigo >= 200 && $codigo < 300;
 }
 
 function rtm_envio_rota() {
@@ -154,7 +195,7 @@ function rtm_envio_corpo( array $p ) {
 	}
 	$slugs   = isset( $p['agentes'] ) && is_array( $p['agentes'] ) ? array_filter( $p['agentes'], 'is_scalar' ) : array();
 	$agentes = rtm_envio_agentes( $slugs, ! empty( $p['rede'] ), sanitize_title( rtm_envio_txt( $p, 'destino_slug' ) ) );
-	if ( ! $agentes ) {
+	if ( ! $agentes && ! rtm_envio_manual() ) {
 		return new WP_Error( 'agentes', 'Escolha de 1 a 3 especialistas.' );
 	}
 	$utm = array();
@@ -224,6 +265,17 @@ function rtm_envio_receber( $req ) {
 		return new WP_REST_Response( array( 'ok' => false, 'msg' => $r->get_error_message() ), 400 );
 	}
 	list( $corpo, $agentes ) = $r;
+	if ( rtm_envio_manual() ) {
+		// Sem o Cliente Ideal dos especialistas: a Rede recebe o lead e distribui à mão.
+		$lead = rtm_envio_webhook_servidor( $p, $corpo );
+		update_option( 'rtm_envio_ultimo', array( 'quando' => time(), 'codigo' => $lead ? 200 : 0, 'erro' => $lead ? '' : 'webhook recebe-forms sem resposta (manual)' ), false );
+		return new WP_REST_Response( array(
+			'ok'            => true,
+			'manual'        => true,
+			'lead_enviado'  => $lead,
+			'agentes'       => array_values( wp_list_pluck( $agentes, 'nome' ) ),
+		), 200 );
+	}
 	$resp   = wp_remote_post( rtm_envio_url_ci(), array(
 		'timeout' => 20,
 		'headers' => array( 'Content-Type' => 'application/json', 'X-Rede-Chave' => (string) rtm_opcoes()['ci_chave'] ),
@@ -257,7 +309,7 @@ function rtm_envio_atributos() {
 	if ( ! rtm_envio_ativo() ) {
 		return '';
 	}
-	$h = ' data-envio="' . esc_url( rtm_envio_rota() ) . '"';
+	$h = ' data-envio="' . esc_url( rtm_envio_rota() ) . '"' . ( rtm_envio_manual() ? ' data-manual="1"' : '' );
 	// Webhook e empresa: filtros para trocar (string vazia desliga o envio ao n8n).
 	$webhook = (string) apply_filters( 'rtm_webhook_forms', RTM_WEBHOOK_FORMS_PADRAO );
 	$company = (string) apply_filters( 'rtm_company_rede', RTM_COMPANY_REDE_PADRAO );

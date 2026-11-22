@@ -333,6 +333,7 @@ function rtm_limpar_opcoes( $entrada ) {
 		'ci_api'       => preg_match( '#^https://#i', $api ) ? $api : '',
 		'ci_cotacao'   => preg_match( '#^https://#i', $cot ) ? $cot : '',
 		'ci_chave'     => $ch,
+		'manual'       => ! empty( $entrada['manual'] ),
 	);
 }
 
@@ -365,6 +366,7 @@ function rtm_tela_configuracoes() {
 		. ( '' !== (string) $o['ci_chave'] ? ' <label><input type="checkbox" name="rtm_opcoes[ci_chave_apagar]" value="1"> apagar</label>' : '' )
 		. '<p class="description">Chave secreta que o Cliente Ideal fornece para receber os pedidos de cotação. Fica só no servidor.</p>'
 		. '<p><input type="url" class="regular-text" name="rtm_opcoes[ci_cotacao]" value="' . esc_attr( (string) $o['ci_cotacao'] ) . '" placeholder="' . esc_attr( RTM_CI_COTACAO_PADRAO ) . '"></p><p class="description">Endereço do envio. Vazio = Cliente Ideal DEV.</p></td></tr>'
+		. '<tr><th scope="row">Atendimento manual</th><td><label><input type="checkbox" name="rtm_opcoes[manual]" value="1"' . checked( ! empty( $o['manual'] ), true, false ) . '> Receber a cotação sem especialista e distribuir à mão</label><p class="description">Ligado: o viajante pode pedir sem escolher especialista; o pedido não vai aos especialistas no Cliente Ideal, só como lead da Rede Turística (webhook recebe-forms, com os especialistas escolhidos no texto). Não precisa da chave do envio.</p></td></tr>'
 		. '<tr><th scope="row">Modo ensaio</th><td><label><input type="checkbox" name="rtm_opcoes[ensaio]" value="1"' . checked( ! empty( $o['ensaio'] ), true, false ) . '> Ensaio (fora do Google; agentes e envio do pedido só para quem edita o site)</label></td></tr>'
 		. '</table>';
 	submit_button();
